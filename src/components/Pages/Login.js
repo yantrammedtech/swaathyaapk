@@ -10,16 +10,19 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import icon for eye visibility
 import CheckBox from 'react-native-check-box'
-
 const { height } = Dimensions.get('window'); // Get screen height
-
+import logo from '../../assets/logo_apk.png';
+import tweenFrame from '../../assets/tween-frame.png'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { postAxios } from '../../axios/usePost';
+import { useDispatch } from 'react-redux'
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#ffffff',
-        paddingTop:10
+        paddingTop: 10
     },
     logo: {
         width: 140,
@@ -111,12 +114,18 @@ const styles = StyleSheet.create({
     },
 });
 
-const LoginScreen = () => {
+
+
+
+// Existing styles code...
+
+const LoginScreen = ({ navigation }) => { // Receive navigation prop here
+    const dispatch = useDispatch()
     // State to manage form data
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        keepSignedIn: false,
+        keepSignedIn: true,
     });
     const [isSelected, setSelection] = useState(true);
 
@@ -127,17 +136,25 @@ const LoginScreen = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleDashboard = () => {
-        console.log("dashboard")
-        navigation.navigate('Dashboard'); 
+    const handleLogin = async () => {
+        const response = await postAxios('user/emailLogin', {
+            email: formData.email,
+            password: formData.password,
+        });
+        // console.log("response", response)
+        const key = "Token"
+        if (response.message == "success") {
+            await AsyncStorage.setItem(key, response.token);
+            dispatch({ type: "currentUserData", payload: response })
+            navigation.navigate('dashboard');
+        }
     }
-
 
     return (
         <View style={styles.container}>
-            <Image source={require('../../assets/logo_apk.png')} style={styles.logo} />
+            <Image source={logo} style={styles.logo} />
             <Text style={styles.title}>Swaasthya</Text>
-            <Image source={require('../../assets/tween-frame.png')} style={styles.doctorImage} />
+            <Image source={tweenFrame} style={styles.doctorImage} />
             <View style={styles.bgminputContainer}>
                 <View style={styles.inputContainer}>
                     <TextInput
@@ -170,13 +187,14 @@ const LoginScreen = () => {
                     <View style={styles.checkboxContainer}>
                         <CheckBox
                             isChecked={isSelected}
-                            onClick={() => setSelection(!isSelected) }
+                            onClick={() => setSelection(!isSelected)}
                             style={styles.checkbox}
                         />
                         <Text style={styles.label}>Keep me signed in</Text>
                     </View>
-                    <TouchableOpacity style={styles.button} onPress={handleDashboard}>
-                        <Text style={styles.buttonText} >Continue</Text>
+
+                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                        <Text style={styles.buttonText}>Continue</Text>
                     </TouchableOpacity>
                 </View>
             </View>
