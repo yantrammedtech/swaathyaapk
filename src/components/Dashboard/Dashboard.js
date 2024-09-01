@@ -1,25 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 const Dashboard = ({ onNotificationPress }) => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const navigation = useNavigation();
 
+  const userData = useSelector((state) => {
+    return state
+  })
+
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
+  useEffect(() => {
+    console.log("userData", userData)
+  }, [])
 
   return (
     <View style={styles.container}>
       <Header toggleSidebar={toggleSidebar} onNotificationPress={onNotificationPress} />
 
-      <Image 
-        source={require('../../assets/imge.png')} 
-        style={styles.image} 
+      <Image
+        source={require('../../assets/imge.png')}
+        style={styles.image}
         resizeMode="contain" // Use resizeMode as a prop
       />
 
@@ -36,11 +44,11 @@ const Dashboard = ({ onNotificationPress }) => {
               />
               <Text style={styles.boxText}>Out Patient</Text>
             </View>
-            <View style={[styles.arrowContainer,styles.rotatedIcon2]}>
-           
-           <Icon name="arrow-upward" size={24} color="#fff" />
-        
-           </View>
+            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+
+              <Icon name="arrow-upward" size={24} color="#fff" />
+
+            </View>
           </Pressable>
 
           <Pressable style={[styles.box, styles.inPatient]}>
@@ -52,10 +60,10 @@ const Dashboard = ({ onNotificationPress }) => {
               />
               <Text style={styles.boxText}>In Patient</Text>
             </View>
-            <View style={[styles.arrowContainer,styles.rotatedIcon2]}>
-           
-            <Icon name="arrow-upward" size={24} color="#fff" />
-         
+            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+
+              <Icon name="arrow-upward" size={24} color="#fff" />
+
             </View>
           </Pressable>
         </View>
@@ -70,10 +78,10 @@ const Dashboard = ({ onNotificationPress }) => {
               />
               <Text style={styles.boxText}>OT</Text>
             </View>
-            <View style={[styles.arrowContainer,styles.rotatedIcon2]}>
-           
-            <Icon name="arrow-upward" size={24} color="#fff" />
-         
+            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+
+              <Icon name="arrow-upward" size={24} color="#fff" />
+
             </View>
           </Pressable>
 
@@ -86,17 +94,17 @@ const Dashboard = ({ onNotificationPress }) => {
               />
               <Text style={styles.boxText}>Emergency</Text>
             </View>
-            <View style={[styles.arrowContainer,styles.rotatedIcon2]}>
-           
-           <Icon name="arrow-upward" size={24} color="#fff" />
-        
-           </View>
+            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+
+              <Icon name="arrow-upward" size={24} color="#fff" />
+
+            </View>
           </Pressable>
         </View>
 
         <View style={styles.row}>
-          <Pressable 
-            style={[styles.box, styles.triagePatient]} 
+          <Pressable
+            style={[styles.box, styles.triagePatient]}
             onPress={() => navigation.navigate('TriageDashboard')}
           >
             <View style={styles.boxContent}>
@@ -107,11 +115,11 @@ const Dashboard = ({ onNotificationPress }) => {
               />
               <Text style={styles.boxText}>Triage</Text>
             </View>
-            <View style={[styles.arrowContainer,styles.rotatedIcon2]}>
-           
-           <Icon name="arrow-upward" size={24} color="#fff" />
-        
-           </View>
+            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+
+              <Icon name="arrow-upward" size={24} color="#fff" />
+
+            </View>
           </Pressable>
 
           <Pressable style={[styles.box, styles.recordPatient]}>
@@ -123,10 +131,10 @@ const Dashboard = ({ onNotificationPress }) => {
               />
               <Text style={styles.boxText}>Record</Text>
             </View>
-            <View style={[styles.arrowContainer,styles.rotatedIcon2]}>
-           
-            <Icon name="arrow-upward" size={24} color="#fff" />
-         
+            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+
+              <Icon name="arrow-upward" size={24} color="#fff" />
+
             </View>
           </Pressable>
         </View>
@@ -157,7 +165,7 @@ const styles = StyleSheet.create({
   },
   rotatedIcon2: {
     transform: [{ rotate: '90deg' }],
-    textAlign:"right",
+    textAlign: "right",
   },
   row: {
     flexDirection: 'row',
@@ -165,9 +173,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   box: {
-    flexDirection: 'column', 
+    flexDirection: 'column',
     alignItems: 'flex-start',
-    backgroundColor: '#f8f8f8', 
+    backgroundColor: '#f8f8f8',
     padding: 15,
     borderRadius: 10,
     marginBottom: 15,
@@ -192,7 +200,7 @@ const styles = StyleSheet.create({
   boxText: {
     fontSize: 18,
     fontWeight: '500',
-    color:"#fff"
+    color: "#fff"
   },
   arrowContainer: {
     alignItems: 'flex-end',
@@ -200,22 +208,22 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   outPatient: {
-    backgroundColor:"#FFC0CB",
+    backgroundColor: "#FFC0CB",
   },
   inPatient: {
-    backgroundColor:"#ADD8E6",
+    backgroundColor: "#ADD8E6",
   },
   otPatient: {
-    backgroundColor:"#4792f5",
+    backgroundColor: "#4792f5",
   },
   emergencyPatient: {
-    backgroundColor:"#f78e8e",
+    backgroundColor: "#f78e8e",
   },
   triagePatient: {
-    backgroundColor:"#FFA07A",
+    backgroundColor: "#FFA07A",
   },
   recordPatient: {
-    backgroundColor:"#D8BFD8",
+    backgroundColor: "#D8BFD8",
   },
 });
 
