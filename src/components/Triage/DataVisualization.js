@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -97,6 +97,29 @@ const DataVisualization = () => {
           hasLegend={true}
           absolute
         />
+         <View style={styles.paracontainer}>
+      {/* Visited Text */}
+      <Text style={styles.visitedText}>visited</Text>
+      
+      {/* Images */}
+      <View style={styles.imageContainer}>
+        <Image
+          source={require('../../assets/person.avif')}
+          style={styles.image}
+        />
+        <Image
+          source={require('../../assets/person3.avif')}
+          style={styles.image}
+        />
+        <Image
+          source={require('../../assets/person.avif')}
+          style={styles.image}
+        />
+      </View>
+      
+      {/* 200+ Text */}
+      <Text style={styles.numberText}>200+</Text>
+    </View>
       </View>
     </ScrollView>
   );
@@ -140,6 +163,29 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 10,
     color: '#1977f3',
+  },
+  paracontainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  visitedText: {
+    fontSize: 16,
+    marginRight: 10,
+  },
+  imageContainer: {
+    flexDirection: 'row',
+    marginRight: 10,
+  },
+  image: {
+    width: 20,
+    height: 20,
+    borderRadius: 15, // Make images circular
+    marginLeft: -10,  // Overlap images slightly
+  },
+  numberText: {
+    fontSize: 16,
+    color: 'blue',
+    fontWeight:"bold",
   },
 });
 
