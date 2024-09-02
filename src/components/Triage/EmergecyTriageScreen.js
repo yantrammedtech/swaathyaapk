@@ -31,7 +31,6 @@ const EmergencyTriageScreen = () => {
       observationTime
     };
 
-    // You can then use this formData to submit to an API or perform other actions
     console.log('Form Data:', formData);
     navigation.navigate('EmergencyTriageNextScreen', { formData });
   };

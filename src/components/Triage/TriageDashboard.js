@@ -20,6 +20,23 @@ const TriageDashboard = ({ onNotificationPress }) => {
     navigation.navigate('DataVisualization'); 
   };
 
+//role.ts============start===
+ const patientStatus = {
+    outpatient: 1,
+    inpatient: 2,
+    emergency: 3,
+    operationTheatre: 4,
+    discharged: 21,
+  };
+//role.ts======end ====
+  const data = async () => {
+
+    const response = await authFetch(
+      `patient/${user.hospitalID}/patients/recent/${patientStatus.emergency}?userID=${user.id}&role=${user.role}&category=triage`,
+      user.token
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Header toggleSidebar={toggleSidebar} onNotificationPress={onNotificationPress} />
