@@ -213,7 +213,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     padding: 5,
-    overflow:scrollY,
   },
   box: {
     width: '45%', // Adjust width as needed
