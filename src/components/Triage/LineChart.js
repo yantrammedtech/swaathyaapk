@@ -40,20 +40,7 @@ const LineChartComponent = ({ data }) => {
           bezier
           style={styles.chartStyle}
         />
-        <View style={styles.avatarContainer}>
-          <Image
-            source={require('../../assets/person3.avif')}
-            style={styles.avatar}
-          />
-          <Image
-            source={require('../../assets/person.avif')}
-            style={styles.avatar}
-          />
-          <Image
-            source={require('../../assets/person3.avif')}
-            style={styles.avatar}
-          />
-        </View>
+       
       </View>
     </ScrollView>
   );
@@ -76,19 +63,7 @@ const styles = StyleSheet.create({
   chartStyle: {
     borderRadius: 16,
   },
-  avatarContainer: {
-    flexDirection: 'row',
-    position: 'absolute',
-    bottom: 10,
-    left: 50,
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: -10, // Overlapping effect
-  },
+  
 });
 
 export default LineChartComponent;
