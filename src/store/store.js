@@ -2,12 +2,15 @@ import { createStore } from "redux";
 
 const initialData ={
     currentUserData:null,
+    profileUserData:null
 }
 
 function Reducer(state=initialData,action){
     switch(action.type){
         case "currentUserData":
             return {...state,currentUserData:action.payload};
+        case "profileUserData":
+            return {...state,profileUserData:action.payload};
         
         default:
             return state

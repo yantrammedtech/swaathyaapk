@@ -9,11 +9,13 @@ import LoginScreen from "./src/components/Pages/Login";
 import Page1 from "./src/components/Pages/Page1";
 import Dashboard from "./src/components/Dashboard/Dashboard";
 import TriageDashboard from './src/components/Triage/TriageDashboard';
+
 import PeopleList from "./src/components/Triage/PeopleList";
 import Profile from "./src/components/Triage/Profile";
 import DataVisualization from "./src/components/Triage/DataVisualization";
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import EmergencyDashboard from "./src/components/Emergency/EmergencyDashboard";
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +30,8 @@ const Routing = () => {
         <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
         <Stack.Screen name="dashboard" component={Dashboard} options={{ headerShown: false }} />
         <Stack.Screen name="TriageDashboard" component={TriageDashboard} options={{ headerShown: false }} />
+        <Stack.Screen name="EmergencyDashboard" component={EmergencyDashboard} options={{ headerShown: false }} />
+
         <Stack.Screen name="PeopleList" component={PeopleList} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen

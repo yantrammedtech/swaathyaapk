@@ -7,6 +7,7 @@ import {
     Image,
     TouchableOpacity,
     Dimensions,
+    ToastAndroid
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import icon for eye visibility
 import CheckBox from 'react-native-check-box'
@@ -16,6 +17,7 @@ import tweenFrame from '../../assets/tween-frame.png'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { postAxios } from '../../axios/usePost';
 import { useDispatch } from 'react-redux'
+import Toast from 'react-native-toast-message';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -141,64 +143,107 @@ const LoginScreen = ({ navigation }) => { // Receive navigation prop here
             email: formData.email,
             password: formData.password,
         });
-        // console.log("response", response)
-        const key = "Token"
+        console.log("response", response)
+        const Token = "Token"
+        const scope = "scope"
         if (response.message == "success") {
-            await AsyncStorage.setItem(key, response.token);
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Login Success'
+            });
+            
+
+            await AsyncStorage.setItem(Token, response.token);
+            await AsyncStorage.setItem(scope, response.scope);
             dispatch({ type: "currentUserData", payload: response })
-            navigation.navigate('dashboard');
+            const userScopes = response?.scope?.split('#');
+
+            if (userScopes?.length === 1) {
+                const scope = parseInt(userScopes[0], 10);
+                if (scope == 5001) {
+                    navigation.navigate('InpatientDashboard');
+                }
+                else if (scope == 5002) {
+                    navigation.navigate('OpdDashboard');
+                }
+                else if (scope == 5003 || scope == 5004 || scope == 5005) {
+                    navigation.navigate('EmergencyDashboard');
+                }
+                else if (scope == 5006) {
+                    navigation.navigate('TriageDashboard');
+                }
+                else if (scope == 5007 || scope == 5008) {
+                    navigation.navigate('OTDashboard');
+                }
+
+
+            } else {
+
+                navigation.navigate('dashboard');
+            }
+        } else {
+            console.log("ErrorLogin:", response)
+            Toast.show({
+                type: 'error',
+                text1: 'Login Failed',
+                text2: response.message
+            });
         }
     }
 
     return (
-        <View style={styles.container}>
-            <Image source={logo} style={styles.logo} />
-            <Text style={styles.title}>Swaasthya</Text>
-            <Image source={tweenFrame} style={styles.doctorImage} />
-            <View style={styles.bgminputContainer}>
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email Address"
-                        keyboardType="email-address"
-                        value={formData.email}
-                        onChangeText={(value) => handleInputChange('email', value)}
-                    />
-                    <View style={styles.passwordInputContainer}>
+        <>
+            <View style={styles.container}>
+                <Image source={logo} style={styles.logo} />
+                <Text style={styles.title}>Swaasthya</Text>
+                <Image source={tweenFrame} style={styles.doctorImage} />
+                <View style={styles.bgminputContainer}>
+                    <View style={styles.inputContainer}>
                         <TextInput
-                            style={styles.passwordInput}
-                            placeholder="Password"
-                            secureTextEntry={!showPassword}
-                            value={formData.password}
-                            onChangeText={(value) => handleInputChange('password', value)}
+                            style={styles.input}
+                            placeholder="Email Address"
+                            keyboardType="email-address"
+                            value={formData.email}
+                            onChangeText={(value) => handleInputChange('email', value)}
                         />
-                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                            <Icon
-                                name={showPassword ? 'eye-slash' : 'eye'}
-                                size={20}
-                                color="#000"
-                                style={styles.eyeIcon}
+                        <View style={styles.passwordInputContainer}>
+                            <TextInput
+                                style={styles.passwordInput}
+                                placeholder="Password"
+                                secureTextEntry={!showPassword}
+                                value={formData.password}
+                                onChangeText={(value) => handleInputChange('password', value)}
                             />
+                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                                <Icon
+                                    name={showPassword ? 'eye-slash' : 'eye'}
+                                    size={20}
+                                    color="#000"
+                                    style={styles.eyeIcon}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <TouchableOpacity>
+                            <Text style={styles.forgotPassword}>Forgot Password</Text>
+                        </TouchableOpacity>
+                        <View style={styles.checkboxContainer}>
+                            <CheckBox
+                                isChecked={isSelected}
+                                onClick={() => setSelection(!isSelected)}
+                                style={styles.checkbox}
+                            />
+                            <Text style={styles.label}>Keep me signed in</Text>
+                        </View>
+
+                        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                            <Text style={styles.buttonText}>Continue</Text>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity>
-                        <Text style={styles.forgotPassword}>Forgot Password</Text>
-                    </TouchableOpacity>
-                    <View style={styles.checkboxContainer}>
-                        <CheckBox
-                            isChecked={isSelected}
-                            onClick={() => setSelection(!isSelected)}
-                            style={styles.checkbox}
-                        />
-                        <Text style={styles.label}>Keep me signed in</Text>
-                    </View>
-
-                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                        <Text style={styles.buttonText}>Continue</Text>
-                    </TouchableOpacity>
                 </View>
             </View>
-        </View>
+        </>
+
     );
 };
 
