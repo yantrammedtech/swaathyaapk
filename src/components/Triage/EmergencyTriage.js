@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1977f3',
     paddingTop: 60, // Adjust for header height
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
   },
   header: {
     position: 'absolute',
@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: 20,
     alignItems: 'center',
+    width:"100%",
   },
   criticalConditionText: {
     fontSize: 16,

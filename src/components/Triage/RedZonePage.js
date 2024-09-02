@@ -1,42 +1,41 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import ModalDropdown from 'react-native-modal-dropdown';
+import { Picker } from '@react-native-picker/picker'; 
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
 const RedZonePage = ({ route }) => {
   const { patientName, patientImage } = route.params;
-  const [selectedZone, setSelectedZone] = useState(null);
-  const [selectedWard, setSelectedWard] = useState(null);
   
   // Get the navigation object
   const navigation = useNavigation();
+  const [selectedZone, setSelectedZone] = useState(null);
+  
 
-  // Define background colors based on the selected zone
+  const [selectedWard, setSelectedWard] = useState(null);
+ 
+
   const getBackgroundColor = () => {
     switch (selectedZone) {
-      case 'Red Zone':
-        return '#F65555'; // Red
-      case 'Yellow Zone':
-        return '#F7AC38'; // Yellow
-      case 'Green Zone':
-        return '#1DDD8D'; // Green
+      case 'red':
+        return '#F65555';
+      case 'yellow':
+        return '#F7AC38'; 
+      case 'green':
+        return '#1DDD8D'; 
       default:
-        return '#fff'; // Default background color
+        return 'white'; // Default background color
     }
   };
 
-  const handleZoneChange = (index, value) => {
-    setSelectedZone(value);
-  };
-
-  const handleWardChange = (index, value) => {
-    setSelectedWard(value);
-  };
-
-  // Function to handle submit button press
   const handleSubmit = () => {
     // Navigate to the TriageDashboard screen
     navigation.navigate('TriageDashboard');
+  };
+  const getPickerBackgroundColor = () => {
+    return selectedWard ? '#4792f5' : 'white'; // Change color based on selection
+  };
+  const getTextColor = () => {
+    return getPickerBackgroundColor() === '#4792f5' ? 'white' : 'black'; // White text on blue, black otherwise
   };
 
   return (
@@ -45,72 +44,48 @@ const RedZonePage = ({ route }) => {
         <Text style={styles.patientText}>{patientName} is under {selectedZone}</Text>
         <Image source={patientImage} style={styles.patientImage} />
       </View>
-
-      <View style={[styles.zoneContainer, { backgroundColor: getBackgroundColor() }]}>
-        <ModalDropdown
-          options={['Red Zone', 'Yellow Zone', 'Green Zone']}
-          defaultValue="Select Zone"
-          onSelect={handleZoneChange}
-          style={styles.dropdown}
-          textStyle={styles.dropdownText}
-          dropdownStyle={styles.dropdownMenu}
-          renderRow={(option, _, isSelected) => (
-            <View
-              style={[
-                styles.dropdownRow,
-                { backgroundColor: isSelected ? '#ddd' : '#fff' }
-              ]}
-            >
-              <Text
-                style={[
-                  styles.dropdownRowText,
-                  { color: isSelected ? '#000' : '#666' }
-                ]}
-              >
-                {option}
-              </Text>
-            </View>
-          )}
-        />
 {/* 
-<DropDownPicker
-        open={open}
-        value={capillaryRefill}
-        items={items}
-        setOpen={setOpen}
-        setValue={setCapillaryRefill}
-        setItems={setItems}
-        placeholder="Capillary Refill *"
-        style={styles.dropdown}
-        dropDownContainerStyle={styles.dropdownContainer}
-      /> */}
+      <View style={[styles.zoneContainer, { backgroundColor: getBackgroundColor() }]}>
+        <DropDownPicker
+          open={open}
+          value={selectedZone}
+          items={items}
+          setOpen={setOpen}
+          setValue={setSelectedZone}
+          setItems={setItems}
+          placeholder="Select Zone"
+          style={[styles.dropdown, { backgroundColor: getBackgroundColor() }]}
+          dropDownContainerStyle={styles.dropdownContainer}
+        />
+      </View> */}
+
+<View style={[styles.pickerWrapper, { backgroundColor: getBackgroundColor() }]}>
+        <Picker
+          selectedValue={selectedZone}
+          style={[styles.picker, { backgroundColor: 'transparent' }]} // Transparent Picker for color
+          onValueChange={(itemValue) => setSelectedZone(itemValue)}
+        >
+          <Picker.Item label="Select Zone" value={null} />
+          <Picker.Item label="Red Zone" value="red" />
+          <Picker.Item label="Yellow Zone" value="yellow" />
+          <Picker.Item label="Green Zone" value="green" />
+        </Picker>
       </View>
 
-      <ModalDropdown
-        options={['General Ward', 'ICU', 'Emergency']}
-        defaultValue="Select Ward"
-        onSelect={handleWardChange}
-        style={styles.dropdown}
-        textStyle={styles.dropdownText}
-        dropdownStyle={styles.dropdownMenu}
-        renderRow={(option, _, isSelected) => (
-          <View
-            style={[
-              styles.dropdownRow,
-              { backgroundColor: isSelected ? '#ddd' : '#fff' }
-            ]}
+      <View style={styles.dropdownContainer}>
+        <View style={[styles.pickerWrapper, { backgroundColor: getPickerBackgroundColor() }]}>
+          <Picker
+            selectedValue={selectedWard}
+            style={[styles.picker, { backgroundColor: 'transparent' }]} // Transparent Picker for color
+            onValueChange={(itemValue) => setSelectedWard(itemValue)}
           >
-            <Text
-              style={[
-                styles.dropdownRowText,
-                { color: isSelected ? '#000' : '#666' }
-              ]}
-            >
-              {option}
-            </Text>
-          </View>
-        )}
-      />
+            <Picker.Item label="Select Ward" value={null} />
+            <Picker.Item label="General Ward" value="generalWard" />
+            <Picker.Item label="ICU" value="icu" />
+            <Picker.Item label="Emergency" value="emergency" />
+          </Picker>
+        </View>
+      </View>
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Submit</Text>
@@ -144,11 +119,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 5,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
   dropdown: {
     height: 50,
     width: '100%',
@@ -156,20 +126,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
   },
-  dropdownText: {
-    fontSize: 16,
-    color: '#000',
-    padding: 10,
+  
+  pickerContainer: {
+    borderRadius: 5,
+    borderWidth: 1,
+  
   },
-  dropdownMenu: {
+  pickerWrapper: {
+    borderRadius: 5,
+    borderWidth: 1,
+   margin:10,
+  },
+ 
+  picker: {
+    height: 50,
     width: '100%',
+    borderRadius: 5,
     backgroundColor: '#fff',
   },
-  dropdownRow: {
-    padding: 10,
-  },
-  dropdownRowText: {
+  label: {
     fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    paddingHorizontal: 10,
   },
   submitButton: {
     backgroundColor: '#1977f3',
