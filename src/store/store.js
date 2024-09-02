@@ -7,9 +7,9 @@ const initialData ={
 
 function Reducer(state=initialData,action){
     switch(action.type){
-        case "currentUserData":
+        case "currentUserData": //patient data
             return {...state,currentUserData:action.payload};
-        case "profileUserData":
+        case "profileUserData": //login userdata
             return {...state,profileUserData:action.payload};
         
         default:
