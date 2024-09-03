@@ -7,9 +7,6 @@ export async function postAxios(url, body) {
   const authPost = axios.create({
     baseURL: BASE_URL,
     method: "post",
-    headers: {
-      Accept: "application/json",
-    },
   });
   try {
     const response = await authPost.post(url, body);

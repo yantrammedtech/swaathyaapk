@@ -7,7 +7,6 @@ export async function authFetch(url, token) {
     baseURL: BASE_URL,
     method: "get",
     headers: {
-      Accept: "application/json",
       Authorization: token,
     },
   });

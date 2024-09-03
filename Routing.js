@@ -25,6 +25,8 @@ import EmergencyTriageNextScreen from "./src/components/Triage/EmergencyTriageNe
 import NextScreen from "./src/components/Triage/EmergencyTriageNextScreen2";
 import Trauma from "./src/components/Triage/Trauma";
 import EmergencyDashboard from "./src/components/Emergency/EmergencyDashboard";
+import EmergencyActivePeopleList from "./src/components/Emergency/EmergencyActivePeopleList";
+import ProfilePage from "./src/components/Pages/profilePage";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,7 +41,70 @@ const Routing = () => {
         <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
         <Stack.Screen name="dashboard" component={Dashboard} options={{ headerShown: false }} />
         <Stack.Screen name="TriageDashboard" component={TriageDashboard} options={{ headerShown: false }} />
+
+        <Stack.Screen
+          name="PatientProfile"
+          component={ProfilePage}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Patient Profile',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+        
+
         <Stack.Screen name="EmergencyDashboard" component={EmergencyDashboard} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="EmergencyActivePeopleList"
+          component={EmergencyActivePeopleList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Active People List',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+          })}
+        />
+
+
 
         {/* <Stack.Screen name="PeopleList" component={PeopleList} /> */}
         <Stack.Screen name="Profile" component={Profile} />
@@ -65,172 +130,172 @@ const Routing = () => {
             ),
           })}
         />
- <Stack.Screen
-  name="PeopleList"
-  component={PeopleList}
-  options={({ navigation }) => ({
-    headerStyle: {
-      backgroundColor: '#1977f3',
-    },
-    headerTitleAlign: 'center',
-    headerTitleStyle: {
-      color: '#fff',
-    },
-    headerTitle: 'People List',
-    headerLeft: () => (
-      <Icon
-        name="chevron-left"
-        size={24}
-        color="#fff"
-        style={{ marginLeft: 15 }}
-        onPress={() => navigation.goBack()}
-      />
-    ),
-    headerRight: () => (
-      <Icon
-        name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
-        size={24}
-        color="#fff"
-        style={{ marginRight: 15 }}
-        onPress={() => {
-          // Handle press event here
-        }}
-      />
-    ),
-  })}
-/>
-<Stack.Screen
-      name="RedZonePage"
-      component={RedZonePage}
-      options={({ navigation }) => ({
-        headerStyle: {
-          backgroundColor: '#1977f3',
-        },
-        headerTitleAlign: 'center',
-        headerTitleStyle: {
-          color: '#fff',
-        },
-        headerTitle: 'Emergency Triage',
-        headerLeft: () => (
-          <Icon
-            name="chevron-left"
-            size={24}
-            color="#fff"
-            style={{ marginLeft: 15 }}
-            onPress={() => navigation.goBack()}
-          />
-        ),
-      })}
-    />
+        <Stack.Screen
+          name="PeopleList"
+          component={PeopleList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'People List',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="RedZonePage"
+          component={RedZonePage}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Emergency Triage',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+          })}
+        />
 
-<Stack.Screen
-      name="EmergencyTriageScreen"
-      component={EmergencyTriageScreen}
-      options={({ navigation }) => ({
-        headerStyle: {
-          backgroundColor: '#1977f3',
-        },
-        headerTitleAlign: 'center',
-        headerTitleStyle: {
-          color: '#fff',
-        },
-        headerTitle: 'Emergency Triage',
-        headerLeft: () => (
-          <Icon
-            name="chevron-left"
-            size={24}
-            color="#fff"
-            style={{ marginLeft: 15 }}
-            onPress={() => navigation.goBack()}
-          />
-        ),
-      })}
-    />
+        <Stack.Screen
+          name="EmergencyTriageScreen"
+          component={EmergencyTriageScreen}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Emergency Triage',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+          })}
+        />
 
 
 
-<Stack.Screen
-      name="EmergencyTriageNextScreen"
-      component={EmergencyTriageNextScreen}
-      options={({ navigation }) => ({
-        headerStyle: {
-          backgroundColor: '#1977f3',
-        },
-        headerTitleAlign: 'center',
-        headerTitleStyle: {
-          color: '#fff',
-        },
-        headerTitle: 'Emergency Triage',
-        headerLeft: () => (
-          <Icon
-            name="chevron-left"
-            size={24}
-            color="#fff"
-            style={{ marginLeft: 15 }}
-            onPress={() => navigation.goBack()}
-          />
-        ),
-      })}
-    />
+        <Stack.Screen
+          name="EmergencyTriageNextScreen"
+          component={EmergencyTriageNextScreen}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Emergency Triage',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+          })}
+        />
 
-    
-<Stack.Screen
-      name="NextScreen"
-      component={NextScreen}
-      options={({ navigation }) => ({
-        headerStyle: {
-          backgroundColor: '#1977f3',
-        },
-        headerTitleAlign: 'center',
-        headerTitleStyle: {
-          color: '#fff',
-        },
-        headerTitle: 'Emergency Triage',
-        headerLeft: () => (
-          <Icon
-            name="chevron-left"
-            size={24}
-            color="#fff"
-            style={{ marginLeft: 15 }}
-            onPress={() => navigation.goBack()}
-          />
-        ),
-      })}
-    />
 
-    
-<Stack.Screen
-      name="Trauma"
-      component={Trauma}
-      options={({ navigation }) => ({
-        headerStyle: {
-          backgroundColor: '#1977f3',
-        },
-        headerTitleAlign: 'center',
-        headerTitleStyle: {
-          color: '#fff',
-        },
-        headerTitle: 'Emergency Triage',
-        headerLeft: () => (
-          <Icon
-            name="chevron-left"
-            size={24}
-            color="#fff"
-            style={{ marginLeft: 15 }}
-            onPress={() => navigation.goBack()}
-          />
-        ),
-      })}
-    />
+        <Stack.Screen
+          name="NextScreen"
+          component={NextScreen}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Emergency Triage',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+          })}
+        />
 
-<Stack.Screen
-        name="EmergencyTriage"
-        component={EmergencyTriage}
-        options={{ headerShown: false }}
-      />
-      
 
-       
+        <Stack.Screen
+          name="Trauma"
+          component={Trauma}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Emergency Triage',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+          })}
+        />
+
+        <Stack.Screen
+          name="EmergencyTriage"
+          component={EmergencyTriage}
+          options={{ headerShown: false }}
+        />
+
+
+
         <Stack.Screen name="Page1" component={Page1} options={{ title: 'Page1' }} />
       </Stack.Navigator>
     </NavigationContainer>

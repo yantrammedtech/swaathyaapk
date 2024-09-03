@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet ,Image} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Footer = ({ activeRoute, navigation }) => {
@@ -9,7 +9,8 @@ const Footer = ({ activeRoute, navigation }) => {
     <View style={styles.footerContainer}>
       <TouchableOpacity style={styles.iconContainer}
         onPress={() => navigation.navigate('dashboard')} >
-        <Icon name="dashboard" size={26} color={getIconColor('dashboard')} />
+        <Image source={require('../../assets/Property 1=search 3.png')} style={styles.images} />
+
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
         onPress={() => navigation.navigate('TriageDashboard')} >
@@ -17,7 +18,9 @@ const Footer = ({ activeRoute, navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
         onPress={() => navigation.navigate('PeopleList')} >
-        <Icon name="add" size={28} color={getIconColor('peopleList')} />
+        {/* <Icon name="add" size={28} color={getIconColor('peopleList')} /> */}
+        <Image source={require('../../assets/home 2.png')} style={styles.images} />
+
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
         onPress={() => navigation.navigate('Profile')} >
@@ -45,6 +48,11 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  images: {
+    width: 59,
+    height: 32,
+    
   },
 });
 
