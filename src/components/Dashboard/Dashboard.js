@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions ,ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -79,7 +79,7 @@ const Dashboard = ({ onNotificationPress }) => {
 
       <Text style={styles.dashboardText}>Dashboard</Text>
 
-      <View style={styles.boxContainer}>
+      <ScrollView contentContainerStyle={styles.boxContainer}>
         {/* Out Patient */}
         {hasOutpatient &&
           <Pressable style={[styles.box, styles.outPatient]}>
@@ -185,7 +185,7 @@ const Dashboard = ({ onNotificationPress }) => {
             <Icon name="arrow-upward" size={24} color="#fff" />
           </View>
         </Pressable>
-      </View>
+      </ScrollView>
 
       <Sidebar isVisible={sidebarVisible} onClose={toggleSidebar} />
     </View>
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    padding: 5,
+    padding: 8,
   },
   box: {
     width: '45%', // Adjust width as needed
@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     elevation: 3, // For shadow effect on Android
     backgroundColor: '#fff',
+    padding:5
   },
   boxContent: {
     flexDirection: 'column',

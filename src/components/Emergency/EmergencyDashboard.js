@@ -35,7 +35,7 @@ const EmergencyDashboard = ({ onNotificationPress }) => {
         <TouchableOpacity style={styles.cardContainer} onPress={navigateToVisualization}>
           <View style={styles.header}>
             <Text style={styles.numberText}>400 +</Text>
-            <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon]}>
+            <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon]} onPress={navigateToVisualization}>
               <Icon name="arrow-upward" size={24} color="#FFA500" />
             </TouchableOpacity>
           </View>
@@ -43,9 +43,12 @@ const EmergencyDashboard = ({ onNotificationPress }) => {
           <Text style={styles.subText}>People visited by in month and zone</Text>
 
           <View style={styles.imageContainer}>
-            <Image source={require('../../assets/person.avif')} style={styles.images} />
-            <Image source={require('../../assets/person3.avif')} style={styles.images} />
-            <Image source={require('../../assets/person.avif')} style={styles.images} />
+            <Image source={require('../../assets/pp1.png')} style={styles.images} />
+            <Image source={require('../../assets/pp3.png')} style={styles.images} />
+            <Image source={require('../../assets/pp1.png')} style={styles.images} />
+            <Image source={require('../../assets/pp3.png')} style={styles.images} />
+
+
           </View>
         </TouchableOpacity>
 
@@ -53,7 +56,7 @@ const EmergencyDashboard = ({ onNotificationPress }) => {
         
         <Pressable
             style={[styles.box, styles.outPatient]}
-            onPress={() => navigation.navigate('TriageDashboard')}
+            onPress={() => navigation.navigate('EmergencyActivePeopleList')}
           >
             <View style={styles.boxContent}>
               <Image
@@ -174,7 +177,7 @@ const styles = StyleSheet.create({
   },
 
   cardContainer: {
-    backgroundColor: "#b8d5fb",
+    backgroundColor: "#55abed",
     borderRadius: 24,
     padding: 14,
     margin: 16,
@@ -244,7 +247,7 @@ const styles = StyleSheet.create({
     borderColor: '#bebebe',
     borderRadius: 16,
     marginVertical: 8,
-    margin: "15px"
+    margin: 15
   },
   personImage: {
     width: 70,

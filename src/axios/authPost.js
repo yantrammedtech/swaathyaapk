@@ -7,7 +7,6 @@ export async function authPost(url, body, token) {
     baseURL: BASE_URL,
     method: "post",
     headers: {
-      Accept: "application/json",
       Authorization: token,
     },
   });
