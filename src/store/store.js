@@ -2,7 +2,8 @@ import { createStore } from "redux";
 
 const initialData ={
     currentUserData:null,
-    currentPatientData:null
+    currentPatientData:null,
+    allPatientsList: null,
 }
 
 function Reducer(state=initialData,action){
@@ -11,6 +12,8 @@ function Reducer(state=initialData,action){
             return {...state,currentUserData:action.payload};
         case "currentPatientData":
             return {...state,currentPatientData:action.payload};
+        case "allPatientsList":
+            return {...state,allPatientsList:action.payload};
         
         default:
             return state

@@ -1,10 +1,21 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useDispatch, useSelector } from 'react-redux';
+import { authFetch } from '../../axios/authFetch';
+const { height } = Dimensions.get('window');
 
 const EmergencyTriage = ({ route, navigation }) => {
-  const { patientId, patientName, patientImage } = route.params;
+  const { patientId } = route.params;
+  const dispatch = useDispatch()
 
+  const user = useSelector((state)=> {
+    return state.currentUserData
+  })
+const currentPatientData = useSelector((state) => {
+  return state.currentPatientData
+})
+console.log("currentPatient=",currentPatientData)
   const handleBackPress = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
@@ -22,6 +33,24 @@ const EmergencyTriage = ({ route, navigation }) => {
     navigation.navigate('EmergencyTriageScreen'); // Navigate to AlertTriage page
   };
 
+  
+  const getCurrentPatient = async () => {
+    const response = await authFetch(
+      `patient/${user.hospitalID}/patients/single/triage/${patientId}`,
+      user.token
+    );
+    if (response.message == "success") {
+      console.log("currentPatientData==",response.patient)
+      dispatch({ type: "currentPatientData", payload: response.patient })
+    }
+  }
+
+  useEffect(() => {
+    getCurrentPatient()
+  },[])
+
+const patientImage =''
+const patientName ='q'
   return (
     <View style={styles.container}>
       {/* Header Section */}
@@ -39,28 +68,43 @@ const EmergencyTriage = ({ route, navigation }) => {
 
       {/* Patient Information Section */}
       <View style={styles.patientInfoContainer}>
-        <Image source={patientImage} style={styles.profileImage} />
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Name</Text>
-          <Text style={styles.colon}>:</Text>
-          <Text style={styles.value}>{patientName}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>ID</Text>
-          <Text style={styles.colon}>:</Text>
-          <Text style={styles.value}>{patientId}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Doctor Name</Text>
-          <Text style={styles.colon}>:</Text>
-          <Text style={styles.value}>Unassigned</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Admit Date</Text>
-          <Text style={styles.colon}>:</Text>
-          <Text style={styles.value}>Not Available</Text>
-        </View>
-      </View>
+  {currentPatientData?.imageURL ? (
+    <Image source={{ uri: currentPatientData.imageURL }} style={styles.profileImage} />
+  ) : (
+    <View style={styles.placeholderImage}>
+      <Text style={styles.placeholderText}>
+        {currentPatientData?.pName ? currentPatientData.pName.charAt(0).toUpperCase() : ''}
+      </Text>
+    </View>
+  )}
+  <View style={styles.infoContainer}>
+    <View style={styles.infoRow}>
+      <Text style={styles.label}>Name</Text>
+      <Text style={styles.colon}>:</Text>
+      <Text style={styles.value}>{currentPatientData?.pName}</Text>
+    </View>
+    <View style={styles.infoRow}>
+      <Text style={styles.label}>ID</Text>
+      <Text style={styles.colon}>:</Text>
+      <Text style={styles.value}>{currentPatientData?.id}</Text>
+    </View>
+    <View style={styles.infoRow}>
+      <Text style={styles.label}>Doctor Name</Text>
+      <Text style={styles.colon}>:</Text>
+      <Text style={styles.value}>
+        {currentPatientData?.doctorName ? currentPatientData.doctorName : 'Unassigned'}
+      </Text>
+    </View>
+    <View style={styles.infoRow}>
+      <Text style={styles.label}>Admit Date</Text>
+      <Text style={styles.colon}>:</Text>
+      <Text style={styles.value}>
+        {currentPatientData?.addedOn ? new Date(currentPatientData.addedOn).toLocaleDateString() : 'Not Available'}
+      </Text>
+    </View>
+  </View>
+</View>
+
 
       {/* Critical Condition Section */}
       <View style={styles.criticalConditionContainer}>
@@ -117,17 +161,23 @@ const styles = StyleSheet.create({
   patientInfoContainer: {
     alignItems: 'center',
     marginTop: 10, 
+    marginBottom:10,
   },
   profileImage: {
     width: 80,
     height: 80,
     borderRadius: 50,
-    marginBottom: 10,
+    marginBottom: 20,
+  },
+  infoContainer: {
+    width: '100%', // Ensures that the container takes full width
+    alignItems: 'center', // Center-aligns the content horizontally
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
+    width: '80%',
   },
   label: {
     fontSize: 18,
@@ -149,6 +199,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 20,
     marginTop: 20,
+    height: height * 0.7,
     alignItems: 'center',
     width:"100%",
   },
@@ -184,7 +235,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 24,
     alignSelf: 'center',
-    marginTop: 20,
+    marginTop: 50,
     marginBottom: 30, // Adjust as needed
   },
   skipButtonText: {
