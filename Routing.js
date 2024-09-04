@@ -26,7 +26,7 @@ import NextScreen from "./src/components/Triage/EmergencyTriageNextScreen2";
 import Trauma from "./src/components/Triage/Trauma";
 import EmergencyDashboard from "./src/components/Emergency/EmergencyDashboard";
 import EmergencyActivePeopleList from "./src/components/Emergency/EmergencyActivePeopleList";
-import ProfilePage from "./src/components/Pages/profilePage";
+import ProfilePage from "./src/components/Pages/ProfilePage";
 
 const Stack = createNativeStackNavigator();
 

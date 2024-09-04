@@ -9,9 +9,21 @@ import {
 } from "react-native";
 import { CheckBox } from "react-native-elements";
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from "react-redux";
 
 
 const Trauma = () => {
+  const condition = "Stroke"
+  const data = useSelector((state) => state.triageData)
+  console.log("data==",data)
+
+  const triageDataFromStore = useSelector((state) => state.triageData);
+  const [trauma, setTrauma] = useState(triageDataFromStore.trauma);
+  const [nonTrauma, setNonTrauma] = useState(triageDataFromStore.nonTrauma);
+  
+  
+  const dispatch = useDispatch();
+
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("Trauma");
  
@@ -32,6 +44,14 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
   location: null,
 });
 
+const [errors, setErrors] = useState({
+  options: '',
+  traumaType: '',
+  fractureRegion: '',
+  fallHeight: '', // Add this if you are validating fall height
+});
+
+
   const [pregnancyChecked, setPregnancyChecked] = useState(false);
   const [selectedPregnancyOption, setSelectedPregnancyOption] = useState(null);
   const [bleedingChecked, setBleedingChecked] = useState(false);
@@ -45,7 +65,15 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
   const [burnPercentage, setBurnPercentage] = useState('');
   const navigation = useNavigation();
 
-
+  const [formErrors, setFormErrors] = useState({
+    burnPercentage: "",
+    pregnancy: "",
+    internalBleeding: "",
+    poisoning: "",
+    fever: "",
+    otherConditions: "",
+  });
+  
 
 
   const traumaOptions = [
@@ -124,7 +152,6 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
     ],
   };
 
-
   const handleSubmitPress = () => {
     const formData = {
       burnPercentage,
@@ -132,13 +159,69 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
       internalBleeding: bleedingChecked ? selectedBleedingOption : null,
       poisoning: poisoningChecked ? selectedPoisoningOption : null,
       fever: feverChecked ? selectedFeverOption : null,
-      otherConditions: selectedConditions.length > 0 ? selectedConditions : null, // Include selected conditions
+      otherConditions: selectedConditions.length > 0 ? selectedConditions : null,
     };
   
-    console.log('Form Data:', formData);
+    const errors = validateNonTraumaForm(formData);
   
-    navigation.navigate('RedZonePage', { formData });
+    if (Object.values(errors).some((error) => error !== '')) {
+      setFormErrors(errors); // Set errors to state
+      return; // Stop form submission if there are validation errors
+    }
+  
+    console.log("formdata==",formData)
+    // Dispatch the data if no errors
+    dispatch({
+      type: 'updateTriageData',
+      payload: {
+        ...triageDataFromStore,
+        nonTrauma: formData,
+      },
+    });
+  
+    // Navigate to the next page
+    navigation.navigate('RedZonePage',{condition});
   };
+  
+  const validateNonTraumaForm = (data) => {
+    const errors = {
+      burnPercentage: "",
+      pregnancy: "",
+      internalBleeding: "",
+      poisoning: "",
+      fever: "",
+      otherConditions: "",
+    };
+  
+    if (pregnancyChecked && !data.pregnancy)
+      errors.pregnancy = "Pregnancy option is required.";
+  
+    if (bleedingChecked && !data.internalBleeding)
+      errors.internalBleeding = "Internal bleeding option is required.";
+  
+    if (poisoningChecked && !data.poisoning)
+      errors.poisoning = "Poisoning option is required.";
+  
+    if (feverChecked && !data.fever)
+      errors.fever = "Fever option is required.";
+
+    if (!data.burnPercentage) {
+      errors.burnPercentage = 'Burn percentage is required.';
+    } else if (isNaN(parseFloat(data.burnPercentage))) {
+      errors.burnPercentage = 'Burn percentage should be a numeric value.';
+    } else if (
+      parseFloat(data.burnPercentage) < 0 ||
+      parseFloat(data.burnPercentage) > 100
+    ) {
+      errors.burnPercentage = 'Burn percentage must be between 0 and 100.';
+    }
+    if (!data.otherConditions  || data.otherConditions.length === 0)
+      errors.otherConditions = "At least one condition must be selected.";
+  
+    return errors;
+  };
+  
+
 
   const handleTraumaSubmit = () => {
     const formData = {
@@ -154,10 +237,40 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
         : null,
     };
   
-    console.log('Trauma Form Data:', formData);
+    // Validate form data
+    const errs = validateForm(formData);
   
-    navigation.navigate('RedZonePage', { formData });
+    if (Object.values(errs).some((error) => error !== '')) {
+      setErrors(errs);
+      return; 
+    }
+    // Dispatch the data if no errors
+    dispatch({
+      type: 'updateTriageData',
+      payload: {
+        ...triageDataFromStore,
+        trauma: formData,
+      },
+    });
+  
+    // Navigate to the next page
+    navigation.navigate('RedZonePage',{condition});
   };
+  
+  const validateForm = (formData) => {
+    const errs = {
+      options: formData.options.length === 0 ? 'At least one option must be selected.' : '',
+      traumaType: traumaChecked && !formData.traumaType ? 'This field is required.' : '',
+      fractureRegion: fractureChecked && !formData.fracture ? 'This field is required.' : '',
+      fallHeight: fallChecked && !formData.fall ? 'This field is required.' : '',
+      stabWoundSeverity: stabWoundChecked && !formData.stabWound?.severity ? 'Severity is required.' : '',
+      stabWoundLocation: stabWoundChecked && !formData.stabWound?.location ? 'Location is required.' : '',
+    };
+  
+    setErrors(errs);
+    return errs;
+  };
+  
   
   
 
@@ -209,6 +322,7 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
               </TouchableOpacity>
             ))}
           </View>
+          {errors.options ? <Text style={styles.errorText}>{errors.options}</Text> : null}
 
           {/* // JSX for Trauma Types */}
 <View style={traumaChecked && styles.section}>
@@ -232,7 +346,9 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
           <Text style={styles.optionText}>{option}</Text>
         </TouchableOpacity>
       ))}
-    </View>
+
+    {errors.traumaType ? <Text style={styles.errorText}>{errors.traumaType}</Text> : null}
+</View>
   )}
 </View>
 
@@ -260,8 +376,8 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
       ))}
     </View>
   )}
-</View>
-
+ {errors.fractureRegion ? <Text style={styles.errorText}>{errors.fractureRegion}</Text> : null}
+ </View>
 {/* // JSX for Fall */}
 <View style={fallChecked && styles.section}>
   <CheckBox
@@ -286,7 +402,8 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
       ))}
     </View>
   )}
-</View>
+ {errors.fallHeight ? <Text style={styles.errorText}>{errors.fallHeight}</Text> : null}
+ </View>
 
 {/* // JSX for Stab Wound */}
 <View style={stabWoundChecked && styles.section}>
@@ -402,6 +519,9 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
     );
   })}
 </View>
+{formErrors.otherConditions && (
+      <Text style={styles.errorText}>{formErrors.otherConditions}</Text>
+    )}
 
 
             {/* Burn Input */}
@@ -414,7 +534,9 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
   onChangeText={setBurnPercentage}  // This will update the burnPercentage state
 />
 
-
+{formErrors.burnPercentage && (
+      <Text style={styles.errorText}>{formErrors.burnPercentage}</Text>
+    )}
             {/* Checkboxes and Options */}
             <View style={ pregnancyChecked && styles.section}>
               <CheckBox
@@ -442,6 +564,9 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
                 </View>
               )}
             </View>
+            {formErrors.pregnancy && (
+      <Text style={styles.errorText}>{formErrors.pregnancy}</Text>
+    )}
 
             <View style={ bleedingChecked && styles.section}>
               <CheckBox
@@ -469,6 +594,9 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
                 </View>
               )}
             </View>
+            {formErrors.internalBleeding && (
+      <Text style={styles.errorText}>{formErrors.internalBleeding}</Text>
+    )}
 
             <View style={ poisoningChecked && styles.section}>
               <CheckBox
@@ -495,6 +623,9 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
                 </View>
               )}
             </View>
+            {formErrors.poisoning && (
+      <Text style={styles.errorText}>{formErrors.poisoning}</Text>
+    )}
 
             <View style={ feverChecked && styles.section}>
               <CheckBox
@@ -520,6 +651,9 @@ const [selectedStabWoundOption, setSelectedStabWoundOption] = useState({
                 </View>
               )}
             </View>
+            {formErrors.fever && (
+      <Text style={styles.errorText}>{formErrors.fever}</Text>
+    )}
 
             {/* Submit Button */}
             <TouchableOpacity style={styles.nonTraumaSubmitButton} onPress={handleSubmitPress}>
@@ -790,6 +924,11 @@ const styles = StyleSheet.create({
   },
   selectedOption: {
     backgroundColor: "#007bff", // Blue background color for selected option
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 10,
   },
 });
 

@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+
 
 const EmergencyTriageNextScreen = () => {
     const navigation = useNavigation(); 
+   
+
+const triageDataFromStore = useSelector((state) => state.triageData);
+const [abcd, setAbcd] = React.useState(triageDataFromStore.abcd);
+const dispatch = useDispatch()
+
 
   const [activeBleeding, setActiveBleeding] = useState('yes');
   const [stridor, setStridor] = useState('yes');
@@ -43,8 +51,39 @@ const EmergencyTriageNextScreen = () => {
     </View>
   );
 
-  const handleNextPress = () => {
-    // Create an object with the form data
+ 
+  // Function to validate fields
+  const validateField = (name, value) => {
+    if (value === '' || value === null) {
+      return 'This field is required.';
+    }
+    return '';
+  };
+  const [errors, setErrors] = useState({});
+
+  const handleNextPress = useCallback(() => {
+    const errors = {
+      activeBleeding: validateField('activeBleeding', activeBleeding),
+      stridor: validateField('stridor', stridor),
+      cSpineInjury: validateField('cSpineInjury', cSpineInjury),
+      talkingInIncompleteSentence: validateField('talkingInIncompleteSentence', talkingInIncompleteSentence),
+      alteredSensorium: validateField('alteredSensorium', alteredSensorium),
+      noisyBreathing: validateField('noisyBreathing', noisyBreathing),
+      activeBreathing: validateField('activeBreathing', activeBreathing),
+      angioedema: validateField('angioedema', angioedema),
+      capillaryRefill: validateField('capillaryRefill', capillaryRefill),
+      radioPulse: validateField('radioPulse', radioPulse),
+    };
+  
+    setErrors(errors);
+  
+    const hasErrors = Object.values(errors).some(error => error !== '');
+  
+    if (hasErrors) {
+      console.error('Validation failed:', errors);
+      return;
+    }
+  
     const formData = {
       activeBleeding,
       stridor,
@@ -58,11 +97,32 @@ const EmergencyTriageNextScreen = () => {
       radioPulse,
     };
   
-    console.log('Form Data:', formData);
+    setAbcd(formData);
   
-    // Navigate to the next screen, passing the formData as a parameter
-    navigation.navigate('NextScreen', { formData });
-  };
+    dispatch({
+      type: 'updateTriageData',
+      payload: {
+        ...triageDataFromStore,
+        abcd: formData,
+      },
+    });
+  
+    navigation.navigate('NextScreen');
+  }, [
+    activeBleeding,
+    stridor,
+    cSpineInjury,
+    talkingInIncompleteSentence,
+    alteredSensorium,
+    noisyBreathing,
+    activeBreathing,
+    angioedema,
+    capillaryRefill,
+    radioPulse,
+    dispatch,
+    triageDataFromStore,
+    navigation,
+  ]);
   
 
   return (
@@ -113,6 +173,9 @@ const EmergencyTriageNextScreen = () => {
         style={styles.dropdown}
         dropDownContainerStyle={styles.dropdownContainer}
       />
+      {!!errors.capillaryRefill && (
+  <Text style={styles.errorText}>{errors.capillaryRefill}</Text>
+)}
 
 <TouchableOpacity style={styles.skipButton} onPress={handleNextPress}>
           <Text style={styles.skipButtonText}>Next</Text>
@@ -223,6 +286,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '90deg' }],
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginTop: 5,
   },
 });
 

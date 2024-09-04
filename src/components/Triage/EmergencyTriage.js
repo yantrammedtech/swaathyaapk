@@ -23,9 +23,10 @@ console.log("currentPatient=",currentPatientData)
       navigation.navigate('PeopleList'); // Navigate to "PeopleList" if no back action is possible
     }
   };
-  const handleImagePress = (patientImage) => {
+  const handleImagePress = (condition) => {
     navigation.navigate('RedZonePage', { 
       patientName,
+      condition,
       patientImage,  // Pass the patient image to the next screen
     });
   };
@@ -49,8 +50,20 @@ console.log("currentPatient=",currentPatientData)
     getCurrentPatient()
   },[])
 
+ 
+
 const patientImage =''
 const patientName ='q'
+
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+const backgroundColor = getRandomColor();
   return (
     <View style={styles.container}>
       {/* Header Section */}
@@ -71,7 +84,7 @@ const patientName ='q'
   {currentPatientData?.imageURL ? (
     <Image source={{ uri: currentPatientData.imageURL }} style={styles.profileImage} />
   ) : (
-    <View style={styles.placeholderImage}>
+    <View style={[styles.placeholderImage, { backgroundColor }]}>
       <Text style={styles.placeholderText}>
         {currentPatientData?.pName ? currentPatientData.pName.charAt(0).toUpperCase() : ''}
       </Text>
@@ -110,12 +123,16 @@ const patientName ='q'
       <View style={styles.criticalConditionContainer}>
         <Text style={styles.criticalConditionText}>Select a Critical Condition</Text>
         <View style={styles.imageRow}>
-        <TouchableOpacity onPress={() => handleImagePress(patientImage)}>
+        <TouchableOpacity onPress={() => handleImagePress("Stroke")}>
             <Image source={require('../../assets/Frame 3547.png')} style={styles.criticalImage} />
           </TouchableOpacity>
-          <Image source={require('../../assets/Frame 3546.png')} style={styles.criticalImage} />
+          <TouchableOpacity onPress={() => handleImagePress("Un Conscious")}>
+            <Image source={require('../../assets/Frame 3546.png')} style={styles.criticalImage} />
+          </TouchableOpacity>
         </View>
-        <Image source={require('../../assets/Frame 3548.png')} style={styles.centerImage} />
+        <TouchableOpacity onPress={() => handleImagePress("Chest Pain")}>
+            <Image source={require('../../assets/Frame 3548.png')} style={styles.criticalImage} />
+          </TouchableOpacity>
 
         {/* Skip Button */}
         <TouchableOpacity style={styles.skipButton} onPress={handleSkipPress}>
@@ -253,6 +270,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '90deg' }],
+  },
+  placeholderImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom:20,
+  },
+  placeholderText: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight:"bold",
   },
 });
 

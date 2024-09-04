@@ -1,9 +1,149 @@
 import { createStore } from "redux";
 
+
+const triageFormState = {
+    zone: null,
+    ward: "",
+    wardID: 0,
+    lastKnownSequence: "",
+    criticalCondition: "",
+    vitals: {
+      oxygen: 0,
+      pulse: 0,
+      temperature: 0,
+      bpH: 0,
+      bpL: 0,
+      respiratoryRate: 0,
+      time: null,
+    },
+    abcd: {
+      radialPulse: "", // should be absent/present or ''
+      noisyBreathing: "",
+      activeSeizures: "",
+      cSpineInjury: "",
+      angioedema: "",
+      stridor: "",
+      activeBleeding: "",
+      incompleteSentences: "",
+      capillaryRefill: "",
+      alteredSensorium: "",
+      activeBleedingType: "",
+    },
+    gcs: {
+      eyeMovement: "",
+      verbalResponse: "",
+      motorResponse: "",
+      painScale: "",
+    },
+    trauma: {
+      traumaType: "",
+      fallHeight: "",
+      fracture: false,
+      fractureRegion: "",
+      amputation: false,
+      neckSwelling: false,
+      minorHeadInjury: false,
+      abrasion: false,
+      suspectedAbuse: false,
+      chestInjuryType: "",
+      stabInjurySeverity: "",
+      stabInjuryLocation: "",
+      stabHeadScalp: false,
+      stabHeadFace: false,
+      stabHeadNeck: false,
+      stabChestHeart: false,
+      stabChestLungs: false,
+      stabChestMajorBloodVessels: false,
+      stabAbdomenStomach: false,
+      stabAbdomenLiver: false,
+      stabAbdomenKidneys: false,
+      stabAbdomenSpleen: false,
+      stabAbdomenIntestines: false,
+      stabExtremityArm: false,
+      stabExtremityLeg: false,
+      stabExtremityMuscles: false,
+      stabExtremityTendons: false,
+      stabExtremityNerves: false,
+      stabExtremityBloodVessels: false,
+    },
+    nonTrauma: {
+      pregnancy: false,
+      pregnancyIssue: "",
+      trimester: "",
+      breathlessness: false,
+      edema: false,
+      internalBleeding: false,
+      internalBleedingCause: "",
+      poisoning: false,
+      poisoningCause: "",
+      burn: false,
+      burnPercentage: "",
+      hanging: false,
+      drowning: false,
+      electrocution: false,
+      heatStroke: false,
+      fever: false,
+      feverSymptoms: "",
+      drugOverdose: false,
+      stoolPass: false,
+      urinePass: false,
+      swellingWound: false,
+      dizziness: false,
+      headache: false,
+      coughCold: false,
+      skinRash: false,
+      medicoLegalExamination: false,
+    },
+  
+    errors: {
+      vitals: {
+        oxygen: "",
+        pulse: "",
+        temperature: "",
+        respiratoryRate: "",
+        bpH: "",
+        bpL: "",
+      },
+      abcd: {
+        radialPulse: "",
+        noisyBreathing: "",
+        activeSeizures: "",
+        cSpineInjury: "",
+        angioedema: "",
+        stridor: "",
+        activeBleeding: "",
+        incompleteSentences: "",
+        capillaryRefill: "",
+        alteredSensorium: "",
+        activeBleedingType: "",
+      },
+      gcs: {
+        eyeMovement: "",
+        verbalResponse: "",
+        motorResponse: "",
+        painScale: "",
+      },
+      trauma: {
+        traumaType: "",
+        fractureRegion: "",
+        fallHeight: "",
+      },
+      nonTrauma: {
+        poisoningCause: "",
+        burnPercentage: "",
+        feverSymptoms: "",
+        trimester: "",
+        pregnancyIssue: "",
+        internalBleedingCause: "",
+      },
+    },
+  };
+
 const initialData ={
     currentUserData:null,
     currentPatientData:null,
     allPatientsList: null,
+    triageData: triageFormState
 }
 
 function Reducer(state=initialData,action){
@@ -14,7 +154,9 @@ function Reducer(state=initialData,action){
             return {...state,currentPatientData:action.payload};
         case "allPatientsList":
             return {...state,allPatientsList:action.payload};
-        
+        case "updateTriageData":
+                return {...state,triageData:action.payload};
+            
         default:
             return state
     }
