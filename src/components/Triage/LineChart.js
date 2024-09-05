@@ -8,7 +8,7 @@ import { patientStatus } from '../../utility/role';
 // Get screen width for responsive design
 const screenWidth = Dimensions.get('window').width;
 
-const LineChartComponent = () => {
+const LineChartComponent = ({currentMonth}) => {
   const user = useSelector((state) => state.currentUserData);
   const [dataTable, setDataTable] = React.useState([]);
 
@@ -20,6 +20,10 @@ const LineChartComponent = () => {
 
   const filterMonth = 'year';
   const filterValue = '';
+  // const filterMonth = currentMonth ? 'month' : 'year';
+  // const filterValue = currentMonth 
+  //   ? (new Date(currentMonth).getMonth() + 1).toString()  // Extract month (1-based index)
+  //   : new Date().getFullYear().toString();  // Use current year
 
   const barData = async () => {
     try {
@@ -113,7 +117,7 @@ const LineChartComponent = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
     width: '100%',
   },
   chartContainer: {

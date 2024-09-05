@@ -3,7 +3,7 @@ import { View, Text, TextInput, Image, Pressable, StyleSheet } from 'react-nativ
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { authPatch } from '../../axios/usePatch';
 
 const Profile = () => {
@@ -18,6 +18,7 @@ const Profile = () => {
   });
 
   const navigation = useNavigation();
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (currentUserData.imageURL) {

@@ -84,14 +84,16 @@ const DataVisualization = () => {
       const totalPatientCount = response.count.reduce((acc, curr) => acc + curr.patient_count, 0);
       console.log('Total Patient Count:', totalPatientCount);
 
-      const data = response.count.map((res) => ({
-        // name: `Zone ${res.zone}`,
-        name: zoneLabels[res.zone] || `Zone ${res.zone}`,
-        population: (res.patient_count / totalPatientCount) * 100,
-        color: zoneColors[res.zone] || '#000', // Default to black if zone color is not found
-        legendFontColor: "#7F7F7F",
-        legendFontSize: 15,
-      }));
+      const data = response.count.map((res) => {
+        const population = (res.patient_count / totalPatientCount) * 100;
+        return {
+          name: zoneLabels[res.zone] || `Zone ${res.zone}`,
+          population: parseFloat(population.toFixed(0)), // Round to nearest integer
+          color: zoneColors[res.zone] || '#000', // Default to black if zone color is not found
+          legendFontColor: "#7F7F7F",
+          legendFontSize: 15,
+        };
+      });
 
       console.log('Transformed Data:', data); // Log the transformed data
       setPieChartData(data);
@@ -220,6 +222,8 @@ const styles = StyleSheet.create({
   paracontainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    margin:10,
+    padding:10,
   },
   visitedText: {
     fontSize: 16,

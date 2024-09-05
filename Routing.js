@@ -17,7 +17,6 @@ import DataVisualization from "./src/components/Triage/DataVisualization";
 
 
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import EmergencyTriage from "./src/components/Triage/EmergencyTriage";
 import RedZonePage from "./src/components/Triage/RedZonePage";
 import EmergencyTriageScreen from "./src/components/Triage/EmergecyTriageScreen";
@@ -27,6 +26,10 @@ import Trauma from "./src/components/Triage/Trauma";
 import EmergencyDashboard from "./src/components/Emergency/EmergencyDashboard";
 import EmergencyActivePeopleList from "./src/components/Emergency/EmergencyActivePeopleList";
 import ProfilePage from "./src/components/Pages/ProfilePage";
+import PatientProfile from "./src/components/Emergency/PatientProfile";
+
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -105,8 +108,7 @@ const Routing = () => {
         />
 
 
-
-        {/* <Stack.Screen name="PeopleList" component={PeopleList} /> */}
+{/* ==========================triage Routing start======== */}
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen
           name="DataVisualization"
@@ -291,6 +293,14 @@ const Routing = () => {
         <Stack.Screen
           name="EmergencyTriage"
           component={EmergencyTriage}
+          options={{ headerShown: false }}
+        />
+{/* ==========================triage Routing end======================== */}
+
+{/* =====================red=start=============== */}
+         <Stack.Screen
+          name="RedZonePatientProfile"
+          component={PatientProfile}
           options={{ headerShown: false }}
         />
 
