@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Footer from './Footer';
+import { patientStatus } from '../../utility/role';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux'
+import { authFetch } from '../../axios/authFetch';
+
 
 const patientlist = [
   {
@@ -27,23 +32,66 @@ const patientlist = [
 ];
 
 const PeopleList = ({ navigation }) => {
-  const renderItem = ({ item }) => (
+
+  const user = useSelector((state) =>{
+    return state.currentUserData
+  })
+  const dispatch = useDispatch()
+
+  const [allPatient, setAllPatients] = useState([])
+
+  const getAllPatient = async() => {
+    const response = await authFetch(
+      `patient/${user.hospitalID}/patients/triage/${patientStatus.emergency}`,
+      user.token
+    );
+    if (response.message == "success") {
+      console.log("patients===",response.patients)
+      setAllPatients(response.patients);
+      dispatch({ type: "allPatientsList", payload: response.patients })
+    }
+  };
+
+useEffect(() => {
+  getAllPatient()
+},[])
+
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+const renderItem = ({ item }) => {
+  const backgroundColor = getRandomColor();
+
+  return (
     <TouchableOpacity
       style={styles.container}
       onPress={() =>
-        navigation.navigate('EmergencyTriage', {
+        navigation.navigate("EmergencyTriage", {
           patientId: item.id,
-          patientName: item.name,
-          patientImage: item.image,
+          
         })
       }
     >
       <View style={styles.row}>
-        <Image source={item.image} style={styles.image} />
+        {item.imageURL ? (
+          <Image source={{ uri: item.imageURL }} style={styles.image} />
+        ) : (
+          <View style={[styles.placeholderImage, { backgroundColor }]}>
+            <Text style={styles.placeholderText}>
+              {item.pName ? item.pName.charAt(0).toUpperCase() : ''}
+            </Text>
+          </View>
+        )}
         <View style={styles.infoContainer}>
           <Text style={styles.patient}>
             Patient Name:
-            <Text style={styles.patientName}> {item.name}</Text>
+            <Text style={styles.patientName}> {item.pName}</Text>
           </Text>
           <View style={styles.dateRow}>
             <Icon name="access-time" size={20} color="#666" />
@@ -59,11 +107,13 @@ const PeopleList = ({ navigation }) => {
       </View>
     </TouchableOpacity>
   );
+};
+
 
   return (
     <View style={styles.mainContainer}>
       <FlatList
-        data={patientlist}
+        data={allPatient}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
@@ -83,7 +133,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#bebebe',
-    elevation: 2,
+  
   },
   row: {
     flexDirection: 'row',
@@ -130,6 +180,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '90deg' }],
+  },
+  placeholderImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    fontSize: 24,
+    color: '#fff',
   },
 });
 

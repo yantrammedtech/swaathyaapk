@@ -1,18 +1,61 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; 
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
+import { authFetch } from '../../axios/authFetch';
+import { useSelector } from 'react-redux';
+import TriageFormContext, { GetTriageFormDataObject } from './Context/TriageFormContext';
+import { zoneType } from '../../utility/role';
+import { authPost } from '../../axios/authPost';
 
 const RedZonePage = ({ route }) => {
-  const { patientName, patientImage } = route.params;
+  const {   condition } = route.params;
+  const patientImage=''
+  const user = useSelector((state) => {
+    return state.currentUserData
+  })
+  const currentPatientData = useSelector((state) => state.currentPatientData)
+  const triageData = useSelector((state) => state.triageData)
+  console.log("triag", triageData)
   
   // Get the navigation object
   const navigation = useNavigation();
   const [selectedZone, setSelectedZone] = useState(null);
-  
-
   const [selectedWard, setSelectedWard] = useState(null);
+  const [wards, setWards] = useState([]);
+  const { formData, setFormData } = useContext(TriageFormContext);
+
+
+  const getWardData = async () => {
+    const wardResonse = await authFetch(
+      `ward/${user.hospitalID}`,
+      user.token
+    );
+    if (wardResonse.message == "success") {
+      setWards(wardResonse.wards);
+    }
+  };
+
+  useEffect(() => {
+    getWardData()
+  },[])
  
+  const handleCriticalCondition = (selectedWard) => {
+    if (!condition) return;
+    setFormData((prev) => ({
+      ...prev,
+      criticalCondition: condition,
+      ward: selectedWard,
+      zone: zoneType.red,
+    }));
+    navigate("./zone");
+  };
+
+  
+  useEffect(() => {
+    setFormData((p) => ({ ...p, lastKnownSequence: "criticalCondition" }));
+  }, [setFormData]);
+
 
   const getBackgroundColor = () => {
     switch (selectedZone) {
@@ -26,8 +69,51 @@ const RedZonePage = ({ route }) => {
         return 'white'; // Default background color
     }
   };
+  let zone;
 
-  const handleSubmit = () => {
+  useEffect(() => {
+    // Determine the zone value based on selectedZone
+     if(selectedZone === "red"){
+      zone = "1"
+     }
+    else if (selectedZone === "yellow"){
+     zone='2'
+    }
+    else {
+    zone ='3'
+    }
+    
+  
+    setFormData((prev) => ({
+      ...prev,
+      criticalCondition: condition,
+      ward: selectedWard,
+      zone: zoneValue,
+    }));
+  }, [condition, selectedWard, selectedZone]);
+
+  const handleSubmit = async() => {
+    const data = GetTriageFormDataObject(formData) ;
+    data.ward = selectedWard;
+    data.zone = zone;
+    data.hospitalID = user.hospitalID;
+    data.userID = user.id;
+    console.log("data===",data)
+    console.log("currentPatientData===", currentPatientData); 
+    try {
+      const res = await authPost(
+        `triage/${user.hospitalID}/${currentPatientData.id}`,
+        data,
+        user.token
+      );
+      if (res.message === "success") {
+        console.log("res==",res)
+        setIsLoading(false);
+      } else console.log("Error", res);
+    } catch (error) {
+      console.log("triage error", error);
+    }
+
     // Navigate to the TriageDashboard screen
     navigation.navigate('TriageDashboard');
   };
@@ -38,11 +124,34 @@ const RedZonePage = ({ route }) => {
     return getPickerBackgroundColor() === '#4792f5' ? 'white' : 'black'; // White text on blue, black otherwise
   };
 
+  console.log("selectwar",selectedWard)
+  console.log("zone===",selectedZone)
+  console.log("currentdata==",currentPatientData)
+
+  
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+const backgroundColor = getRandomColor();
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.patientInfo}>
-        <Text style={styles.patientText}>{patientName} is under {selectedZone}</Text>
-        <Image source={patientImage} style={styles.patientImage} />
+        <Text style={styles.patientText}>{currentPatientData.pName} is under {selectedZone}</Text>
+        {currentPatientData.imageURL ? (
+          <Image source={{ uri: currentPatientData.imageURL }} style={styles.profileImage} />
+        ) : (
+          <View style={[styles.placeholderImage, { backgroundColor }]}>
+            <Text style={styles.placeholderText}>
+              {currentPatientData.pName ? currentPatientData.pName.charAt(0).toUpperCase() : ''}
+            </Text>
+          </View>
+        )}
       </View>
 {/* 
       <View style={[styles.zoneContainer, { backgroundColor: getBackgroundColor() }]}>
@@ -73,19 +182,19 @@ const RedZonePage = ({ route }) => {
       </View>
 
       <View style={styles.dropdownContainer}>
-        <View style={[styles.pickerWrapper, { backgroundColor: getPickerBackgroundColor() }]}>
-          <Picker
-            selectedValue={selectedWard}
-            style={[styles.picker, { backgroundColor: 'transparent' }]} // Transparent Picker for color
-            onValueChange={(itemValue) => setSelectedWard(itemValue)}
-          >
-            <Picker.Item label="Select Ward" value={null} />
-            <Picker.Item label="General Ward" value="generalWard" />
-            <Picker.Item label="ICU" value="icu" />
-            <Picker.Item label="Emergency" value="emergency" />
-          </Picker>
-        </View>
+      <View style={[styles.pickerWrapper, { backgroundColor: getPickerBackgroundColor() }]}>
+        <Picker
+          selectedValue={selectedWard}
+          style={[styles.picker, { backgroundColor: 'transparent' }]} // Transparent Picker for color
+          onValueChange={(itemValue) => setSelectedWard(itemValue)}
+        >
+           <Picker.Item label="Select Ward" value="" />
+          {wards.map((el, index) => (
+            <Picker.Item key={index} label={el.name} value={el.name} />
+          ))}
+        </Picker>
       </View>
+    </View>
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Submit</Text>
@@ -161,6 +270,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 50,
+    marginBottom: 20,
+  },
+  placeholderImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom:20,
+  },
+  placeholderText: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight:"bold",
   },
 });
 

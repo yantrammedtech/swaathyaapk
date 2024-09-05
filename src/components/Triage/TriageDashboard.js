@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image,TouchableOpacity ,ScrollView } from 'react-native'; // Added Image import
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image,TouchableOpacity ,ScrollView,FlatList } from 'react-native'; // Added Image import
 import Header from '../Dashboard/Header';
 import Sidebar from '../Dashboard/Sidebar';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useSelector } from 'react-redux';
+
 import Footer from './Footer';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { authFetch } from '../../axios/authFetch';
+import { patientStatus } from '../../utility/role';
 
 const TriageDashboard = ({ onNotificationPress }) => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-
+  const [recentPatient, setRecentPatient] = useState([])
+  
+  const user = useSelector((state) => {
+    return state.currentUserData
+    
+  })
+  console.log("user==",user)
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
@@ -20,22 +30,75 @@ const TriageDashboard = ({ onNotificationPress }) => {
     navigation.navigate('DataVisualization'); 
   };
 
-//role.ts============start===
- const patientStatus = {
-    outpatient: 1,
-    inpatient: 2,
-    emergency: 3,
-    operationTheatre: 4,
-    discharged: 21,
-  };
-//role.ts======end ====
-  const data = async () => {
+  const getRecentData = async () => {
 
     const response = await authFetch(
       `patient/${user.hospitalID}/patients/recent/${patientStatus.emergency}?userID=${user.id}&role=${user.role}&category=triage`,
       user.token
     );
+    if (response.message == "success") {
+      setRecentPatient(response.patients);
+    }
   }
+  useEffect(() => {
+    getRecentData()
+  },[])
+  console.log("recentPatient===", recentPatient)
+
+  
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+  
+  const renderPatient = ({ item }) => {
+    const backgroundColor = getRandomColor();
+    return (
+      <TouchableOpacity
+        style={styles.recentPatientContainer}
+        onPress={() =>
+          navigation.navigate('EmergencyTriage', {
+            patientId: item.id,
+            patientName: item.pName,
+            patientImage: item.photo,
+          })
+        }
+      >
+        <View style={styles.recentPatientRow}>
+        {item.imageURL ? (
+          <Image source={{ uri: item.imageURL }} style={styles.profileimage} />
+        ) : (
+          <View style={[styles.placeholderImage, { backgroundColor }]}>
+            <Text style={styles.placeholderText}>
+              {item.pName ? item.pName.charAt(0).toUpperCase() : ''}
+            </Text>
+          </View>
+        )}
+          <View style={styles.recentPatientInfoContainer}>
+            <Text style={styles.recentPatient}>
+              Patient Name:
+              <Text style={styles.recentPatientName}> {item.pName.trim()}</Text>
+            </Text>
+            <View style={styles.recentPatientDateRow}>
+              <Icon name="access-time" size={20} color="#666" />
+              <Text style={styles.recentPatientDateText}>{new Date(item.dob).toDateString()} | 10:00 AM</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.recentPatientRow}>
+          <Text style={styles.recentPatientUhidText}>UHID: {item.pUHID}</Text>
+          <TouchableOpacity style={styles.recentPatientCloseButton}>
+            <Icon name="arrow-upward" size={24} color="#FFA500" />
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -70,59 +133,11 @@ const TriageDashboard = ({ onNotificationPress }) => {
       <Text style={styles.seeAllText}>See All</Text>
     </View>
 
-    <View style={styles.subContainer}>
-    <View style={styles.subimageContainer}>
-        <Image 
-          source={require('../../assets/person.avif')} // Replace with your image path
-          style={styles.personImage} 
-        />
-      <View style={styles.iconContainer}>
-          <Text style={styles.uhidText}>UH ID: 2456</Text>
-          <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
-            <Icon name="arrow-upward" size={24} color="#FFA500" />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.textContainer}>
-      <Text style= {styles.uhidText}>
-  Patient: <Text style={styles.patientText}>Jones Doe</Text>
-</Text>
-
-        <View style={styles.dateTimeContainer}>
-          <Icon name="access-time" size={16} color="#000" style={styles.clockIcon} />
-          <Text style={styles.dateText}>April 10, 2024 | 10:00 AM</Text>
-        </View>
-      </View>
-     
-    </View>
-
-    
-    <View style={styles.subContainer}>
-    <View style={styles.subimageContainer}>
-        <Image 
-          source={require('../../assets/person3.avif')} // Replace with your image path
-          style={styles.personImage} 
-        />
-      <View style={styles.iconContainer}>
-          <Text style={styles.uhidText}>UH ID: 2456</Text>
-          <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
-            <Icon name="arrow-upward" size={24} color="#FFA500" />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.textContainer}>
-      <Text style= {styles.uhidText}>
-  Patient: <Text style={styles.patientText}>Jones Doe</Text>
-</Text>
-
-        <View style={styles.dateTimeContainer}>
-          <Icon name="access-time" size={16} color="#000" style={styles.clockIcon} />
-          <Text style={styles.dateText}>April 10, 2024 | 10:00 AM</Text>
-        </View>
-      </View>
-     
-    </View>
-
+    <FlatList
+      data={recentPatient}
+      renderItem={renderPatient}
+      keyExtractor={(item) => item.id.toString()}
+    />
 
       </ScrollView>
     <Footer activeRoute="home" navigation={navigation} />
@@ -261,6 +276,79 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 16,
     
+  },
+
+  recentPatientContainer: {
+    padding: 15,
+    margin: 8,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#bebebe',
+  
+  },
+  recentPatientRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  recentPatientImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  recentPatientInfoContainer: {
+    flex: 1,
+    marginLeft: 15,
+  },
+  recentPatient: {
+    fontSize: 15,
+    fontWeight:"semibold",
+  },
+  recentPatientName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    marginLeft: 2,
+  },
+  recentPatientDateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  recentPatientDateText: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 5,
+  },
+  recentPatientUhidText: {
+    fontSize: 13,
+    color: '#333',
+  },
+  recentPatientCloseButton: {
+    width: 36,
+    height: 36,
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: [{ rotate: '90deg' }],
+  },
+  placeholderImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight:"bold",
+  },
+  profileimage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
 });
 

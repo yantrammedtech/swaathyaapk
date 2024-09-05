@@ -2,21 +2,19 @@
 import axios from "axios";
 import { BASE_URL } from '@env';
 
-export async function authFetch(url, token) {
-  const authPost = axios.create({
+export async function authPatch(url, body, token) {
+  const authPatch = axios.create({
     baseURL: BASE_URL,
-    method: "get",
+    method: "patch",
     headers: {
       Accept: "application/json",
       Authorization: token,
     },
   });
   try {
-    const response = await authPost(url);
+    const response = await authPatch.patch(url, body);
     const data = response.data;
-    // if(response.data.status === 'error') 
-  
-    if (String(response.status).startsWith("2")) return data;
+    return data;
   } catch (err) {
     if (err?.response?.data?.error) {
       return { message: err?.response?.data?.error, status: "error" };

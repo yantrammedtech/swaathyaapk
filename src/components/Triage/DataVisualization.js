@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LineChartComponent from './LineChart';
+import { useSelector } from 'react-redux';
+import { authFetch } from '../../axios/authFetch';
 
 const screenWidth = Dimensions.get('window').width;
 
 const DataVisualization = () => {
+  const user = useSelector((state) => state.currentUserData)
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const handlePreviousMonth = () => {
@@ -48,12 +51,64 @@ const DataVisualization = () => {
   
 
   // Data for PieChart (unchanged)
-  const pieChartData = [
-    { name: 'Green Zone', population: 60, color: 'green', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-    { name: 'Red Zone', population: 30, color: 'red', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-    { name: 'Yellow Zone', population: 10, color: 'yellow', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  ];
+  // const pieChartData = [
+  //   { name: 'Green Zone', population: 60, color: 'green', legendFontColor: '#7F7F7F', legendFontSize: 15 },
+  //   { name: 'Red Zone', population: 30, color: 'red', legendFontColor: '#7F7F7F', legendFontSize: 15 },
+  //   { name: 'Yellow Zone', population: 10, color: 'yellow', legendFontColor: '#7F7F7F', legendFontSize: 15 },
+  // ];
 
+  const [data, setData] = React.useState([]);
+  const [pieChartData, setPieChartData] = useState([]);
+
+  const zoneColors = {
+    1: '#FF6347', // Red
+    2: '#FFD700', // Yellow
+    3: '#32CD32', // Green
+  };
+   // Define labels for each zone
+   const zoneLabels = {
+    1: 'Red Zone',
+    2: 'Yellow Zone',
+    3: 'Green Zone',
+  };
+  
+  const getData = async () => {
+  try {
+    const response = await authFetch(
+      `patient/${user.hospitalID}/patients/count/zone`,
+      user.token
+    );
+    console.log('API Response:', response); // Log the API response
+
+    if (response.message === 'success') {
+      const totalPatientCount = response.count.reduce((acc, curr) => acc + curr.patient_count, 0);
+      console.log('Total Patient Count:', totalPatientCount);
+
+      const data = response.count.map((res) => {
+        const population = (res.patient_count / totalPatientCount) * 100;
+        return {
+          name: zoneLabels[res.zone] || `Zone ${res.zone}`,
+          population: parseFloat(population.toFixed(0)), // Round to nearest integer
+          color: zoneColors[res.zone] || '#000', // Default to black if zone color is not found
+          legendFontColor: "#7F7F7F",
+          legendFontSize: 15,
+        };
+      });
+
+      console.log('Transformed Data:', data); // Log the transformed data
+      setPieChartData(data);
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
+
+
+
+  useEffect(() => {
+    getData()
+  },[])
+console.log("data==",pieChartData)
   return (
     <ScrollView style={styles.container}>
       {/* Date Selector */}
@@ -79,24 +134,23 @@ const DataVisualization = () => {
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Patients visited by Zone</Text>
         <PieChart
-          data={pieChartData}
-          width={screenWidth - 50}
-          height={220}
-          
-          chartConfig={{
-            backgroundColor: '#e26a00',
-            backgroundGradientFrom: '#fb8c00',
-            backgroundGradientTo: '#ffa726',
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          }}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="6"
-          center={[0, 0]} 
-          hasLegend={true}
-          absolute
-        />
+        data={pieChartData}
+        width={screenWidth - 50}
+        height={220}
+        chartConfig={{
+          backgroundColor: '#e26a00',
+          backgroundGradientFrom: '#fb8c00',
+          backgroundGradientTo: '#ffa726',
+          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        }}
+        accessor="population"
+        backgroundColor="transparent"
+        paddingLeft="6"
+        center={[0, 0]} 
+        hasLegend={true}
+        absolute
+      />
          <View style={styles.paracontainer}>
       {/* Visited Text */}
       <Text style={styles.visitedText}>visited</Text>
@@ -150,13 +204,14 @@ const styles = StyleSheet.create({
   chartContainer: {
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 20,
+    // padding: 20,
     marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 2,
+    width:"100%",
   },
   chartTitle: {
     fontSize: 18,
@@ -167,6 +222,8 @@ const styles = StyleSheet.create({
   paracontainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    margin:10,
+    padding:10,
   },
   visitedText: {
     fontSize: 16,

@@ -1,119 +1,222 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
 
+
+
+const validateForm = ({
+  vitals: data,
+  isSubmission = false,
+}) => {
+  const errors = {
+    oxygen: "",
+    pulse: "",
+    temperature: "",
+    respiratoryRate: "",
+    bpH: "",
+    bpL: "",
+  };
+
+  if (data.oxygen || isSubmission) {
+    if (data.oxygen < 50) errors.oxygen = "Oxygen value should be >= 50";
+    else if (data.oxygen > 100) errors.oxygen = "Oxygen value should be <= 100";
+  }
+
+  if (data.bpH || isSubmission) {
+    if (data.bpL && data.bpH < data.bpL)
+      errors.bpH = "High value should be greater than low value";
+    else if (data.bpH > 400) errors.bpH = "High value should be <= 400";
+    else if (data.bpH < 50) errors.bpH = "High value should be >= 50";
+  }
+
+  if (data.bpL || isSubmission) {
+    if (data.bpH && data.bpH < data.bpL)
+      errors.bpL = "Low value should be less than high value";
+    else if (data.bpL > 300) errors.bpL = "Low value should be <= 300";
+    else if (data.bpL < 30) errors.bpL = "Low value should be >= 30";
+  }
+
+  if (data.pulse || isSubmission) {
+    if (data.pulse < 30) errors.pulse = "Pulse value should be >= 30";
+    else if (data.pulse > 300) errors.pulse = "Pulse value should be <= 300";
+  }
+
+  if (data.temperature || isSubmission) {
+    if (data.temperature < 20)
+      errors.temperature = "Temperature value should be >= 20";
+    else if (data.temperature > 45)
+      errors.temperature = "Temperature value should be <= 45";
+  }
+
+  if (data.respiratoryRate || isSubmission) {
+    if (data.respiratoryRate < 1)
+      errors.respiratoryRate = "Respiratory Rate value should be >= 1";
+    else if (data.respiratoryRate > 50)
+      errors.respiratoryRate = "Respiratory Rate value should be <= 50";
+  }
+
+  const hasErrors = Object.entries(errors).some(([, value]) => !!value);
+
+  return { errors, hasErrors };
+};
 
 
 const EmergencyTriageScreen = () => {
-  // State variables for each input field
-  const [oxygen, setOxygen] = useState('');
-  const [bpHigh, setBpHigh] = useState('');
-  const [bpLow, setBpLow] = useState('');
-  const [temperature, setTemperature] = useState('');
-  const [pulse, setPulse] = useState('');
-  const [respiratoryRate, setRespiratoryRate] = useState('');
-  const [observationTime, setObservationTime] = useState('');
+  // Get initial vitals data from Redux store
+  const dispatch = useDispatch();
+  const triageDataFromStore = useSelector((state) => state.triageData);
 
+  // Set local state for vitals
+  const [vitals, setVitals] = React.useState(triageDataFromStore.vitals);
+
+  // Handle change for each field
+  const handleChange = (key, value) => {
+    setVitals((prevVitals) => ({
+      ...prevVitals,
+      [key]: value.replace(/[^0-9]/g, ""),
+    }));
+  };
+
+  
   const navigation = useNavigation();
-
 
   // Handler for form submission
   const handleNextPress = () => {
-    // Create an object with the form data
-    const formData = {
-      oxygen,
-      bpHigh,
-      bpLow,
-      temperature,
-      pulse,
-      respiratoryRate,
-      observationTime
-    };
+    const { errors, hasErrors } = validateForm({ vitals, isSubmission: true });
 
-    console.log('Form Data:', formData);
-    navigation.navigate('EmergencyTriageNextScreen', { formData });
+  if (hasErrors) {
+   
+    setVitals((prevVitals) => ({
+      ...prevVitals,
+      errors, 
+    }));
+    return;
+  }
+    
+    dispatch({
+      type: "updateTriageData",
+      payload: {
+        ...triageDataFromStore,
+        vitals,
+      },
+    });
+  
+    navigation.navigate("EmergencyTriageNextScreen");
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Oxygen</Text>
+       <View style={styles.inputContainer}>
+      <Text style={styles.label}>Oxygen</Text>
+      <TextInput
+        style={[styles.input, vitals?.errors?.oxygen ? styles.inputError : null]}
+        value={vitals?.oxygen}
+        onChangeText={(value) => handleChange("oxygen", value)}
+        keyboardType="numeric"
+      />
+      {vitals?.errors?.oxygen && (
+        <Text style={styles.errorText}>{vitals.errors.oxygen}</Text>
+      )}
+    </View>
+
+    <View style={styles.bpContainer}>
+      <View style={styles.bpInputContainer}>
+        <Text style={styles.label}>Blood Pressure High [mm]</Text>
         <TextInput
-          style={styles.input}
-          value={oxygen}
-          onChangeText={setOxygen}
+          style={[styles.bpInput, vitals?.errors?.bpH ? styles.inputError : null]}
+          value={vitals?.bpH}
+          onChangeText={(value) => handleChange("bpH", value)}
+          keyboardType="numeric"
         />
+        {vitals?.errors?.bpH && (
+          <Text style={styles.errorText}>{vitals.errors.bpH}</Text>
+        )}
       </View>
+      <View style={styles.bpInputContainer}>
+        <Text style={styles.label}>Low [mm Hg]</Text>
+        <TextInput
+          style={[styles.bpInput, vitals?.errors?.bpL ? styles.inputError : null]}
+          value={vitals?.bpL}
+          onChangeText={(value) => handleChange("bpL", value)}
+          keyboardType="numeric"
+        />
+        {vitals?.errors?.bpL && (
+          <Text style={styles.errorText}>{vitals.errors.bpL}</Text>
+        )}
+      </View>
+    </View>
 
       <View style={styles.bpContainer}>
-        <View style={styles.bpInputContainer}>
-          <Text style={styles.label}>Blood Pressure High [mm]</Text>
-          <TextInput
-            style={styles.bpInput}
-            value={bpHigh}
-            onChangeText={setBpHigh}
-            keyboardType="numeric"
-          />
-        </View>
-        <View style={styles.bpInputContainer}>
-          <Text style={styles.label}>Low [mm Hg]</Text>
-          <TextInput
-            style={styles.bpInput}
-            value={bpLow}
-            onChangeText={setBpLow}
-            keyboardType="numeric"
-          />
-        </View>
+      <View style={styles.bpInputContainer}>
+        <Text style={styles.label}>Temperature (°C or °F)</Text>
+        <TextInput
+          style={[styles.bpInput, vitals?.errors?.temperature ? styles.inputError : null]}
+          value={vitals?.temperature}
+          onChangeText={(value) => handleChange("temperature", value)}
+        />
+        {vitals?.errors?.temperature && (
+          <Text style={styles.errorText}>{vitals.errors.temperature}</Text>
+        )}
       </View>
 
-      <View style={styles.bpContainer}>
-        <View style={styles.bpInputContainer}>
-          <Text style={styles.label}>Temperature (°C or °F)</Text>
-          <TextInput
-            style={styles.bpInput}
-            value={temperature}
-            onChangeText={setTemperature}
-          />
-        </View>
-
-        <View style={styles.bpInputContainer}>
-          <Text style={styles.label}>Pulse (bpm)</Text>
-          <TextInput
-            style={styles.bpInput}
-            value={pulse}
-            onChangeText={setPulse}
-          />
-        </View>
+      <View style={styles.bpInputContainer}>
+        <Text style={styles.label}>Pulse (bpm)</Text>
+        <TextInput
+          style={[styles.bpInput, vitals?.errors?.pulse ? styles.inputError : null]}
+          value={vitals?.pulse}
+          onChangeText={(value) => handleChange("pulse", value)}
+        />
+        {vitals?.errors?.pulse && (
+          <Text style={styles.errorText}>{vitals.errors.pulse}</Text>
+        )}
       </View>
+    </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Respiratory Rate (per min)</Text>
-        <TextInput
-          style={styles.input}
-          value={respiratoryRate}
-          onChangeText={setRespiratoryRate}
-        />
-      </View>
+      <Text style={styles.label}>Respiratory Rate (per min)</Text>
+      <TextInput
+        style={[styles.input, vitals?.errors?.respiratoryRate ? styles.inputError : null]}
+        value={vitals?.respiratoryRate}
+        onChangeText={(value) => handleChange("respiratoryRate", value)}
+      />
+      {vitals?.errors?.respiratoryRate && (
+        <Text style={styles.errorText}>{vitals.errors.respiratoryRate}</Text>
+      )}
+    </View>
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Time of observation</Text>
         <TextInput
-          style={styles.input}
-          value={observationTime}
-          onChangeText={setObservationTime}
+        style={[styles.input, vitals?.errors?.time ? styles.inputError : null]}
+      
+          value={vitals?.time}
+          onChangeText={(value) => handleChange("time", value)}
         />
+         {vitals?.errors?.time && (
+        <Text style={styles.errorText}>{vitals.errors.time}</Text>
+      )}
       </View>
 
+     
       {/* Add image if needed */}
       {/* <Image source={{ uri: 'https://example.com/your-image-url.png' }} style={styles.image} /> */}
 
       <TouchableOpacity style={styles.skipButton} onPress={handleNextPress}>
-          <Text style={styles.skipButtonText}>Next</Text>
-          <TouchableOpacity style={styles.closeButton}>
-            <Icon name="arrow-upward" size={24} color="#1977f3" />
-          </TouchableOpacity>
+        <Text style={styles.skipButtonText}>Next</Text>
+        <TouchableOpacity style={styles.closeButton}>
+          <Icon name="arrow-upward" size={24} color="#1977f3" />
         </TouchableOpacity>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -121,19 +224,19 @@ const EmergencyTriageScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   inputContainer: {
-    width: '100%',
+    width: "100%",
     marginBottom: 10,
   },
   bpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
     marginBottom: 10,
   },
   bpInputContainer: {
@@ -146,7 +249,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#cccccc',
+    borderColor: "#cccccc",
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
@@ -154,12 +257,12 @@ const styles = StyleSheet.create({
   },
   bpInput: {
     borderWidth: 1,
-    borderColor: '#cccccc',
+    borderColor: "#cccccc",
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
     marginBottom: 5,
-    width: '100%',
+    width: "100%",
   },
   image: {
     width: 100,
@@ -167,42 +270,49 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     padding: 15,
     borderRadius: 50,
-    alignItems: 'center',
-    width: '80%',
+    alignItems: "center",
+    width: "80%",
   },
   buttonText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 18,
   },
   skipButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1977f3',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1977f3",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 24,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: 20,
     marginBottom: 30, // Adjust as needed
   },
   skipButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginRight: 10,
   },
   closeButton: {
     width: 36,
     height: 36,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    transform: [{ rotate: '90deg' }],
+    justifyContent: "center",
+    alignItems: "center",
+    transform: [{ rotate: "90deg" }],
+  },
+  inputError: {
+    borderColor: "red",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
   },
 });
 

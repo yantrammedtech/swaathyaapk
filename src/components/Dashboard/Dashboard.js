@@ -1,15 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions ,ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SCOPE_LIST } from '../../utility/scopes';
+const { height } = Dimensions.get('window'); // Get screen height
+
 
 const Dashboard = ({ onNotificationPress }) => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const navigation = useNavigation();
-
+  const [hasInpatient, setHasInpatient] = useState(false);
+  const [hasOutpatient, setHasOutpatient] = useState(false);
+  const [hasTriage, setHasTriage] = useState(false);
+  const [hasEmergencyRedZone, setHasEmergencyRedZone] = useState(false);
+  const [hasEmergencyYellowZone, setHasEmergencyYellowZone] = useState(false);
+  const [hasEmergencyGreenZone, setHasEmergencyGreenZone] = useState(false);
+  const [hasSurgeon, setHasSurgeon] = useState(false);
+  const [hasAnesthesia, setHasAnesthesia] = useState(false);
+  
   const userData = useSelector((state) => {
     return state
   })
@@ -17,9 +29,43 @@ const Dashboard = ({ onNotificationPress }) => {
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
+
+
+
+
   useEffect(() => {
     console.log("userData", userData)
+
+    async function getLocalData() {
+      const token = await AsyncStorage.getItem('Token')
+      const scope = await AsyncStorage.getItem('scope')
+      const userScopes = scope?.split('#');
+
+      if (userScopes) {
+        const scopes = userScopes.map((n) => Number(n));
+        setHasOutpatient(scopes.includes(SCOPE_LIST.outpatient));
+        setHasInpatient(scopes.includes(SCOPE_LIST.inpatient));
+        setHasSurgeon(scopes.includes(SCOPE_LIST.surgeon));
+        setHasAnesthesia(scopes.includes(SCOPE_LIST.anesthetist));
+        setHasTriage(scopes.includes(SCOPE_LIST.triage));
+        setHasEmergencyRedZone(scopes.includes(SCOPE_LIST.emergency_red_zone));
+        setHasEmergencyYellowZone(scopes.includes(SCOPE_LIST.emergency_yellow_zone));
+        setHasEmergencyGreenZone(scopes.includes(SCOPE_LIST.emergency_green_zone));
+      }
+      console.log("token", token)
+      console.log("scope", scope)
+
+    }
+    getLocalData()
   }, [])
+
+
+
+
+
+  console.log("hasInpatient", hasInpatient)
+
+
 
   return (
     <View style={styles.container}>
@@ -33,76 +79,80 @@ const Dashboard = ({ onNotificationPress }) => {
 
       <Text style={styles.dashboardText}>Dashboard</Text>
 
-      <View style={styles.boxContainer}>
-        <View style={styles.row}>
+      <ScrollView contentContainerStyle={styles.boxContainer}>
+        {/* Out Patient */}
+        {hasOutpatient &&
           <Pressable style={[styles.box, styles.outPatient]}>
             <View style={styles.boxContent}>
               <Image
                 source={require('../../assets/Clip path group.png')}
                 style={styles.boxImage}
-                resizeMode="contain" // Use resizeMode as a prop
+                resizeMode="contain"
               />
               <Text style={styles.boxText}>Out Patient</Text>
             </View>
             <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-
               <Icon name="arrow-upward" size={24} color="#fff" />
-
             </View>
           </Pressable>
+        }
 
+        {/* In Patient */}
+        {hasInpatient === true &&
           <Pressable style={[styles.box, styles.inPatient]}>
             <View style={styles.boxContent}>
               <Image
                 source={require('../../assets/Clip path group.png')}
                 style={styles.boxImage}
-                resizeMode="contain" // Use resizeMode as a prop
+                resizeMode="contain"
               />
               <Text style={styles.boxText}>In Patient</Text>
             </View>
             <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-
               <Icon name="arrow-upward" size={24} color="#fff" />
-
             </View>
           </Pressable>
-        </View>
+        }
 
-        <View style={styles.row}>
-          <Pressable style={[styles.box, styles.otPatient]}>
-            <View style={styles.boxContent}>
-              <Image
-                source={require('../../assets/Clip path group-3.png')}
-                style={styles.boxImage}
-                resizeMode="contain" // Use resizeMode as a prop
-              />
-              <Text style={styles.boxText}>OT</Text>
-            </View>
-            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+        {/* OT */}
+        {(hasSurgeon || hasAnesthesia) &&
+        <Pressable style={[styles.box, styles.otPatient]}>
+          <View style={styles.boxContent}>
+            <Image
+              source={require('../../assets/Clip path group-3.png')}
+              style={styles.boxImage}
+              resizeMode="contain"
+            />
+            <Text style={styles.boxText}>OT</Text>
+          </View>
+          <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+            <Icon name="arrow-upward" size={24} color="#fff" />
+          </View>
+        </Pressable>
+        }
 
-              <Icon name="arrow-upward" size={24} color="#fff" />
+        {/* Emergency */}
+        {(hasEmergencyRedZone || hasEmergencyYellowZone || hasEmergencyGreenZone) &&
+        <Pressable style={[styles.box, styles.emergencyPatient]}
+        onPress={() => navigation.navigate('EmergencyDashboard')}
+        
+        >
+          <View style={styles.boxContent}>
+            <Image
+              source={require('../../assets/Clip path group-2.png')}
+              style={styles.boxImage}
+              resizeMode="contain"
+            />
+            <Text style={styles.boxText}>Emergency</Text>
+          </View>
+          <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+            <Icon name="arrow-upward" size={24} color="#fff" />
+          </View>
+        </Pressable>
+        }
 
-            </View>
-          </Pressable>
-
-          <Pressable style={[styles.box, styles.emergencyPatient]}>
-            <View style={styles.boxContent}>
-              <Image
-                source={require('../../assets/Clip path group-2.png')}
-                style={styles.boxImage}
-                resizeMode="contain" // Use resizeMode as a prop
-              />
-              <Text style={styles.boxText}>Emergency</Text>
-            </View>
-            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-
-              <Icon name="arrow-upward" size={24} color="#fff" />
-
-            </View>
-          </Pressable>
-        </View>
-
-        <View style={styles.row}>
+        {/* Triage */}
+        {hasTriage &&
           <Pressable
             style={[styles.box, styles.triagePatient]}
             onPress={() => navigation.navigate('TriageDashboard')}
@@ -111,39 +161,37 @@ const Dashboard = ({ onNotificationPress }) => {
               <Image
                 source={require('../../assets/Clip path group.png')}
                 style={styles.boxImage}
-                resizeMode="contain" // Use resizeMode as a prop
+                resizeMode="contain"
               />
               <Text style={styles.boxText}>Triage</Text>
             </View>
             <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-
               <Icon name="arrow-upward" size={24} color="#fff" />
-
             </View>
           </Pressable>
+        }
 
-          <Pressable style={[styles.box, styles.recordPatient]}>
-            <View style={styles.boxContent}>
-              <Image
-                source={require('../../assets/Clip path group-1.png')}
-                style={styles.boxImage}
-                resizeMode="contain" // Use resizeMode as a prop
-              />
-              <Text style={styles.boxText}>Record</Text>
-            </View>
-            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-
-              <Icon name="arrow-upward" size={24} color="#fff" />
-
-            </View>
-          </Pressable>
-        </View>
-      </View>
+        {/* Record */}
+        <Pressable style={[styles.box, styles.recordPatient]}>
+          <View style={styles.boxContent}>
+            <Image
+              source={require('../../assets/Clip path group-1.png')}
+              style={styles.boxImage}
+              resizeMode="contain"
+            />
+            <Text style={styles.boxText}>Record</Text>
+          </View>
+          <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+            <Icon name="arrow-upward" size={24} color="#fff" />
+          </View>
+        </Pressable>
+      </ScrollView>
 
       <Sidebar isVisible={sidebarVisible} onClose={toggleSidebar} />
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -161,70 +209,68 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   boxContainer: {
-    paddingHorizontal: 20,
-  },
-  rotatedIcon2: {
-    transform: [{ rotate: '90deg' }],
-    textAlign: "right",
-  },
-  row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    padding: 8,
   },
   box: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    backgroundColor: '#f8f8f8',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-    width: '48%',
+    width: '45%', // Adjust width as needed
+    marginBottom: 20,
+    height: height * 0.2,
+    borderRadius: 8,
+    overflow: 'hidden',
+    elevation: 3, // For shadow effect on Android
+    backgroundColor: '#fff',
+    padding:5
   },
   boxContent: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: 10,
-  },
-  boxImage: {
-    width: 40,
-    height: 40,
-    marginRight: 15,
-    resizeMode: 'contain',
+    padding: 10,
   },
   boxText: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: "#fff"
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 5,
+  },
+  boxImage: {
+    width: 100,
+    height: 100,
   },
   arrowContainer: {
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    alignSelf: 'flex-end',
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  rotatedIcon2: {
+    transform: [{ rotate: '45deg' }],
   },
   outPatient: {
-    backgroundColor: "#FFC0CB",
+    backgroundColor: '#F28A30',
   },
   inPatient: {
-    backgroundColor: "#ADD8E6",
+    backgroundColor: '#73A857',
   },
   otPatient: {
-    backgroundColor: "#4792f5",
+    backgroundColor: '#FFC107',
   },
   emergencyPatient: {
-    backgroundColor: "#f78e8e",
+    backgroundColor: '#F44336',
   },
   triagePatient: {
-    backgroundColor: "#FFA07A",
+    backgroundColor: '#00BCD4',
   },
   recordPatient: {
-    backgroundColor: "#D8BFD8",
+    backgroundColor: '#8E44AD',
   },
 });
 
+
+
 export default Dashboard;
+
+
+
+

@@ -3,8 +3,40 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 
 import { CheckBox } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+
+const validateFields = (fieldName, value, range) => {
+  switch (fieldName) {
+    case 'painScale':
+      if (value === '' || isNaN(Number(value))) {
+        return 'Please enter a valid number.';
+      }
+      if (range) {
+        const painValue = parseFloat(value);
+        if (painValue < range[0] || painValue > range[1]) {
+          return `Pain scale should be between ${range[0]} and ${range[1]}.`;
+        }
+      }
+      return '';
+
+    case 'eyeMovement':
+    case 'motorResponse':
+    case 'verbalResponse':
+      if (value === null) {
+        return 'This field is required.';
+      }
+      return '';
+
+    default:
+      return '';
+  }
+};
 
 const NextScreen = () => {
+  const triageDataFromStore = useSelector((state) => state.triageData);
+  const [gcs, setGcs] = useState(triageDataFromStore.gcs);
+  const dispatch = useDispatch();
+
   const [gcsScore, setGcsScore] = useState(11);
   const [eyeMovementChecked, setEyeMovementChecked] = useState(false);
   const [motorResponseChecked, setMotorResponseChecked] = useState(false);
@@ -13,6 +45,7 @@ const NextScreen = () => {
   const [selectedEyeMovement, setSelectedEyeMovement] = useState(null);
   const [selectedMotorResponse, setSelectedMotorResponse] = useState(null);
   const [selectedVerbalResponse, setSelectedVerbalResponse] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const responseOptions = {
     eye: ["Spontaneous", "To Sound", "To Pressures", "None"],
@@ -23,19 +56,36 @@ const NextScreen = () => {
   const navigation = useNavigation();
 
   const handleNextPress = () => {
-    // Create an object with the form data
-    const formData = {
-      gcsScore,
-      eyeMovement: selectedEyeMovement,
-      motorResponse: selectedMotorResponse,
-      verbalResponse: selectedVerbalResponse,
-      painScale,
+    const errs = {
+      painScale: validateFields('painScale', painScale, [1, 10]),
+      eyeMovement: validateFields('eyeMovement', selectedEyeMovement),
+      motorResponse: validateFields('motorResponse', selectedMotorResponse),
+      verbalResponse: validateFields('verbalResponse', selectedVerbalResponse),
     };
 
-    console.log('Form Data:', formData);
+    setErrors(errs);
 
-    // Navigate to the next screen, passing the formData as a parameter
-    navigation.navigate('Trauma', { formData });
+    const hasErrors = Object.values(errs).some(error => error !== '');
+
+    if (hasErrors) {
+      return;
+    }
+
+    dispatch({
+      type: 'updateTriageData',
+      payload: {
+        ...triageDataFromStore,
+        gcs: {
+          gcsScore,
+          eyeMovement: selectedEyeMovement,
+          motorResponse: selectedMotorResponse,
+          verbalResponse: selectedVerbalResponse,
+          painScale,
+        },
+      },
+    });
+
+    navigation.navigate('Trauma');
   };
 
   return (
@@ -45,7 +95,7 @@ const NextScreen = () => {
       </View>
 
       {/* Eye Movement Section */}
-      <View style={styles.section}>
+      <View style={eyeMovementChecked && styles.section}>
         <CheckBox
           title="Eye movement *"
           checked={eyeMovementChecked}
@@ -68,10 +118,11 @@ const NextScreen = () => {
             ))}
           </View>
         )}
+        {errors.eyeMovement && <Text style={styles.errorText}>{errors.eyeMovement}</Text>}
       </View>
 
       {/* Motor Response Section */}
-      <View style={styles.section}>
+      <View style={motorResponseChecked && styles.section}>
         <CheckBox
           title="Motor Response *"
           checked={motorResponseChecked}
@@ -94,10 +145,11 @@ const NextScreen = () => {
             ))}
           </View>
         )}
+        {errors.motorResponse && <Text style={styles.errorText}>{errors.motorResponse}</Text>}
       </View>
 
       {/* Verbal Response Section */}
-      <View style={styles.section}>
+      <View style={verbalResponseChecked && styles.section}>
         <CheckBox
           title="Verbal response *"
           checked={verbalResponseChecked}
@@ -120,6 +172,7 @@ const NextScreen = () => {
             ))}
           </View>
         )}
+        {errors.verbalResponse && <Text style={styles.errorText}>{errors.verbalResponse}</Text>}
       </View>
 
       {/* Pain Scale Input */}
@@ -130,12 +183,13 @@ const NextScreen = () => {
         onChangeText={setPainScale}
         keyboardType="numeric"
       />
+      {errors.painScale && <Text style={styles.errorText}>{errors.painScale}</Text>}
 
       {/* Next Button */}
       <TouchableOpacity style={styles.skipButton} onPress={handleNextPress}>
         <Text style={styles.skipButtonText}>Next</Text>
         <TouchableOpacity style={styles.closeButton}>
-          <Icon name="arrow-upward" size={24} color="#1977f3" />
+          <Icon name="arrow-upward" size={24} color="#1977F3" />
         </TouchableOpacity>
       </TouchableOpacity>
     </ScrollView>
@@ -146,7 +200,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#fff',
   },
   scoreContainer: {
     backgroundColor: '#d4edda',
@@ -228,6 +282,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '90deg' }],
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
 });
 
