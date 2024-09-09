@@ -13,7 +13,39 @@ const MedicineForm = ({ visible, onClose }) => {
     const [note, setNote] = useState('');
     const [selectedTiming, setSelectedTiming] = useState('');
     const timings = ['Before Breakfast', 'After Breakfast', 'Before Lunch', 'After Lunch', 'Before Dinner', 'After Dinner'];
+    const [selectedTimings, setSelectedTimings] = useState([]);
+
+    const handleInputChange = (text) => {
+        // Ensure that the input is numeric and does not exceed a reasonable number of days
+        const numericValue = text.replace(/[^0-9]/g, ''); // This ensures only numbers
+        setSelectedDays(numericValue);
+    };
+
+    const handleTimingSelection = (time) => {
+        if (selectedTimings.includes(time)) {
+            // Remove timing if already selected (deselect)
+            setSelectedTimings(selectedTimings.filter(t => t !== time));
+        } else {
+            // If less than frequency, add the timing
+            if (selectedTimings.length < frequency) {
+                setSelectedTimings([...selectedTimings, time]);
+            }
+        }
+    };
+
+    const medicineTypeImages = {
+        tablet: require('../../../assets/treatmentplan/tablet.png'),
+        capsule: require('../../../assets/treatmentplan/image 50.png'),
+        syrup: require('../../../assets/treatmentplan/image 53.png'),
+        injection: require('../../../assets/treatmentplan/image 51.png'),
+        iv_line: require('../../../assets/treatmentplan/image 52.png'),
+        drops: require('../../../assets/treatmentplan/image 54.png'),
+        spray: require('../../../assets/treatmentplan/image 55.png'),
+        tubing: require('../../../assets/treatmentplan/image 56.png'),
+    };
     
+    
+   
     const handleFrequencyDecrease = () => {
         if (frequency > 1) {
             setFrequency(frequency - 1);
@@ -36,7 +68,10 @@ const MedicineForm = ({ visible, onClose }) => {
         setDosage(dosage + 1);
     };
 
-    
+    const onPress =() => {
+        onClose()
+    }
+  
     
     
     return (
@@ -48,15 +83,25 @@ const MedicineForm = ({ visible, onClose }) => {
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <View style={styles.header}>
-                        <TouchableOpacity onPress={onClose}>
-                            <Icon name="close" size={24} color="#fff" style={styles.closeIcon} />
-                        </TouchableOpacity>
-                        <Text style={styles.headerText}>Tablet</Text>
-                        <View style={styles.pills}>
-                            {/* <Icon name="pill" type="material-community" size={40} color="#fff" /> */}
-                        </View>
-                    </View>
+                <View style={styles.header}>
+    {/* Close Icon at the top-left */}
+    <TouchableOpacity onPress={onClose} style={styles.closeIconContainer}>
+        <Icon name="close" size={24} color="#fff" style={styles.closeIcon} />
+    </TouchableOpacity>
+
+    {/* Medicine image and text in the center */}
+    <View style={styles.centerContent}>
+        {selectedType !== '' && (
+            <Image
+                source={medicineTypeImages[selectedType]}
+                style={styles.medicineImage}
+                resizeMode="contain"
+            />
+        )}
+        <Text style={styles.headerText}>{selectedType}</Text>
+    </View>
+</View>
+
 
                     <View style={styles.form}>
                         {/* Select Medicine */}
@@ -74,50 +119,58 @@ const MedicineForm = ({ visible, onClose }) => {
 
                         {/* Select Medicine Type */}
                         <View style={styles.dropdownContainer}>
-                            <Picker
-                                selectedValue={selectedType}
-                                onValueChange={(itemValue) => setSelectedType(itemValue)}
-                                style={styles.picker}
-                            >
-                                <Picker.Item label="Select Medicine type" value="" />
-                                <Picker.Item label="Tablet" value="tablet" />
-                                <Picker.Item label="Capsule" value="capsule" />
-                            </Picker>
-                        </View>
+    <Picker
+        selectedValue={selectedType}
+        onValueChange={(itemValue) => setSelectedType(itemValue)}
+        style={styles.picker}
+    >
+        <Picker.Item label="Select Medicine type" value="" />
+        <Picker.Item label="Tablet" value="tablet" />
+        <Picker.Item label="Capsule" value="capsule" />
+        <Picker.Item label="Syrup" value="syrup" />
+        <Picker.Item label="Injection" value="injection" />
+        <Picker.Item label="IV Line" value="iv_line" />
+        <Picker.Item label="Drops" value="drops" />
+        <Picker.Item label="Spray" value="spray" />
+        <Picker.Item label="Tubing" value="tubing" />
+    </Picker>
+</View>
 
                         {/* Select Days */}
-                        <View style={styles.dropdownContainer}>
-                            <Picker
-                                selectedValue={selectedDays}
-                                onValueChange={(itemValue) => setSelectedDays(itemValue)}
-                                style={styles.picker}
-                            >
-                                <Picker.Item label="Select days" value="" />
-                                <Picker.Item label="1 day" value="1day" />
-                                <Picker.Item label="3 days" value="3days" />
-                            </Picker>
-                        </View>
+                        <View style={styles.inputContainer}>
+            <TextInput
+                value={selectedDays}
+                onChangeText={handleInputChange}
+                keyboardType="numeric"
+                placeholder="Enter number of days"
+                style={styles.textInput}
+                maxLength={3} // Set a limit to how many digits can be entered
+            />
+        </View>
 
                         {/* Meal Timing Buttons */}
                         <View style={styles.mealTimingsContainer}>
-            {timings.map((time) => (
-                <TouchableOpacity
-                    key={time}
-                    style={[
-                        styles.mealButton,
-                        selectedTiming === time && styles.mealButtonActive
-                    ]}
-                    onPress={() => setSelectedTiming(time)}
-                >
-                    <Text style={[
-                        styles.mealButtonText,
-                        selectedTiming === time && styles.mealButtonTextActive
-                    ]}>
-                        {time}
-                    </Text>
-                </TouchableOpacity>
-            ))}
-        </View>
+    {timings.map((time) => (
+        <TouchableOpacity
+            key={time}
+            style={[
+                styles.mealButton,
+                selectedTimings.includes(time) && styles.mealButtonActive,
+                selectedTimings.length >= frequency && !selectedTimings.includes(time) && styles.disabledButton // Disable unselected buttons if limit reached
+            ]}
+            onPress={() => handleTimingSelection(time)}
+            disabled={selectedTimings.length >= frequency && !selectedTimings.includes(time)} // Disable button if frequency reached
+        >
+            <Text style={[
+                styles.mealButtonText,
+                selectedTimings.includes(time) && styles.mealButtonTextActive
+            ]}>
+                {time}
+            </Text>
+        </TouchableOpacity>
+    ))}
+</View>
+
 
                         {/* Add Note */}
                         <TextInput
@@ -132,27 +185,50 @@ const MedicineForm = ({ visible, onClose }) => {
                             <View style={styles.counter}>
                                 <Text style={styles.counterText}>Frequency</Text>
                                 <View style={styles.counterControls}>
-                                    <TouchableOpacity onPress={() => setFrequency(frequency > 1 ? frequency - 1 : 1)}>
-                                        <Image
-          source={require('../../../assets/treatmentplan/minus.png')}
-          style={styles.image}
-          resizeMode="contain"
-        />
-                                    </TouchableOpacity>
+                                <TouchableOpacity onPress={handleFrequencyDecrease}>
+                            <Image
+                                source={require('../../../assets/treatmentplan/minus.png')}
+                                style={styles.image}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
                                     <Text style={styles.counterNumber}>{frequency}</Text>
-                                    <TouchableOpacity onPress={() => setFrequency(frequency + 1)}>
-                                        <Image
-          source={require('../../../assets/treatmentplan/pluse.png')}
-          style={styles.image}
-          resizeMode="contain"
-        />
-                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={handleFrequencyIncrease}>
+                            <Image
+                                source={require('../../../assets/treatmentplan/pluse.png')}
+                                style={styles.image}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
                                 </View>
                             </View>
-                            <View>
-                                <Text>No  ofDosage</Text>
+                            <View style={styles.counter}>
+                                <Text style={styles.counterText}>No of Dosage</Text>
+                                <View style={styles.counterControls}>
+                                <TouchableOpacity onPress={handleDosageDecrease}>
+                            <Image
+                                source={require('../../../assets/treatmentplan/minus.png')}
+                                style={styles.image}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
+                                    <Text style={styles.counterNumber}>{dosage}</Text>
+                                    <TouchableOpacity onPress={handleDosageIncrease}>
+                            <Image
+                                source={require('../../../assets/treatmentplan/pluse.png')}
+                                style={styles.image}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
+
+                       
+                        <TouchableOpacity style={styles.button} onPress={onPress}>
+            <Text style={styles.buttonText}>Add</Text>
+        </TouchableOpacity>
+                      
 
                        
                     </View>
@@ -196,21 +272,29 @@ const styles = StyleSheet.create({
     },
     header: {
         backgroundColor: '#007bff',
-        padding: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
-        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
     },
-    closeIcon: {
-        marginRight: 10,
+    closeIconContainer: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+    },
+    centerContent: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerText: {
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold',
-        flex: 1,
     },
+    
     pills: {
         marginLeft: 'auto',
     },
@@ -227,7 +311,20 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#d9d9d9',
     },
-   
+    button: {
+        backgroundColor: '#007bff',  // Blue background
+        padding: 15,
+        borderRadius: 15,
+        alignItems: 'center',
+        marginTop: 20,
+        width: '40%',
+        alignSelf: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
    
    
     mealTimingsContainer: {
@@ -263,6 +360,8 @@ const styles = StyleSheet.create({
     frequencyContainer: {
         marginTop: 10,
         flexDirection: 'row',
+        justifyContent:"space-between",
+        width:"100%"
     },
     counter: {
         // flexDirection: 'row',
@@ -271,28 +370,24 @@ const styles = StyleSheet.create({
     },
     counterText: {
         fontSize: 16,
-    
+        margin:10,
     },
     counterControls: {
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor:"red",
     },
     counterNumber: {
         marginHorizontal: 10,
         fontSize: 18,
     },
-    image:{
-        width:30,
-        height:30,
-    },
+   
     container: {
-        flex: 1,
+        // flex: 3,
         padding: 20,
         backgroundColor: '#fff',
     },
-    frequencyContainer: {
-        marginTop: 10,
-    },
+   
     rowContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -306,15 +401,44 @@ const styles = StyleSheet.create({
     counterControls: {
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: "#fff",
+        borderRadius: 16,
+        // iOS Shadow
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3.84,
+        // Android Shadow
+        elevation: 5,
     },
+    
     image: {
-        width: 30,
+        width: 20,
         height: 30,
         marginHorizontal: 10,
     },
     counterNumber: {
         fontSize: 18,
     },
+    inputContainer: {
+        width: '100%',
+        marginTop: 20,
+        alignSelf: 'center',
+    },
+    textInput: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 10,
+        borderRadius: 5,
+        fontSize: 16,
+        textAlign: 'center',
+    },
+    medicineImage: {
+        width: 100,
+        height: 70,
+        marginTop: 10,
+    },
+    
 });
 
 export default MedicineForm

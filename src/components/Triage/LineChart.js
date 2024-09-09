@@ -1,3 +1,5 @@
+
+
 import React, { useEffect } from 'react';
 import { View, Dimensions, StyleSheet, ScrollView } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
@@ -5,10 +7,9 @@ import { authFetch } from '../../axios/authFetch';
 import { useSelector } from 'react-redux';
 import { patientStatus } from '../../utility/role';
 
-// Get screen width for responsive design
 const screenWidth = Dimensions.get('window').width;
 
-const LineChartComponent = ({currentMonth}) => {
+const LineChartComponent = ({ currentMonth }) => {
   const user = useSelector((state) => state.currentUserData);
   const [dataTable, setDataTable] = React.useState([]);
 
@@ -20,26 +21,23 @@ const LineChartComponent = ({currentMonth}) => {
 
   const filterMonth = 'year';
   const filterValue = '';
-  // const filterMonth = currentMonth ? 'month' : 'year';
-  // const filterValue = currentMonth 
-  //   ? (new Date(currentMonth).getMonth() + 1).toString()  // Extract month (1-based index)
-  //   : new Date().getFullYear().toString();  // Use current year
 
   const barData = async () => {
     try {
-      const barGraphResponse = await authFetch(
-        `patient/${user.hospitalID}/patients/count/fullYearFilter/${patientStatus.emergency}?filter=${filterMonth}&filterValue=${filterValue}&zone=${[
-          zoneType.red,
-          zoneType.green,
-          zoneType.yellow,
-        ].join(',')}`,
-        user.token
-      );
-
-      if (barGraphResponse.message === 'success') {
-        setDataTable(barGraphResponse.counts || []);
-      }
-    } catch (error) {
+            const barGraphResponse = await authFetch(
+              `patient/${user.hospitalID}/patients/count/fullYearFilter/${patientStatus.emergency}?filter=${filterMonth}&filterValue=${filterValue}&zone=${[
+                zoneType.red,
+                zoneType.green,
+                zoneType.yellow,
+              ].join(',')}`,
+              user.token
+            );
+      
+            if (barGraphResponse.message === 'success') {
+              setDataTable(barGraphResponse.counts || []);
+              console.log("barGraphResponse===",barGraphResponse)
+            }
+          }catch (error) {
       console.error('Error fetching bar data:', error);
     }
   };
@@ -67,26 +65,40 @@ const LineChartComponent = ({currentMonth}) => {
     }
   });
 
-  // Prepare chart data
+  // Extract current month as a number (0-based index)
+  const currentMonthIndex = new Date(currentMonth).getMonth() ;
   const chartData = {
-    labels: counts.map(item => item.month), // X-axis labels
+    labels: counts.map((item) => item.month),
     datasets: [
       {
-        data: counts.map(item => item.count), // Y-axis values
-        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Line color
-        strokeWidth: 2, // Line thickness
+        data: counts.map((item) => item.count),
+        color: (opacity = 1) => `rgba(184, 213, 251, ${opacity})`,
+        strokeWidth: 3,
+        withDots: false,
+        fill:0,
+      },
+      {
+        data: counts.map((item, index) => (index === currentMonthIndex ? item.count : 0)),
+        color: (opacity = 3) => `rgba(184, 213, 251, ${opacity})`, // Light blue color for the line
+        strokeWidth: 2,
+        withDots: false,
+        fill: (opacity = 0.1) => `rgba(104, 213, 251, ${opacity})`, // Light blue background fill
       },
     ],
   };
-
   // Chart configuration
   const chartConfig = {
     backgroundGradientFrom: '#ffffff',
     backgroundGradientTo: '#ffffff',
+    backgroundColor: 'transparent', 
     decimalPlaces: 0,
     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Text and axis color
+    color: (opacity = 1) => `rgba(184, 213, 251, ${opacity})`, // Light blue color
+
     style: {
       borderRadius: 16,
+    backgroundColor: 'transparent', 
+
     },
     propsForDots: {
       r: '0', // Remove dots
@@ -96,21 +108,26 @@ const LineChartComponent = ({currentMonth}) => {
     propsForLabels: {
       fill: 'rgba(0, 0, 0, 0)', // Hide label color
     },
+    propsForBackgroundLines: {
+      strokeWidth: 0, // Ensure no lines are drawn in the background
+    },
   };
+
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.chartContainer}>
-        <LineChart
-          data={chartData}
-          width={screenWidth - 40} // Responsive width
-          height={220}
-          chartConfig={chartConfig}
-          bezier // Smooth lines
-          style={styles.chartStyle}
-        />
-      </View>
-    </ScrollView>
+    <View style={styles.chartContainer}>
+      <LineChart
+        data={chartData}
+        width={screenWidth - 40} // Responsive width
+        height={220}
+        chartConfig={chartConfig}
+        bezier // Smooth lines
+        style={styles.chartStyle}
+      />
+     
+    </View>
+  </ScrollView>
   );
 };
 

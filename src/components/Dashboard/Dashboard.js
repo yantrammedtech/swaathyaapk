@@ -248,22 +248,22 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '45deg' }],
   },
   outPatient: {
-    backgroundColor: '#F28A30',
+    backgroundColor: '#f6a8b5',
   },
   inPatient: {
-    backgroundColor: '#73A857',
+    backgroundColor: '#9eb2fb',
   },
   otPatient: {
-    backgroundColor: '#FFC107',
+    backgroundColor: '#65a4f7',
   },
   emergencyPatient: {
-    backgroundColor: '#F44336',
+    backgroundColor: '#fda3a3',
   },
   triagePatient: {
-    backgroundColor: '#00BCD4',
+    backgroundColor: '#97e0f7',
   },
   recordPatient: {
-    backgroundColor: '#8E44AD',
+    backgroundColor: '#bca0f9',
   },
 });
 

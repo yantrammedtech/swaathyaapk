@@ -97,6 +97,11 @@ const getRandomColor = () => {
 
       {/* Adjusted to center the image and added a welcome message */}
       <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.redcontainer}>
+      <View style={styles.redbox}>
+        <Text style={styles.redtext}>Red </Text>
+      </View>
+    </View>
         <View style={styles.imgcontent}>
 
           <Image source={require('../../assets/imge.png')} style={styles.image} />
@@ -248,7 +253,7 @@ const styles = StyleSheet.create({
   images: {
     width: 20,
     height: 20,
-    borderRadius: 25,
+    borderRadius: 22,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -427,6 +432,20 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+  },
+  redcontainer: {
+    flex: 1, // Ensures the container takes up the full screen
+    justifyContent: 'flex-start', // Aligns children to the top
+    alignItems: 'flex-start', // Aligns children to the left
+  },
+  redbox: {
+    backgroundColor: 'red', // Red background color
+    padding: 10, // Add some padding inside the box
+    borderRadius: 5, // Optional: rounds the corners of the box
+  },
+  redtext: {
+    color: 'white', // White text color
+    fontSize: 16, // Adjust font size as needed
   },
  
 });
