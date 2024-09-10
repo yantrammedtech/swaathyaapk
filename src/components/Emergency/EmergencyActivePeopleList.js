@@ -27,7 +27,7 @@ const renderPatient = ({ item }) => {
     <TouchableOpacity
       style={styles.recentPatientContainer}
       onPress={() =>
-        navigation.navigate('PatientProfile', {
+        navigation.navigate('CommonPatientProfile', {
           patientId: item.id,
         })
       }
