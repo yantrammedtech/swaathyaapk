@@ -27,9 +27,12 @@ import EmergencyDashboard from "./src/components/Emergency/EmergencyDashboard";
 import EmergencyActivePeopleList from "./src/components/Emergency/EmergencyActivePeopleList";
 import ProfilePage from "./src/components/Pages/ProfilePage";
 import PatientProfile from "./src/components/Emergency/PatientProfile";
+import CommonPatientProfile from "./src/components/Pages/PatientProfile";
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import EmergencyZoneSelector from "./src/components/Emergency/switchZone";
+import InPatientsList from "./src/components/InPatient/InPatientsList";
+import OutPatientsList from "./src/components/OutPatient/OutPatientsList";
 import EmrgDataVisualization from "./src/components/Emergency/EmrgDataVisualization";
 
 
@@ -46,6 +49,31 @@ const Routing = () => {
         <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
         <Stack.Screen name="dashboard" component={Dashboard} options={{ headerShown: false }} />
         <Stack.Screen name="TriageDashboard" component={TriageDashboard} options={{ headerShown: false }} />
+        {/* ============common patient profile=========== */}
+        <Stack.Screen
+          name="CommonPatientProfile"
+          component={CommonPatientProfile}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Patient Profile',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
 
         <Stack.Screen
           name="PatientProfile"
@@ -316,6 +344,64 @@ const Routing = () => {
           options={{ headerShown: false }}
         />
          {/* <Stack.Screen name="PDFViewer" component={PDFViewerScreen} /> */}
+
+
+
+
+
+         {/* ===================InPatient start================= */}
+         <Stack.Screen
+          name="InPatientsList"
+          component={InPatientsList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'In Patients List',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+         {/* ===================InPatient End================= */}
+
+         {/* ===================OutPatient start================= */}
+         <Stack.Screen
+          name="OutPatientsList"
+          component={OutPatientsList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Out Patients List',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+         {/* ===================OutPatient End================= */}
 
 
 
