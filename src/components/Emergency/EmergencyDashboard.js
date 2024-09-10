@@ -16,14 +16,14 @@ const EmergencyDashboard = ({ onNotificationPress }) => {
   const route = useRoute();
   const [recentPatient, setRecentPatient] = useState([])
 const user = useSelector((state) =>state.currentUserData)
-
+const currentZone = useSelector((state) =>state.currentZone)
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
   const navigateToVisualization = () => {
-    navigation.navigate('DataVisualization');
+    navigation.navigate('EmergencyDataVisualization');
   };
 
   
@@ -79,16 +79,38 @@ const getRandomColor = () => {
     );
   };
   
+  let zoneType=''
+  if (currentZone === 'red') {
+   zoneType = '1';
+ } else if (currentZone === 'yellow') {
+   zoneType = '2';
+ } else if (currentZone === 'green') {
+   zoneType = '3';
+ }
 
   const getRecentData = async() => {
-   const  zoneType='1'
     const response = await authFetch(`patient/${user.hospitalID}/patients/recent/${patientStatus.emergency}?zone=${zoneType}`, user.token);
     if (response.message == "success") setRecentPatient(response.patients);
   }
 
   useEffect(()  => {
     getRecentData()
-  },[])
+  },[currentZone])
+
+    // background color based on the current zone
+    const getBackgroundColor = () => {
+      switch (currentZone) {
+        case 'red':
+          return 'red';
+        case 'yellow':
+          return 'yellow';
+        case 'green':
+          return 'green';
+        default:
+          return 'gray'; // Default color if no zone matches
+      }
+    };
+  
   console.log("response===",recentPatient)
   return (
     <View style={styles.container}>
@@ -98,8 +120,8 @@ const getRandomColor = () => {
       {/* Adjusted to center the image and added a welcome message */}
       <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.redcontainer}>
-      <View style={styles.redbox}>
-        <Text style={styles.redtext}>Red </Text>
+      <View style={[styles.redbox, { backgroundColor: getBackgroundColor() }]}>
+        <Text style={styles.redtext}>{currentZone} </Text>
       </View>
     </View>
         <View style={styles.imgcontent}>
@@ -439,12 +461,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start', // Aligns children to the left
   },
   redbox: {
-    backgroundColor: 'red', // Red background color
+  
     padding: 10, // Add some padding inside the box
     borderRadius: 5, // Optional: rounds the corners of the box
   },
   redtext: {
-    color: 'white', // White text color
+    color: '#000', // White text color
     fontSize: 16, // Adjust font size as needed
   },
  

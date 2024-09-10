@@ -30,6 +30,7 @@ import PatientProfile from "./src/components/Emergency/PatientProfile";
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import EmergencyZoneSelector from "./src/components/Emergency/switchZone";
+import EmrgDataVisualization from "./src/components/Emergency/EmrgDataVisualization";
 
 
 const Stack = createNativeStackNavigator();
@@ -307,6 +308,11 @@ const Routing = () => {
          <Stack.Screen
           name="switchZone"
           component={EmergencyZoneSelector}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="EmergencyDataVisualization"
+          component={EmrgDataVisualization}
           options={{ headerShown: false }}
         />
          {/* <Stack.Screen name="PDFViewer" component={PDFViewerScreen} /> */}

@@ -1,13 +1,28 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 
 
 const EmergencyZoneSelector = () => {
     const navigation = useNavigation(); 
+    const dispatch = useDispatch()
+
     const handlePress = () => {
-        navigation.navigate('EmergencyDashboard'); // Navigate to EmergencyDashboard
+        navigation.navigate('EmergencyDashboard'); 
+        dispatch({ type: "currentZone", payload: 'red' })
       };
+
+      const handleYellow = () => {
+        navigation.navigate('EmergencyDashboard'); 
+        dispatch({ type: "currentZone", payload: 'yellow' })
+      };
+      const handleGreeen = () => {
+        navigation.navigate('EmergencyDashboard'); 
+        dispatch({ type: "currentZone", payload: 'green' })
+      };
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Emergency Red Zone */}
@@ -19,7 +34,7 @@ const EmergencyZoneSelector = () => {
       </TouchableOpacity>
 
       {/* Emergency Yellow Zone */}
-      <TouchableOpacity style={styles.yellowZone}>
+      <TouchableOpacity style={styles.yellowZone} onPress={handleYellow}>
         <Text style={styles.zoneTitle}>Emergency Yellow Zone</Text>
         <Text style={styles.zoneDescription}>
           "Stable but monitored: Medical supervision needed."
@@ -27,7 +42,7 @@ const EmergencyZoneSelector = () => {
       </TouchableOpacity>
 
       {/* Emergency Green Zone */}
-      <TouchableOpacity style={styles.greenZone}>
+      <TouchableOpacity style={styles.greenZone} onPress={handleGreeen}>
         <Text style={styles.zoneTitle}>Emergency Green Zone</Text>
         <Text style={styles.zoneDescription}>
           "Non-critical: Routine care and monitoring."
