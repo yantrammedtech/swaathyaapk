@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, Dimensions ,ScrollView} from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -21,7 +21,7 @@ const Dashboard = ({ onNotificationPress }) => {
   const [hasEmergencyGreenZone, setHasEmergencyGreenZone] = useState(false);
   const [hasSurgeon, setHasSurgeon] = useState(false);
   const [hasAnesthesia, setHasAnesthesia] = useState(false);
-  
+
   const userData = useSelector((state) => {
     return state
   })
@@ -82,7 +82,9 @@ const Dashboard = ({ onNotificationPress }) => {
       <ScrollView contentContainerStyle={styles.boxContainer}>
         {/* Out Patient */}
         {hasOutpatient &&
-          <Pressable style={[styles.box, styles.outPatient]}>
+          <Pressable style={[styles.box, styles.outPatient]}
+          onPress={() => navigation.navigate('OutPatientsList')}
+          >
             <View style={styles.boxContent}>
               <Image
                 source={require('../../assets/Clip path group.png')}
@@ -97,9 +99,12 @@ const Dashboard = ({ onNotificationPress }) => {
           </Pressable>
         }
 
-        {/* In Patient */}
+        {/* In Patient InPatientsList*/}
         {hasInpatient === true &&
-          <Pressable style={[styles.box, styles.inPatient]}>
+          <Pressable style={[styles.box, styles.inPatient]}
+            onPress={() => navigation.navigate('InPatientsList')}
+
+          >
             <View style={styles.boxContent}>
               <Image
                 source={require('../../assets/Clip path group.png')}
@@ -116,39 +121,39 @@ const Dashboard = ({ onNotificationPress }) => {
 
         {/* OT */}
         {(hasSurgeon || hasAnesthesia) &&
-        <Pressable style={[styles.box, styles.otPatient]}>
-          <View style={styles.boxContent}>
-            <Image
-              source={require('../../assets/Clip path group-3.png')}
-              style={styles.boxImage}
-              resizeMode="contain"
-            />
-            <Text style={styles.boxText}>OT</Text>
-          </View>
-          <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-            <Icon name="arrow-upward" size={24} color="#fff" />
-          </View>
-        </Pressable>
+          <Pressable style={[styles.box, styles.otPatient]}>
+            <View style={styles.boxContent}>
+              <Image
+                source={require('../../assets/Clip path group-3.png')}
+                style={styles.boxImage}
+                resizeMode="contain"
+              />
+              <Text style={styles.boxText}>OT</Text>
+            </View>
+            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+              <Icon name="arrow-upward" size={24} color="#fff" />
+            </View>
+          </Pressable>
         }
 
         {/* Emergency */}
         {(hasEmergencyRedZone || hasEmergencyYellowZone || hasEmergencyGreenZone) &&
-        <Pressable style={[styles.box, styles.emergencyPatient]}
-        onPress={() => navigation.navigate('EmergencyDashboard')}
-        
-        >
-          <View style={styles.boxContent}>
-            <Image
-              source={require('../../assets/Clip path group-2.png')}
-              style={styles.boxImage}
-              resizeMode="contain"
-            />
-            <Text style={styles.boxText}>Emergency</Text>
-          </View>
-          <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-            <Icon name="arrow-upward" size={24} color="#fff" />
-          </View>
-        </Pressable>
+          <Pressable style={[styles.box, styles.emergencyPatient]}
+            onPress={() => navigation.navigate('EmergencyDashboard')}
+
+          >
+            <View style={styles.boxContent}>
+              <Image
+                source={require('../../assets/Clip path group-2.png')}
+                style={styles.boxImage}
+                resizeMode="contain"
+              />
+              <Text style={styles.boxText}>Emergency</Text>
+            </View>
+            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+              <Icon name="arrow-upward" size={24} color="#fff" />
+            </View>
+          </Pressable>
         }
 
         {/* Triage */}
@@ -222,7 +227,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     elevation: 3, // For shadow effect on Android
     backgroundColor: '#fff',
-    padding:5
+    padding: 5
   },
   boxContent: {
     flexDirection: 'column',
