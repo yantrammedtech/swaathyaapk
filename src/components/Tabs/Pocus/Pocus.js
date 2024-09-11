@@ -1,11 +1,20 @@
-import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, ScrollView ,TouchableOpacity} from 'react-native';
+import { useEffect, useState } from "react";
+import { View, Text, TextInput, StyleSheet, ScrollView ,TouchableOpacity,Alert} from 'react-native';
 import { CheckBox } from "react-native-elements";
 import { Picker } from '@react-native-picker/picker'; 
-
+import { authPost } from "../../../axios/authPost";
+import { authFetch } from "../../../axios/authFetch";
+import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import { DataTable } from 'react-native-paper';
 
 
 const Pocus = () => {
+  const user = useSelector((state) => state.currentUserData)
+  const currentPatient  = useSelector((state) => state.currentPatientData)
+  const patientTimeLineID = currentPatient?.patientTimeLineID
+  const navigation = useNavigation()
+ 
 
     const [pocusData, setPocusData] =useState([]); // Adjust type as needed
   const [formValues, setFormValues] = useState({
@@ -79,13 +88,101 @@ const Pocus = () => {
     // Submit the form if there are no errors
     if (Object.keys(errors).length === 0) {
      console.log("formValues==",formValues)
+     try {
+      const patientTimeLineID = currentPatient?.patientTimeLineID
+      const response = await authPost(
+        `pocus/${user.hospitalID}/${patientTimeLineID}`,
+        {
+          userID: user.id,
+          ...formValues 
+        },
+        user.token
+      );
+      if (response.message =="success") {
+        Alert.alert(
+          'Success',
+          'Pocus successfully added',
+          [{ text: 'OK' }] 
+        )
+        navigation.navigate('CommonPatientProfile', {
+          patientId: currentPatient.id,
+        })
+      } 
+    }catch (error) {
+      console.error('Error submitting form:', error);
+      if (error.response) {
+        console.error('Server response:', error.response.data);
+      }
+    }
+    
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
 
+        const response = await authFetch(
+          `pocus/${user.hospitalID}/${patientTimeLineID}`,
+          user.token
+        );
+        console.log("get pocus====",response)
+        if (response.message === 'success') {
+          setPocusData(response.pocus);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // Call the async function
+    fetchData();
+  }, [user.hospitalID, patientTimeLineID, user.token]); 
+
+  console.log("pocusData==",pocusData)
 
     return(
         <ScrollView contentContainerStyle={styles.container}>
+{pocusData.length >= 1 && (
+        <View style={{ marginVertical: 20 }}>
+          <DataTable>
+            {/* Table Header */}
+            <DataTable.Header>
+              <DataTable.Title>ID</DataTable.Title>
+              <DataTable.Title>Abdomen</DataTable.Title>
+              <DataTable.Title>ABG</DataTable.Title>
+              <DataTable.Title>CXR</DataTable.Title>
+              <DataTable.Title>ECG</DataTable.Title>
+              <DataTable.Title>Heart</DataTable.Title>
+              <DataTable.Title>IVC</DataTable.Title>
+              <DataTable.Title>Left Pleural Effusion</DataTable.Title>
+              <DataTable.Title>Left Pneumothorax</DataTable.Title>
+              <DataTable.Title>Right Pleural Effusion</DataTable.Title>
+              <DataTable.Title>Right Pneumothorax</DataTable.Title>
+            </DataTable.Header>
+
+            {/* Table Rows */}
+            {pocusData.map((row) => (
+              <DataTable.Row key={row.userID}>
+                <DataTable.Cell>{row.userID}</DataTable.Cell>
+                <DataTable.Cell>{row.abdomen}</DataTable.Cell>
+                <DataTable.Cell>{row.abg}</DataTable.Cell>
+                <DataTable.Cell>{row.cxr}</DataTable.Cell>
+                <DataTable.Cell>{row.ecg}</DataTable.Cell>
+                <DataTable.Cell>{row.heart}</DataTable.Cell>
+                <DataTable.Cell>{row.ivc}</DataTable.Cell>
+                <DataTable.Cell>{row.leftPleuralEffusion}</DataTable.Cell>
+                <DataTable.Cell>{row.leftPneumothorax}</DataTable.Cell>
+                <DataTable.Cell>{row.rightPleuralEffusion}</DataTable.Cell>
+                <DataTable.Cell>{row.rightPneumothorax}</DataTable.Cell>
+              </DataTable.Row>
+            ))}
+          </DataTable>
+        </View>
+      )}
+
+
+
         <Text style={styles.heading}>Tests</Text>
         <View style={styles.inputContainer}>
   <Text style={styles.label}>IVC</Text>
