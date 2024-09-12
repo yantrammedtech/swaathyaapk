@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Modal, Button, TouchableOpacity, Image } from 'react-native';
+import { authFetch } from '../../../axios/authFetch';
+import { useSelector } from 'react-redux';
 
 const timelineData = [
   { date: '02 July 2024', diagnosis: 'Diagnosis Data not available', tag: 'Emergency' },
@@ -7,30 +9,82 @@ const timelineData = [
   { date: '02 July 2024', diagnosis: 'Diagnosis Data not available', tag: 'Emergency' },
   { date: '02 July 2024', diagnosis: 'Diagnosis Data not available', tag: 'Emergency' },
 ];
+const patientStatus = {
+  outpatient: 1,
+  inpatient: 2,
+  emergency: 3,
+  operationTheatre: 4,
+  discharged: 21,
+};
 
-const TimelineItem = ({ item, onPress }) => (
-  <TouchableOpacity onPress={onPress} style={styles.itemContainer}>
-    <View style={styles.timeline}>
-      <View style={styles.dot} />
-      <View style={styles.line} />
-    </View>
-    <View style={styles.content}>
-    <View style={styles.subContent}>
+const colorObj = {
+  [patientStatus.inpatient]: "#FFA07A",
+  [patientStatus.outpatient]: "#ADD8E6",
+  [patientStatus.emergency]: "#98FB98",
+};
 
+const TimelineItem = ({ item, onPress }) => {
+  // Get the status label based on patientStartStatus
+  const statusLabel = Object.keys(patientStatus).find(
+    key => patientStatus[key] === item.patientStartStatus
+  );
 
-      <Text style={styles.dateText}>{item.date}</Text>
-      <Text style={styles.diagnosisText}>{item.diagnosis}</Text>
-        </View>
-      <View style={styles.tag}>
-        <Text style={styles.tagText}>{item.tag}</Text>
+  return (
+    <TouchableOpacity onPress={onPress} style={styles.itemContainer}>
+      <View style={styles.timeline}>
+        <View
+          style={[
+            styles.dot,
+            { backgroundColor: colorObj[item.patientStartStatus] || '#ccc' }
+          ]}
+        />
+        <View style={styles.line} />
       </View>
-    </View>
-  </TouchableOpacity>
-);
+      <View style={styles.content}>
+        <View style={styles.subContent}>
+          <Text style={styles.dateText}>
+            {String(new Date(item.startTime || "").toLocaleDateString('en-GB')) +
+              " - " +
+              (item.patientEndStatus
+                ? String(new Date(item.endTime).toLocaleDateString('en-GB'))
+                : "Present")}
+          </Text>
+          <Text style={styles.diagnosisText}>
+            {item.diagnosis ? (
+              item.diagnosis.length > 40 ? (
+                `${item.diagnosis.substring(0, 40)}... view`
+              ) : (
+                item.diagnosis
+              )
+            ) : (
+              "Diagnosis data not available"
+            )}
+          </Text>
+        </View>
+        <View
+          style={[
+            styles.tag,
+            { backgroundColor: colorObj[item.patientStartStatus] || '#ccc' }
+          ]}
+        >
+          <Text style={styles.tagText}>
+            {statusLabel ? statusLabel.charAt(0).toUpperCase() + statusLabel.slice(1) : 'Unknown'}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const PatientTimeline = () => {
+
+  const user = useSelector((state) => state.currentUserData)
+  const currentPatient  = useSelector((state) => state.currentPatientData)
+
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [timelines, setTimelines] = React.useState([]);
+
 
   const handleItemPress = (item) => {
     setSelectedItem(item);
@@ -41,10 +95,25 @@ const PatientTimeline = () => {
     setModalVisible(false);
   };
 
+  const getAllTimeline = async () => {
+    const res = await authFetch(
+      `patientTimeLine/hospital/${user.hospitalID}/patient/${currentPatient.id}`,
+      user.token
+    );
+    console.log("res----timeline", res);
+
+    if (res.message == "success") {
+      setTimelines(res.patientTimeLines);
+    }
+  };
+  useEffect(() => {
+    getAllTimeline()
+  },[currentPatient,user])
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={timelineData}
+        data={timelines}
         renderItem={({ item }) => (
           <TimelineItem item={item} onPress={() => handleItemPress(item)} />
         )}
@@ -143,6 +212,7 @@ const styles = StyleSheet.create({
     color: '#ff3b30',
     fontSize: 12,
   },
+  
   // Modal Styles
   modalContainer: {
     flex: 1,

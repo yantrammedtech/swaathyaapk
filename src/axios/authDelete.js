@@ -2,17 +2,17 @@
 import axios from "axios";
 import { BASE_URL } from '@env';
 
-export async function authPost(url, body, token) {
-  console.log(BASE_URL,"BASE_URL===")
+export async function authDelete(url, token) {
   const authPost = axios.create({
     baseURL: BASE_URL,
-    method: "post",
+    method: "delete",
     headers: {
+      Accept: "application/json",
       Authorization: token,
     },
   });
   try {
-    const response = await authPost.post(url, body);
+    const response = await authPost.delete(url);
     const data = response.data;
     return data;
   } catch (err) {

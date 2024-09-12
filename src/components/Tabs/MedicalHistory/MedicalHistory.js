@@ -815,6 +815,9 @@ console.log("medicalHistoryData==============",medicalHistoryData)
   return (
     <ScrollView style={styles.container}>
       <View style={styles.column}>
+      <TouchableOpacity style={styles.editIcon} onPress={() => alert('Edit pressed')}>
+        <Icon name="edit" size={24} color="#000" />
+      </TouchableOpacity>
         {/* Blood Type Selector */}
         <View style={styles.section}>
           <CheckBox
@@ -2313,6 +2316,11 @@ const styles = StyleSheet.create({
   selectedList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  editIcon: {
+    position: 'absolute',
+    top: 10, // Adjust the top position as needed
+    right: 10, // Adjust the right position as needed
   },
 });
 

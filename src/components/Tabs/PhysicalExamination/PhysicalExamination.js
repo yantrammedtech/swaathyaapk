@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput,  StyleSheet, ScrollView,TouchableOpacity,Image } from 'react-native';
+import { View, Text, TextInput,  StyleSheet, ScrollView,TouchableOpacity,Image,Alert  } from 'react-native';
+import { authPost } from '../../../axios/authPost';
+import { useSelector } from 'react-redux';
+import Toast from 'react-native-toast-message';
+import { useNavigation } from "@react-navigation/native";
+
 
 
 const INITIAL_STATE = {
@@ -18,7 +23,11 @@ const INITIAL_STATE = {
   };
 
 const PhysicalExamination = ()  => {
+  const user = useSelector((state) => state.currentUserData)
+  const currentPatient  = useSelector((state) => state.currentPatientData)
     const [formData, setFormData] = useState(INITIAL_STATE);
+    const navigation = useNavigation()
+
 
     const handleChange = (name, value) => {
       setFormData((prevState) => ({
@@ -26,9 +35,41 @@ const PhysicalExamination = ()  => {
         [name]: value,
       }));
     };
+
+    const PhysicalExaminationFormRedZone = async () => {
+      const response = await authPost(
+        `ot/${user.hospitalID}/${currentPatient.patientTimeLineID}/redzone/physicalExamination`,
+        { physicalExaminationData: formData },
+        user.token
+      );
+      if (response.status === 201) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Physical Examination data saved successfully.',
+        });
+        // Show success alert
+      Alert.alert(
+        'Success',
+        'Physical Examination data saved successfully.',
+        [{ text: 'OK' }] // You can customize this button as needed
+      );
+      navigation.navigate('CommonPatientProfile', {
+        patientId: currentPatient.id,
+      })
+
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Physical Examination failed. Please try again.',
+        });
+      }
+    };
   
     const handleSubmit = () => {
       console.log('Form Submitted:', formData);
+      PhysicalExaminationFormRedZone()
       // Handle form submission logic here
     };
     
