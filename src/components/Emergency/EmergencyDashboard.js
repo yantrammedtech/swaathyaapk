@@ -16,14 +16,14 @@ const EmergencyDashboard = ({ onNotificationPress }) => {
   const route = useRoute();
   const [recentPatient, setRecentPatient] = useState([])
 const user = useSelector((state) =>state.currentUserData)
-
+const currentZone = useSelector((state) =>state.currentZone)
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
   const navigateToVisualization = () => {
-    navigation.navigate('DataVisualization');
+    navigation.navigate('EmergencyDataVisualization');
   };
 
   
@@ -79,16 +79,38 @@ const getRandomColor = () => {
     );
   };
   
+  let zoneType=''
+  if (currentZone === 'red') {
+   zoneType = '1';
+ } else if (currentZone === 'yellow') {
+   zoneType = '2';
+ } else if (currentZone === 'green') {
+   zoneType = '3';
+ }
 
   const getRecentData = async() => {
-   const  zoneType='1'
     const response = await authFetch(`patient/${user.hospitalID}/patients/recent/${patientStatus.emergency}?zone=${zoneType}`, user.token);
     if (response.message == "success") setRecentPatient(response.patients);
   }
 
   useEffect(()  => {
     getRecentData()
-  },[])
+  },[currentZone])
+
+    // background color based on the current zone
+    const getBackgroundColor = () => {
+      switch (currentZone) {
+        case 'red':
+          return 'red';
+        case 'yellow':
+          return 'yellow';
+        case 'green':
+          return 'green';
+        default:
+          return 'gray'; // Default color if no zone matches
+      }
+    };
+  
   console.log("response===",recentPatient)
   return (
     <View style={styles.container}>
@@ -97,6 +119,11 @@ const getRandomColor = () => {
 
       {/* Adjusted to center the image and added a welcome message */}
       <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.redcontainer}>
+      <View style={[styles.redbox, { backgroundColor: getBackgroundColor() }]}>
+        <Text style={styles.redtext}>{currentZone} </Text>
+      </View>
+    </View>
         <View style={styles.imgcontent}>
 
           <Image source={require('../../assets/imge.png')} style={styles.image} />
@@ -248,7 +275,7 @@ const styles = StyleSheet.create({
   images: {
     width: 20,
     height: 20,
-    borderRadius: 25,
+    borderRadius: 22,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -427,6 +454,20 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+  },
+  redcontainer: {
+    flex: 1, // Ensures the container takes up the full screen
+    justifyContent: 'flex-start', // Aligns children to the top
+    alignItems: 'flex-start', // Aligns children to the left
+  },
+  redbox: {
+  
+    padding: 10, // Add some padding inside the box
+    borderRadius: 5, // Optional: rounds the corners of the box
+  },
+  redtext: {
+    color: '#000', // White text color
+    fontSize: 16, // Adjust font size as needed
   },
  
 });

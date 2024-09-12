@@ -20,14 +20,16 @@ const PatientProfile = ({route}) => {
     const currentPatientData = useSelector((state) => {
         return state.currentPatientData
       })
+      
       const handleBackPress = () => {
+        console.log("Can go back:", navigation.canGoBack()); // Check if it returns true or false
         if (navigation.canGoBack()) {
           navigation.goBack();
         } else {
-          navigation.navigate('EmergencyDashboard'); // Navigate to "PeopleList" if no back action is possible
+          navigation.navigate('EmergencyDashboard');
         }
       };
-
+      
 
       
   const getCurrentPatient = async () => {

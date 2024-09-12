@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity , Modal} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity ,Image, Modal} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import MedicineForm from "./MedicineForm";
 
 const TreatmentPlanScreen = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [usermodalVisible, setUserModalVisible] = useState(false);
 
   const handleMenuClick = () => {
     setIsMenuVisible(!isMenuVisible);
@@ -63,7 +64,10 @@ const handleSaveVitals = () => {
           </View>
           <View style={styles.prescribedByContainer}>
             <Text style={styles.prescribedText}>Prescribed by</Text>
-            <Text style={styles.doctorName}>Laxmi</Text>
+            <TouchableOpacity onPress={() => setUserModalVisible(true)}>
+        <Text style={styles.doctorName}>Laxmi</Text>
+      </TouchableOpacity>
+
           </View>
           <View style={styles.moreIconContainer}>
             <TouchableOpacity style={styles.moreIcon} onPress={handleMenuClick}>
@@ -92,6 +96,63 @@ const handleSaveVitals = () => {
       
       <MedicineForm visible={modalVisible} onClose={handleCloseModal} onSave={handleSaveVitals} />
 
+{/* Modal component */}
+<Modal
+        animationType="slide"
+        transparent={true}
+        visible={usermodalVisible}
+        onRequestClose={() => setUserModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContent}>
+            {/* Doctor Profile */}
+            <View style={styles.profileHeader}>
+              <Image
+                source={require('../../../assets/person.avif')} // Replace with the actual image URL
+                style={styles.profileImage}
+              />
+              <Text style={styles.doctorNameModal}>Laxmi</Text>
+              <Text style={styles.doctorID}>ID: 566</Text>
+              <Text style={styles.gender}>F</Text>
+            </View>
+
+            {/* Doctor Details */}
+            <View style={styles.detailsContainer}>
+    <View style={styles.detailsRow}>
+        <Text style={styles.labelText}>DOB</Text>
+        <Text style={styles.colonText}>:</Text>
+        <Text style={styles.detailsValue}>16-08-1987</Text>
+    </View>
+    <View style={styles.detailsRow}>
+        <Text style={styles.labelText}>Dpt</Text>
+        <Text style={styles.colonText}>:</Text>
+        <Text style={styles.detailsValue}>Emergency Department</Text>
+    </View>
+    <View style={styles.detailsRow}>
+        <Text style={styles.labelText}>Role</Text>
+        <Text style={styles.colonText}>:</Text>
+        <Text style={styles.detailsValue}>Doctor</Text>
+    </View>
+    <View style={styles.detailsRow}>
+        <Text style={styles.labelText}>Mobile No</Text>
+        <Text style={styles.colonText}>:</Text>
+        <Text style={styles.detailsValue}>9876665753</Text>
+    </View>
+    <View style={styles.detailsRow}>
+        <Text style={styles.labelText}>Address</Text>
+        <Text style={styles.colonText}>:</Text>
+        <Text style={styles.detailsValue}>HYD</Text>
+    </View>
+</View>
+
+
+            {/* Close Button */}
+            <TouchableOpacity onPress={() => setUserModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
      
     </View>
   );
@@ -198,10 +259,101 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 20,
+    // padding: 20,
     width: '90%',
     elevation: 5,
   },
+  popupcontainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  doctorName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#007bff',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 300,
+    // padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  profileHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+    backgroundColor:"#98cc94",
+    width:"100%"
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 10,
+  },
+  doctorNameModal: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  doctorID: {
+    fontSize: 16,
+    color: '#666',
+  },
+  gender: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 5,
+  },
+  detailsContainer: {
+    width: '100%',
+    marginBottom: 20,
+    padding:10
+  },
+  detailsText: {
+    fontSize: 16,
+    color: '#333',
+    marginVertical: 5,
+  },
+  closeButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+ 
+detailsRow: {
+    flexDirection: 'row',
+    marginBottom: 5,
+    alignItems: 'center', // Ensures that all text is vertically aligned
+},
+labelText: {
+    fontWeight: 'bold',
+    width: 100, // Ensure consistent alignment across labels
+    textAlign: 'right',
+    paddingRight: 10,
+    color: '#000',
+},
+colonText: {
+    width: 10, // Width for colon to align correctly
+    textAlign: 'center', // Ensures the colon stays centered between label and value
+},
+detailsValue: {
+    color: '#555',
+    flexShrink: 1, // Allows wrapping if needed for long text
+},
 });
 
 export default TreatmentPlanScreen;

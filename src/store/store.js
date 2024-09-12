@@ -143,7 +143,8 @@ const initialData ={
     currentUserData:null,
     currentPatientData:null,
     allPatientsList: null,
-    triageData: triageFormState
+    triageData: triageFormState,
+    currentZone :"red",
 }
 
 function Reducer(state=initialData,action){
@@ -156,6 +157,8 @@ function Reducer(state=initialData,action){
             return {...state,allPatientsList:action.payload};
         case "updateTriageData":
                 return {...state,triageData:action.payload};
+        case "currentZone":
+            return {...state,currentZone:action.payload};
             
         default:
             return state

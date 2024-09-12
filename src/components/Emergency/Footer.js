@@ -17,8 +17,7 @@ const Footer = ({ activeRoute, navigation }) => {
         <Icon name="home" size={28} color={getIconColor('home')} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
-        onPress={() => navigation.navigate('PeopleList')} >
-        {/* <Icon name="add" size={28} color={getIconColor('peopleList')} /> */}
+        onPress={() => navigation.navigate('switchZone')} >
         <Image source={require('../../assets/home 2.png')} style={styles.images} />
 
       </TouchableOpacity>

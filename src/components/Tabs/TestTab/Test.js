@@ -29,6 +29,12 @@ const TestTab = () => {
   
     return(
         <View style={styles.container}>
+           <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+                
+                <Icon name="add" size={20} color="#fff" />
+                <Text style={styles.buttonText}>Add Tests</Text>
+            </TouchableOpacity>
+
          <FlatList
         data={testData}
         renderItem={({ item }) => (
@@ -42,11 +48,7 @@ const TestTab = () => {
         keyExtractor={(item) => item.id.toString()}
       />
     
-            <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-                
-                <Icon name="add" size={20} color="#fff" />
-                <Text style={styles.buttonText}>Add Tests</Text>
-            </TouchableOpacity>
+           
 
             <Modal
   animationType="slide"
@@ -94,7 +96,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-end',
+    marginBottom:10,
 },
 buttonText: {
     color: '#fff',

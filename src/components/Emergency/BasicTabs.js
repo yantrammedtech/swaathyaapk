@@ -11,6 +11,12 @@ import SymptomsTab from '../Tabs/Symptoms/Symptoms';
 import TestTab from '../Tabs/TestTab/Test';
 import VitalsTab from '../Tabs/Vitals/Vitals';
 import TreatmentPlanScreen from '../Tabs/TreatmentPlan/TreatmentPlan';
+import MedicalHistoryScreen from '../Tabs/MedicalHistory/MedicalHistory';
+import Report from '../Tabs/Reports/Report';
+import PatientTimeline from '../Tabs/PatientTimeLine/PatientTimeLine';
+import Pocus from '../Tabs/Pocus/Pocus';
+import PhysicalExamination from '../Tabs/PhysicalExamination/PhysicalExamination';
+
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -125,6 +131,13 @@ export default function BasicTabs() {
         {selectedCategory === 'Tests' && <TestTab />}
         {selectedCategory === 'Vitals' && <VitalsTab />}
         {selectedCategory === 'Treatment Plan' && <TreatmentPlanScreen />}
+        {selectedCategory === 'Medical History' && <MedicalHistoryScreen />}
+        {selectedCategory === 'Reports' && <Report />}
+        {selectedCategory === 'Patient Timeline' && <PatientTimeline />}
+        {selectedCategory === 'POCUS' && <Pocus />}
+        {selectedCategory === 'Physical Examination' && <PhysicalExamination />}
+
+
        
         {/* Add other tab components here */}
       </View>
@@ -138,6 +151,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: 10,
+    // backgroundColor: 'yellow',
+
   },
   categoryScrollView: {
     flexDirection: 'row',
@@ -150,7 +165,6 @@ const styles = StyleSheet.create({
   activeButton: {
     borderBottomWidth: 3,
     borderBottomColor: 'blue', // Or your desired color
-    // marginBottom:200,
   },
   inactiveButton: {
     borderBottomWidth: 0,
@@ -166,7 +180,8 @@ const styles = StyleSheet.create({
 
   },
   tabContent: {
-    flex: 1,
+    // flex: 1,
+ height: '90%',
     marginTop: 20,
   },
 });
