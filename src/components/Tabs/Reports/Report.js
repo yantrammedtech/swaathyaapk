@@ -41,58 +41,12 @@ const Report = () => {
 
   //======for laptop=====
 
-  const handleUploadPress = async () => {
-    try {
-      const res = await DocumentPicker.getDocumentAsync({
-        type: "application/pdf",
-      });
-      console.log("res=======", res);
-
-      // Check if the user cancelled the selection
-      if (res.canceled) {
-        Alert.alert("Cancelled", "File selection was cancelled");
-        return;
-      }
-
-      // Extract file details from the assets array
-      const { assets } = res;
-      if (assets.length > 0) {
-        const file = assets[0]?.file; // Assuming single file selection
-
-        const form = new FormData();
-        console.log("file===", file);
-        form.append("files", file);
-
-        const category = 1;
-        form.append("category", String(category));
-
-        // Perform the API call for file upload
-        const reportResponse = await authPost(
-          `attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
-          form,
-          user.token
-        );
-        if (reportResponse.message == "success") {
-          Alert.alert("Success", "Report successfully uploaded");
-        } else {
-          Alert.alert("Error", "An error occurred: " + reportResponse.message);
-        }
-      } else {
-        Alert.alert("Error", "No file selected");
-      }
-    } catch (err) {
-      Alert.alert("Error", "An error occurred: " + err);
-    }
-  };
-
-  //====for mobile==========
   // const handleUploadPress = async () => {
   //   try {
-  //     // Step 1: Pick the document
   //     const res = await DocumentPicker.getDocumentAsync({
   //       type: "application/pdf",
   //     });
-  //     console.log("DocumentPicker result: ", res);
+  //     console.log("res=======", res);
 
   //     // Check if the user cancelled the selection
   //     if (res.canceled) {
@@ -100,51 +54,110 @@ const Report = () => {
   //       return;
   //     }
 
-  //     // Extract file details from the result
-  //     const { uri, name, mimeType, size } = res.assets[0];
-  //     const lastModified = new Date().getTime(); // You might need to get this from the result or calculate it
-  //     const lastModifiedDate = new Date().toString();
+  //     // Extract file details from the assets array
+  //     const { assets } = res;
+  //     if (assets.length > 0) {
+  //       const file = assets[0]?.file; // Assuming single file selection
 
-  //     const file = {
-  //       // uri,
-  //       name,
-  //       type: mimeType,
-  //       size,
-  //       lastModified,
-  //       lastModifiedDate,
-  //     };
+  //       const form = new FormData();
+  //       console.log("file===", file);
+  //       form.append("files", file);
 
-  //     console.log("Selected file details: ", file);
+  //       const category = 1;
+  //       form.append("category", String(category));
 
-  //     // Step 2: Create FormData to send the file to the backend
-  //     const form = new FormData();
-  //     form.append("files", file);
-
-  //     // Add category or any additional data
-  //     const category = 1;
-  //     form.append("category", String(category));
-
-  //     console.log("FormData: ", form);
-
-  //     // Step 3: Make an API call to upload the file
-  //     const reportResponse = await authPost(
-  //       `attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
-  //       form,
-  //       user.token
-  //     );
-
-  //     // Step 4: Handle the response from the server
-  //     if (reportResponse.message === "success") {
-  //       Alert.alert("Success", "Report successfully uploaded");
+  //       // Perform the API call for file upload
+  //       const reportResponse = await authPost(
+  //         `attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
+  //         form,
+  //         user.token
+  //       );
+  //       if (reportResponse.message == "success") {
+  //         Alert.alert("Success", "Report successfully uploaded");
+  //       } else {
+  //         Alert.alert("Error", "An error occurred: " + reportResponse.message);
+  //       }
   //     } else {
-  //       console.log("Full response from server:", reportResponse);
-  //       Alert.alert("Error", "An error occurred: " + reportResponse.message);
+  //       Alert.alert("Error", "No file selected");
   //     }
   //   } catch (err) {
-  //     console.error("Error during file upload:", err);
-  //     Alert.alert("Error", "An error occurred: " + err.message);
+  //     Alert.alert("Error", "An error occurred: " + err);
   //   }
   // };
+
+  //====for mobile==========
+  const handleUploadPress = async () => {
+    try {
+      // Launch the Document Picker for PDF files
+      const res = await DocumentPicker.getDocumentAsync({
+        type: ["application/pdf", "audio/*", "video/*"],  // Allow PDF, audio, and video files
+      copyToCacheDirectory: true,  // Keep the file in cache
+      });
+  
+      // Log the response for debugging
+      console.log("Document Picker Response:", res);
+  
+      // Check if the user canceled the selection
+      if (res.canceled) {
+        Alert.alert("Cancelled", "File selection was cancelled");
+        return;
+      }
+  
+      // Check if assets are available
+      const { assets } = res;
+  
+      if (!assets || assets.length === 0) {
+        Alert.alert("Error", "No file selected");
+        return;
+      }
+  
+      // Extract file details from the first asset
+      const { uri, name, mimeType } = assets[0];
+  
+      // Log the file details
+      console.log("File details:", { uri, name, mimeType });
+  
+      // Validate if the file URI is present
+      if (!uri) {
+        Alert.alert("Error", "No file selected");
+        return;
+      }
+  
+      // Prepare form data for the file upload
+      const form = new FormData();
+  
+      // Create a file object with URI, name, and MIME type
+      const file = {
+        uri: uri,  // File URI from Document Picker
+        name: name || "document.pdf",  // Default name if not available
+        type: mimeType || "application/octet-stream", 
+      };
+  
+      // Append the file to the form data
+      form.append("files", file);
+  
+      // Add category field (as per the requirement)
+      const category = 1;
+      form.append("category", String(category));
+  
+      // Perform the API call for file upload
+      const reportResponse = await authPost(
+`attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
+        form,
+        user.token
+      );
+  
+      // Handle the response from the server
+      if (reportResponse.message === "success") {
+        Alert.alert("Success", "Report successfully uploaded");
+      } else {
+        Alert.alert("Error", "An error occurred: " + reportResponse.message);
+      }
+    } catch (err) {
+      Alert.alert("Error", "An error occurred: " + err.message);
+      console.error("Upload Error:", err);
+    }
+  };
 
   const getAllReports = async () => {
     const response = await authFetch(
@@ -397,13 +410,14 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#fff",
+    marginBottom:60,
   },
   uploadContainer: {
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
     borderStyle: "dashed",
-    padding: 30,
+    padding: 10,
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -481,10 +495,10 @@ const styles = StyleSheet.create({
     width: 10, // Space between buttons
   },
   cameraButton: {
-    // backgroundColor: "#28A745",
-    padding: 10,
-    borderRadius: 5,
-    marginLeft: 5,
+    backgroundColor: "#ccc",
+    padding: 6,
+    borderRadius: 3,
+    marginLeft: 10,
   },
 });
 

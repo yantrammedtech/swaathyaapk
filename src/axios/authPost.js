@@ -9,6 +9,7 @@ export async function authPost(url, body, token) {
     method: "post",
     headers: {
       Authorization: token,
+      'Content-Type': 'multipart/form-data'
     },
   });
   try {

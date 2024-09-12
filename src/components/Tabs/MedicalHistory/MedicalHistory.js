@@ -9,12 +9,18 @@ import {
   FlatList,
 } from "react-native";
 import { CheckBox } from "react-native-elements";
-import { Chip, Button, Checkbox } from "react-native-paper";
+import { Chip, Button } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { authFetch } from "../../../axios/authFetch";
+import { useSelector } from "react-redux";
 
 
 const MedicalHistoryScreen = () => {
+  const user = useSelector((state) => state.currentUserData);
+  const currentPatient = useSelector((state) => state.currentPatientData);
+  const patientTimeLineID = currentPatient?.patientTimeLineID;
+
   const [medicalHistoryData, setMedicalHistory] =
   React.useState({
     patientID: 0,
@@ -696,6 +702,9 @@ const handleCheckboxChange = (diseaseName) => {
     search: "",
     istrue: medicalHistoryData?.foodAllergy ? true : false,
   });
+  const [foodAlergyList, setFoodAlergyList] = React.useState([]);
+  const [foodDropdownVisible, setFoodDropdownVisible] = useState(false);
+
 
  const removeChip = (item) => {
     setFoodAlergy((prev) => ({
@@ -705,6 +714,34 @@ const handleCheckboxChange = (diseaseName) => {
   };
 
 
+const handleFoodSearchChange = (text) => {
+  setFoodAlergy((prev) => ({
+    ...prev,
+    search: text,
+  }));
+
+  if (text.length === 0) {
+    setFoodDropdownVisible(false);
+    setFoodAlergyList([]); // Clear food allergy list when input is empty
+    return;
+  }
+  
+  fetchFoodList(text);
+  setFoodDropdownVisible(true); // Show dropdown if text is not empty
+};
+
+const fetchFoodList = async (text) => {
+  if (text.length >= 1) {
+    const foodAllergyResponse = await authFetch("data/foodAllergies", user.token);
+    if (foodAllergyResponse.message === "success") {
+      
+      const filteredFoodList = foodAllergyResponse.foodAllergies.filter((each) =>
+        each.toLowerCase().startsWith(text.toLowerCase())
+      );
+      setFoodAlergyList(filteredFoodList); // Update the food allergy list
+    }
+  }
+};
 
 //===============================medicineAllergy=====================
  const [medicineAllergy, setMedicineAllergy] = useState({
@@ -716,12 +753,24 @@ const handleCheckboxChange = (diseaseName) => {
     istrue: medicalHistoryData?.medicineAllergy ? true : false,
   });
 
+  const [medicineList, setMedicineList] = React.useState([]);
+
    const removeMedChip = (item) => {
     setMedicineAllergy((prev) => ({
       ...prev,
       selectedList: prev.selectedList.filter((chip) => chip !== item),
     }));
   };
+
+  const fetchMedData = async () => {
+    const Medicineresponse = await authFetch('data/medicines', user.token);
+    if (Medicineresponse.message == 'success') {
+      setMedicineList(Medicineresponse.medicines);
+    }
+  }
+  useEffect(() => {
+    fetchMedData()
+  },[user])
 
 React.useEffect(() => {
   setMedicalHistory({
@@ -1005,7 +1054,7 @@ console.log("medicalHistoryData==============",medicalHistoryData)
     </View>
       
 
-      {/* ===================foodAllergy=============================== */}
+      {/* ===================foodAllergy=============done================== */}
      
     <View style={styles.subcontainer}>
       <Text style={styles.label}>Any food allergy?</Text>
@@ -1029,6 +1078,7 @@ console.log("medicalHistoryData==============",medicalHistoryData)
             setFoodAlergy((pre) => {
               return { ...pre, istrue: false, selectedList: [] };
             })
+            
           }
           disabled={formDisabled}
         >
@@ -1051,16 +1101,13 @@ console.log("medicalHistoryData==============",medicalHistoryData)
               }}
               placeholder="Food Name"
               value={foodAlergy.search}
-              onChangeText={(text) =>
-                setFoodAlergy((prev) => ({
-                  ...prev,
-                  search: text,
-                }))
-              }
+              onChangeText={handleFoodSearchChange} 
+             
               editable={!formDisabled}
             />
             <Button
               mode="contained"
+              buttonColor="#007BFF"  
               onPress={() => {
                 if (
                   foodAlergy.search &&
@@ -1081,19 +1128,44 @@ console.log("medicalHistoryData==============",medicalHistoryData)
               Add
             </Button>
           </View>
-
+          {foodDropdownVisible && (
+      <View style={styles.dropdown}>
         <FlatList
+          data={foodAlergyList} // This should be the list of allergies from the API
+          keyExtractor={(item, index) => index.toString()} // Use index if there's no unique ID
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => {
+                setFoodAlergy((prev) => ({
+                  ...prev,
+                  search: item, // When clicked, set the selected item in the input field
+                }));
+                setFoodDropdownVisible(false); // Hide dropdown when item is selected
+              }}
+            >
+              <Text style={styles.dropdownText}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    )}
+
+<FlatList
             data={foodAlergy.selectedList}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
+
               <Chip
-                style={{ marginBottom: 8 }}
+                style={{ marginBottom: 8 , backgroundColor: "#e8f1fe",width:"auto"}}
                 onClose={() => removeChip(item)} // Add onClose to remove item
               >
                 {item}
               </Chip>
+
             )}
           />
+       
         </View>
       )}
     </View>
@@ -1155,6 +1227,7 @@ console.log("medicalHistoryData==============",medicalHistoryData)
             />
             <Button
               mode="contained"
+              buttonColor="#007BFF"  
               onPress={() => {
                 if (
                   medicineAllergy.search &&
@@ -1173,6 +1246,7 @@ console.log("medicalHistoryData==============",medicalHistoryData)
               Add
             </Button>
           </View>
+         
 
           <FlatList
             data={medicineAllergy.selectedList}
@@ -2306,6 +2380,16 @@ const styles = StyleSheet.create({
     top: 10, // Adjust the top position as needed
     right: 10, // Adjust the right position as needed
   },
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  
 });
 
 export default MedicalHistoryScreen;
