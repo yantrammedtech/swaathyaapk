@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Switch,
   TextInput,
   FlatList,
 } from "react-native";
@@ -168,22 +167,7 @@ const MedicalHistoryScreen = () => {
     'Shellfish',
   ]);
 
-  // const addFoodAllergy = () => {
-  //   if (foodAlergy.search && !foodAlergy.selectedList.includes(foodAlergy.search)) {
-  //     setFoodAllergy((prev) => ({
-  //       ...prev,
-  //       selectedList: [...prev.selectedList, foodAlergy.search],
-  //       search: '',
-  //     }));
-  //   }
-  // };
-
-  // const removeFoodAllergy = (item) => {
-  //   setFoodAllergy((curr) => ({
-  //     ...curr,
-  //     selectedList: curr.selectedList.filter((val) => val !== item),
-  //   }));
-  // };
+  
   const heartProblemList = ['Cardiomegaly', 'Arrhythmia', 'Heart Valve Disease', 'abc'];
 
   const [heartProblem, setHeartProblem] = useState({
