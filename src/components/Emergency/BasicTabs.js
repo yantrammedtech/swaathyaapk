@@ -16,6 +16,7 @@ import Report from '../Tabs/Reports/Report';
 import PatientTimeline from '../Tabs/PatientTimeLine/PatientTimeLine';
 import Pocus from '../Tabs/Pocus/Pocus';
 import PhysicalExamination from '../Tabs/PhysicalExamination/PhysicalExamination';
+import MedicalHistoryForm from '../Tabs/MedicalHistory/MedicalHistoryForm';
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -131,7 +132,7 @@ export default function BasicTabs() {
         {selectedCategory === 'Tests' && <TestTab />}
         {selectedCategory === 'Vitals' && <VitalsTab />}
         {selectedCategory === 'Treatment Plan' && <TreatmentPlanScreen />}
-        {selectedCategory === 'Medical History' && <MedicalHistoryScreen />}
+        {selectedCategory === 'Medical History' && <MedicalHistoryForm />}
         {selectedCategory === 'Reports' && <Report />}
         {selectedCategory === 'Patient Timeline' && <PatientTimeline />}
         {selectedCategory === 'POCUS' && <Pocus />}

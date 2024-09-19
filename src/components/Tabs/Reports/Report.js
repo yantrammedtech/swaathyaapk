@@ -16,9 +16,9 @@ import PdfIcon from "react-native-vector-icons/FontAwesome"; // PDF icon from Fo
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { useSelector } from "react-redux";
-import { authPost } from "../../../axios/authPost";
 import { authFetch } from "../../../axios/authFetch";
 import { authDelete } from "../../../axios/authDelete";
+import { authPostAttachments } from "../../../axios/authPostAttachments";
 
 const Report = () => {
   const user = useSelector((state) => state.currentUserData);
@@ -39,53 +39,7 @@ const Report = () => {
     },
   ]);
 
-  //======for laptop=====
-
-  // const handleUploadPress = async () => {
-  //   try {
-  //     const res = await DocumentPicker.getDocumentAsync({
-  //       type: "application/pdf",
-  //     });
-  //     console.log("res=======", res);
-
-  //     // Check if the user cancelled the selection
-  //     if (res.canceled) {
-  //       Alert.alert("Cancelled", "File selection was cancelled");
-  //       return;
-  //     }
-
-  //     // Extract file details from the assets array
-  //     const { assets } = res;
-  //     if (assets.length > 0) {
-  //       const file = assets[0]?.file; // Assuming single file selection
-
-  //       const form = new FormData();
-  //       console.log("file===", file);
-  //       form.append("files", file);
-
-  //       const category = 1;
-  //       form.append("category", String(category));
-
-  //       // Perform the API call for file upload
-  //       const reportResponse = await authPost(
-  //         `attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
-  //         form,
-  //         user.token
-  //       );
-  //       if (reportResponse.message == "success") {
-  //         Alert.alert("Success", "Report successfully uploaded");
-  //       } else {
-  //         Alert.alert("Error", "An error occurred: " + reportResponse.message);
-  //       }
-  //     } else {
-  //       Alert.alert("Error", "No file selected");
-  //     }
-  //   } catch (err) {
-  //     Alert.alert("Error", "An error occurred: " + err);
-  //   }
-  // };
-
-  //====for mobile==========
+ 
   const handleUploadPress = async () => {
     try {
       // Launch the Document Picker for PDF files
@@ -141,7 +95,7 @@ const Report = () => {
       form.append("category", String(category));
   
       // Perform the API call for file upload
-      const reportResponse = await authPost(
+      const reportResponse = await authPostAttachments(
 `attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
         form,
         user.token
@@ -312,7 +266,7 @@ const Report = () => {
           console.log("FormData cam===:", form);
 
           // Perform the API call for file upload
-          const reportResponse = await authPost(
+          const reportResponse = await authPostAttachments(
             `attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
             form,
             user.token

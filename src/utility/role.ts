@@ -19,3 +19,13 @@ export const zoneList = {
   2: "yellow",
   3: "green",
 };
+
+export const Role_NAME = {
+  sAdmin: 10007,
+  admin: 9999,
+  management: 3001,
+  doctor: 4001,
+  nurse: 2003,
+  staff: 1003,
+  reception: 6001,
+};

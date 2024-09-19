@@ -34,6 +34,11 @@ import EmergencyZoneSelector from "./src/components/Emergency/switchZone";
 import InPatientsList from "./src/components/InPatient/InPatientsList";
 import OutPatientsList from "./src/components/OutPatient/OutPatientsList";
 import EmrgDataVisualization from "./src/components/Emergency/EmrgDataVisualization";
+import EmergencyDischargePeopleList from "./src/components/Emergency/EmergencyDischargePeopleList";
+import HandshakeModal from "./src/components/Emergency/HandShake";
+import TransferPatientForm from "./src/components/Emergency/TransferPatient";
+import RequestSurgeryForm from "./src/components/Emergency/ReqSurgery";
+import DischargeForm from "./src/components/Emergency/DischargeForm";
 
 
 const Stack = createNativeStackNavigator();
@@ -137,8 +142,48 @@ const Routing = () => {
           })}
         />
 
+<Stack.Screen
+          name="EmergencyDischargePeopleList"
+          component={EmergencyDischargePeopleList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Discharged  Patient List',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+          })}
+        />
 
-{/* ==========================triage Routing start======== */}
+<Stack.Screen name="Handshake" component={HandshakeModal} options={{ headerShown: false }} />
+<Stack.Screen name="TransferPatient" component={TransferPatientForm} options={{ headerShown: false }} />
+<Stack.Screen name="RequestSurgery" component={RequestSurgeryForm} options={{ headerShown: false }} />
+<Stack.Screen name="DischargePatient" component={DischargeForm} options={{ headerShown: false }} />
+
+
+{/* ==========================triage Routing start==RequestSurgery====== */}
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen
           name="DataVisualization"

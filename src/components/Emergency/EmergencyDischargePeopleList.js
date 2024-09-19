@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { patientStatus } from '../../utility/role';
 
 
-const EmergencyActivePeopleList = ({ navigation }) => {
+const EmergencyDischargePeopleList = ({ navigation }) => {
   const [allPatient, setAllPatients] = React.useState([]);
 
 const currentZone = useSelector((state) =>state.currentZone)
@@ -26,11 +26,11 @@ const renderPatient = ({ item }) => {
   return (
     <TouchableOpacity
       style={styles.recentPatientContainer}
-      onPress={() =>
-        navigation.navigate('CommonPatientProfile', {
-          patientId: item.id,
-        })
-      }
+    //   onPress={() =>
+    //     navigation.navigate('CommonPatientProfile', {
+    //       patientId: item.id,
+    //     })
+    //   }
     >
       <View style={styles.recentPatientRow}>
         {item.imageURL ? (
@@ -50,7 +50,7 @@ const renderPatient = ({ item }) => {
           <View style={styles.recentPatientDateRow}>
             <Icon name="access-time" size={20} color="#666" />
             <Text style={styles.recentPatientDateText}>
-              {new Date(item.startTime).toDateString()} 
+              {new Date(item.endTime).toDateString()} 
             </Text>
           </View>
         </View>
@@ -76,10 +76,11 @@ const renderPatient = ({ item }) => {
  }
 
   const getAllPatient = async () => {
+   
     const response = await authFetch(
-      `patient/${user.hospitalID}/patients/${patientStatus.emergency}?zone=${zoneType}&userID=${user.id}`,
-      user.token
-    );
+        `patient/${user.hospitalID}/patients/${patientStatus.discharged}?patientStartStatus=${patientStatus.emergency}`,
+        user.token
+      );
     if (response.message == 'success') {
       setAllPatients(response.patients);
     }
@@ -234,4 +235,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EmergencyActivePeopleList;
+export default EmergencyDischargePeopleList;

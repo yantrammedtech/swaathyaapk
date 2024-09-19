@@ -2,14 +2,14 @@
 import axios from "axios";
 import { BASE_URL } from '@env';
 
-export async function authPost(url, body, token) {
+export async function authPostAttachments(url, body, token) {
   console.log(BASE_URL,"BASE_URL===")
   const authPost = axios.create({
     baseURL: BASE_URL,
     method: "post",
     headers: {
       Authorization: token,
-      'Content-Type': 'application/json'
+      'Content-Type': 'multipart/form-data'
 
     },
     
