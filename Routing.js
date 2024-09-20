@@ -39,6 +39,10 @@ import HandshakeModal from "./src/components/Emergency/HandShake";
 import TransferPatientForm from "./src/components/Emergency/TransferPatient";
 import RequestSurgeryForm from "./src/components/Emergency/ReqSurgery";
 import DischargeForm from "./src/components/Emergency/DischargeForm";
+import HubScreen from "./src/components/Dashboard/Hub";
+import HelpSupportScreen from "./src/components/Dashboard/Help/HelpScreen";
+import VideosScreen from "./src/components/Dashboard/Help/VideosScreen";
+import ManualsScreen from "./src/components/Dashboard/Help/Manuals";
 
 
 const Stack = createNativeStackNavigator();
@@ -54,6 +58,14 @@ const Routing = () => {
         <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
         <Stack.Screen name="dashboard" component={Dashboard} options={{ headerShown: false }} />
         <Stack.Screen name="TriageDashboard" component={TriageDashboard} options={{ headerShown: false }} />
+        <Stack.Screen name="Hub" component={HubScreen}  options={{
+    headerStyle: {
+      backgroundColor: '#1977f3',
+    },
+  }}  />
+        <Stack.Screen name="helpScreen" component={HelpSupportScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Videos" component={VideosScreen} />
+        <Stack.Screen name="Manuals" component={ManualsScreen} />
         {/* ============common patient profile=========== */}
         <Stack.Screen
           name="CommonPatientProfile"

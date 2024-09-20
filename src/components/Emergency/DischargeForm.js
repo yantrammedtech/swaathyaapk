@@ -1,25 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet ,FlatList} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Chip } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { RadioButton } from 'react-native-paper';
+import { authPost } from '../../axios/authPost';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux'
+import Toast from 'react-native-toast-message';
+
+import { useNavigation } from '@react-navigation/native'; 
 
 const DischargeForm = () => {
+  const user = useSelector((state) => state.currentUserData);
+  const currentPatient = useSelector((state) => state.currentPatientData);
+  const patientTimeLineID = currentPatient?.patientTimeLineID;
+const allPatient = useSelector((state) => state.allPatientsList)
+
+  const dispatch = useDispatch()
+  const navigation = useNavigation(); 
+
   const [openReason, setOpenReason] = useState(false);
-  const [reason, setReason] = useState(null);
+  const [reason, setReason] = useState(1);
   const [reasonItems, setReasonItems] = useState([
-    { label: 'Medical Recovery', value: 'medical' },
-    { label: 'Transfer', value: 'transfer' },
-    { label: 'Others', value: 'others' },
+    { label: 'Discharge Success', value: 1 },
+    { label: 'DOPR', value: 2 },
+    { label: 'Absconded', value: 3 },
+    { label: 'Left Against Medical Advice', value: 4 },
+    { label: 'Death', value: 5 },
   ]);
+  
 
-  const [advice, setAdvice] = useState('');
-  const [finalDiagnosis, setFinalDiagnosis] = useState('');
-  const [prescription, setPrescription] = useState('');
-  const [followUp, setFollowUp] = useState('yes');
-
-  const [selectedList, setSelectedList] = useState([]); // State for the list of items
+ 
   const dietList = ["Pinapple", "Miannoase"];
 
   const [diet, setDiet] = React.useState({
@@ -81,6 +93,7 @@ const DischargeForm = () => {
   const formatDate = (date) => {
     return date.toISOString().split('T')[0]; // Returns 'YYYY-MM-DD'
   };
+
   const handleFollowUpChange = (value) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -92,13 +105,70 @@ const DischargeForm = () => {
   const [showDatePicker, setShowDatePicker] = React.useState(false);
 
   const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios');
+    setShowDatePicker(false); // Ensure the date picker closes after selection
     if (selectedDate) {
       const dateString = selectedDate.toISOString().split('T')[0]; // Format date as 'YYYY-MM-DD'
-      setFormData((data) => ({ ...data, followUpDate: dateString }));
+      setFormData((data) => ({
+        ...data,
+        followUpDate: dateString, // Update the followUpDate in formData
+      }));
     }
   };
 
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      dischargeType: reason, // Update formData's dischargeType with the selected value
+    }));
+  }, [reason]); 
+
+
+
+ const handleDischarge = async () => {
+   
+    const response = await authPost(
+      `patient/${user.hospitalID}/patients/discharge/${currentPatient.id}`,
+      {
+        dischargeType: formData.dischargeType,
+        advice: formData.advice,
+        followUpDate: formData.followUpDate,
+        followUp: formData.followUp,
+        diet: diet.selectedList.join(","),
+      },
+      user.token
+    );
+    if (response.message == "success") {
+      // const newPatientList = allPatient.filter(
+      //   (patient) => patient.id != currentPatient.id
+      // );
+      // dispatch({ type: "allPatientsList", payload: newPatientList })
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Success',
+        text2: 'Patient successfully discharched.',
+        visibilityTime: 3000,
+        autoHide: true,
+        bottomOffset: 40,
+      });
+      navigation.goBack();
+     
+    } else {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: response.message,
+        visibilityTime: 3000,
+        autoHide: true,
+        bottomOffset: 40,
+      });
+    }
+  };
+ 
+const handleCancel = () => {
+  navigation.goBack();
+}
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Discharge</Text>
@@ -159,22 +229,19 @@ const DischargeForm = () => {
         columnWrapperStyle={{ justifyContent: 'space-between' }}
       />
 
-      
-     
-     
-
       {/* Other Inputs */}
       <TextInput
         style={styles.input}
         placeholder="Advice on discharge"
-        onChange={(event) => {
-          setFormData((data) => {
-            return { ...data, advice: event.target.value };
-          });
-        }}
-        value={formData.advice}
+        onChangeText={(text) => {
+        setFormData((data) => ({
+          ...data,
+          advice: text, // Update advice with the current text input value
+        }));
+      }}
+      value={formData.advice} 
       />
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder="Final Diagnosis"
         value={finalDiagnosis}
@@ -185,7 +252,7 @@ const DischargeForm = () => {
         placeholder="Prescription"
         value={prescription}
         onChangeText={setPrescription}
-      />
+      /> */}
 
       {/* Follow-up Radio Button */}
       <View style={styles.followUpContainer}>
@@ -206,37 +273,37 @@ const DischargeForm = () => {
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Follow up Date</Text>
-        <TouchableOpacity
-          style={[
-            styles.input,
-            { backgroundColor: formData.followUp ? '#fff' : '#e0e0e0' }, // Conditional background color
-          ]}
-          onPress={() => {
-            if (formData.followUp) {
-              setShowDatePicker(true);
-            }
-          }}
-          disabled={!formData.followUp} // Conditionally disable TouchableOpacity
-        >
-          <Text style={styles.inputText}>
-            {formData.followUpDate || 'Select date'}
-          </Text>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={formData.followUpDate ? new Date(formData.followUpDate) : new Date()}
-            mode="date"
-            display="default"
-            onChange={handleDateChange}
-          />
-        )}
-      </View>
+  <Text style={styles.label}>Follow up Date</Text>
+  <TouchableOpacity
+    style={[
+      styles.input,
+      { backgroundColor:formData.followUp == '1' ? '#fff' : '#e0e0e0' }, // Conditional background color
+    ]}
+    onPress={() => {
+      if (formData.followUp == '1') {
+        setShowDatePicker(true);
+      }
+    }}
+    disabled={formData.followUp !== "1"}
+  >
+    <Text style={styles.inputText}>
+      {formData.followUpDate || 'Select date'}
+    </Text>
+  </TouchableOpacity>
+  {showDatePicker && (
+    <DateTimePicker
+      value={formData.followUpDate ? new Date(formData.followUpDate) : new Date()}
+      mode="date"
+      display="default"
+      onChange={handleDateChange}
+    />
+  )}
+</View>
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <Button title="Cancel" color="red" onPress={() => {}} />
-        <Button title="Submit" onPress={() => {}} />
+        <Button title="Cancel" color="red" onPress={handleCancel} />
+        <Button title="Submit" onPress={handleDischarge} />
       </View>
     </View>
   );
