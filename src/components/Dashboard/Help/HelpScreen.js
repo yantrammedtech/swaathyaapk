@@ -42,7 +42,7 @@ const HelpSupportScreen = () => {
         <Ionicons name="book-outline" size={40} color="#fff" />
           <Text style={styles.buttonText}>Manuals</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, { backgroundColor: '#F77E9F' }]}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#F77E9F' }]}  onPress={() => navigation.navigate('Support')}>
           <Ionicons  name="help-circle-outline" size={40} color="#fff" />
           <Text style={styles.buttonText}>Support & Ticket</Text>
         </TouchableOpacity>

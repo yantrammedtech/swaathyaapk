@@ -29,3 +29,8 @@ export const Role_NAME = {
   staff: 1003,
   reception: 6001,
 };
+export const statusDict = {
+  0: "Open",
+  1: "Paused",
+  2: "Closed",
+};

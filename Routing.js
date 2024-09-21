@@ -43,6 +43,9 @@ import HubScreen from "./src/components/Dashboard/Hub";
 import HelpSupportScreen from "./src/components/Dashboard/Help/HelpScreen";
 import VideosScreen from "./src/components/Dashboard/Help/VideosScreen";
 import ManualsScreen from "./src/components/Dashboard/Help/Manuals";
+import SupportScreen from "./src/components/Dashboard/Help/Support";
+import ChatScreen from "./src/components/Dashboard/Help/Chat";
+import OtDashboard from "./src/components/OT/OtDashboard";
 
 
 const Stack = createNativeStackNavigator();
@@ -63,9 +66,13 @@ const Routing = () => {
       backgroundColor: '#1977f3',
     },
   }}  />
+        {/* ============Help =============== */}
+
         <Stack.Screen name="helpScreen" component={HelpSupportScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Videos" component={VideosScreen} />
         <Stack.Screen name="Manuals" component={ManualsScreen} />
+        <Stack.Screen name="Support" component={SupportScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} />
         {/* ============common patient profile=========== */}
         <Stack.Screen
           name="CommonPatientProfile"
@@ -400,8 +407,9 @@ const Routing = () => {
           component={EmrgDataVisualization}
           options={{ headerShown: false }}
         />
-         {/* <Stack.Screen name="PDFViewer" component={PDFViewerScreen} /> */}
+       
 
+{/* =====================red=end=============== */}
 
 
 
@@ -460,7 +468,11 @@ const Routing = () => {
         />
          {/* ===================OutPatient End================= */}
 
+  {/* ===================Ot Start================= */}
 
+         <Stack.Screen name="OtDashboard" component={OtDashboard} options={{ headerShown: false }} />
+
+  {/* ===================Ot End================= */}
 
         <Stack.Screen name="Page1" component={Page1} options={{ title: 'Page1' }} />
       </Stack.Navigator>

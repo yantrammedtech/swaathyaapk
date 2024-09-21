@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'rea
 const manuals = [
   {
     title: 'NV-CORE',
-    imageUrl: require('../../../assets/help/nv_core.png'), // Replace with actual image URL
+    imageUrl: require('../../../assets/help/nv_core.png'),
   },
   {
     title: 'V-TRACK',
@@ -12,7 +12,7 @@ const manuals = [
   },
   {
     title: 'Vitals',
-    imageUrl:  require('../../../assets/help/vitals.png'), // Replace with actual image URL
+    imageUrl:  require('../../../assets/help/vitals.png'), 
   },
 ];
 
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 50,
   },
   image: {
     width: 150,
