@@ -155,6 +155,7 @@ const initialData = {
   triageData: triageFormState,
   currentZone: "red",
   vitals: initialVitals,
+  userType:null,
 };
 
 function Reducer(state = initialData, action) {
@@ -183,6 +184,8 @@ function Reducer(state = initialData, action) {
           ]
         };
 
+        case "userType": //userType OT
+        return { ...state, userType: action.payload };
     default:
       return state;
   }

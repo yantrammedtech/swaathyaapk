@@ -46,6 +46,9 @@ import ManualsScreen from "./src/components/Dashboard/Help/Manuals";
 import SupportScreen from "./src/components/Dashboard/Help/Support";
 import ChatScreen from "./src/components/Dashboard/Help/Chat";
 import OtDashboard from "./src/components/OT/OtDashboard";
+import EmergencyPatientList from "./src/components/OT/EmergencyPatientList";
+import ElectivePatientList from "./src/components/OT/ElectivePatientList";
+import PreOpRecord from "./src/components/OT/PreOpRecord";
 
 
 const Stack = createNativeStackNavigator();
@@ -471,6 +474,101 @@ const Routing = () => {
   {/* ===================Ot Start================= */}
 
          <Stack.Screen name="OtDashboard" component={OtDashboard} options={{ headerShown: false }} />
+         <Stack.Screen
+          name="EmergencyPatientList"
+          component={EmergencyPatientList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Emergency Patient List ',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+          })}
+        />
+
+<Stack.Screen
+          name="ElectivePatientList"
+          component={ElectivePatientList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Elective Patient List ',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+          })}
+        />
+
+        
+<Stack.Screen
+          name="PreOpRecord"
+          component={PreOpRecord}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Pre-Op Record',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            )
+            
+          })}
+        />
 
   {/* ===================Ot End================= */}
 

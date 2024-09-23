@@ -34,3 +34,14 @@ export const statusDict = {
   1: "Paused",
   2: "Closed",
 };
+
+export const SCOPE_LIST = {
+  inpatient: 5001,
+  outpatient: 5002,
+  emergency_green_zone: 5003,
+  emergency_yellow_zone: 5004,
+  emergency_red_zone: 5005,
+  triage: 5006,
+  surgeon: 5007,
+  anesthetist: 5008,
+};
