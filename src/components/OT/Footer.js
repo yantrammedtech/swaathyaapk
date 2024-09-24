@@ -24,14 +24,13 @@ const Footer = ({ activeRoute, navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
         onPress={() => navigation.navigate('TriageDashboard')} >
-        {/* <Icon name="home" size={28} color={getIconColor('home')} /> */}
-        <Icon name="bar-chart" size={30} color="#000" />
+        <Icon name="home" size={28} color={getIconColor('home')} />
+      
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
-        // onPress={() => navigation.navigate('switchZone')}
-        onPress={handleOpenModal}
+        onPress={() => navigation.navigate('OtDataVisualization')}
          >
-        <Image source={require('../../assets/home 2.png')} style={styles.images} />
+        <Icon name="bar-chart" size={30} color="#000" />
 
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}

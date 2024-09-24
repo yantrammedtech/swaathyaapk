@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'rea
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { authFetch } from '../../axios/authFetch';
+import { useNavigation } from '@react-navigation/native';
 
 
 const PreOpRecord = ({route}) => {
@@ -12,6 +13,7 @@ const PreOpRecord = ({route}) => {
 
     const { patientId } = route.params;
     const dispatch  =useDispatch()
+    const navigation = useNavigation();
 
     const getCurrentPatient = async () => {
         const response = await authFetch(
@@ -64,33 +66,33 @@ const getRandomColor = () => {
 
   let genderText = '';
 
-if (currentPatient.gender === 1) {
+if (currentPatient?.gender === 1) {
   genderText = "Male";
-} else if (currentPatient.gender === 2) {
+} else if (currentPatient?.gender === 2) {
   genderText = "Female";
 } else {
   genderText = "Other"; 
 }
 
-
+console.log("patientId===",patientId)
   return (
     <ScrollView style={styles.container}   contentContainerStyle={styles.scrollViewContent}>
      
 
       <View style={styles.profileContainer}>
         <View style={styles.profileHeader}>
-        {currentPatient.imageURL ? (
-          <Image source={{ uri: currentPatient.imageURL }} style={styles.profileimage} />
+        {currentPatient?.imageURL ? (
+          <Image source={{ uri: currentPatient?.imageURL }} style={styles.profileimage} />
         ) : (
           <View style={[styles.placeholderImage, { backgroundColor }]}>
             <Text style={styles.placeholderText}>
-              {currentPatient.pName ? currentPatient.pName.charAt(0).toUpperCase() : ''}
+              {currentPatient?.pName ? currentPatient?.pName.charAt(0).toUpperCase() : ''}
             </Text>
           </View>
         )}
           
           <View style={styles.profileDetails}>
-            <Text style={styles.profileName}>{currentPatient.pName}</Text>
+            <Text style={styles.profileName}>{currentPatient?.pName}</Text>
             <Text style={styles.infoValue}>{genderText}</Text>
           </View>
           <TouchableOpacity style={styles.editButton}>
@@ -102,42 +104,42 @@ if (currentPatient.gender === 1) {
       <View style={styles.infoContainer}>
       <View style={styles.subcontainer}>
   <Text style={styles.infoText}>Name</Text>
-  <Text style={styles.infoValue}>{currentPatient.pName}</Text>
+  <Text style={styles.infoValue}>{currentPatient?.pName}</Text>
 </View>
 
       <View style={styles.infoRow}>
         <Text style={styles.infoText}>Date of Birth</Text>
-        <Text style={styles.infoValue}> {new Date(currentPatient.dob).toLocaleDateString()}</Text>
+        <Text style={styles.infoValue}> {new Date(currentPatient?.dob).toLocaleDateString()}</Text>
       </View>
       <View style={styles.infoRow}>
         <Text style={styles.infoText}>Age</Text>
-        <Text style={styles.infoValue}>{calculateAge(currentPatient.dob)}</Text>
+        <Text style={styles.infoValue}>{calculateAge(currentPatient?.dob)}</Text>
       </View>
       <View style={styles.infoRow}>
         <Text style={styles.infoText}>HUID</Text>
-        <Text style={styles.infoValue}>{currentPatient.pUHID}</Text>
+        <Text style={styles.infoValue}>{currentPatient?.pUHID}</Text>
       </View>
       <View style={styles.infoRow}>
         <Text style={styles.infoText}>Admit date</Text>
         <Text style={styles.infoValue}>
-      {new Date(currentPatient.startTime).toLocaleDateString()}
+      {new Date(currentPatient?.startTime).toLocaleDateString()}
     </Text>
       </View>
       <View style={styles.infoRow}>
         <Text style={styles.infoText}>Treating Doctor</Text>
         
-        <Text style={styles.infoValue}>Dr. {currentPatient.doctorName}</Text>
+        <Text style={styles.infoValue}>Dr. {currentPatient?.doctorName}</Text>
         </View>
         
 <View style={styles.infoRow}>
         <Text style={styles.infoText}>Departmet</Text>
-        <Text style={styles.infoValue}>{currentPatient.department}</Text>
+        <Text style={styles.infoValue}>{currentPatient?.department}</Text>
       </View>
       </View>
 
     
 
-      <TouchableOpacity style={styles.nextButton}>
+      <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate("OtPatientProfile") }>
         <Text style={styles.nextButtonText}>NEXT</Text>
       </TouchableOpacity>
     </ScrollView>

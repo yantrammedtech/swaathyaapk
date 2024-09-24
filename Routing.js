@@ -49,6 +49,8 @@ import OtDashboard from "./src/components/OT/OtDashboard";
 import EmergencyPatientList from "./src/components/OT/EmergencyPatientList";
 import ElectivePatientList from "./src/components/OT/ElectivePatientList";
 import PreOpRecord from "./src/components/OT/PreOpRecord";
+import OtDataVisualization from './src/components/OT/OtDataVisualization'
+import OtPatientProfile from "./src/components/OT/OtPatientProfile";
 
 
 const Stack = createNativeStackNavigator();
@@ -569,6 +571,59 @@ const Routing = () => {
             
           })}
         />
+
+<Stack.Screen
+          name="OtPatientProfile"
+          component={OtPatientProfile}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Patient Profile',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+
+<Stack.Screen
+          name="OtDataVisualization"
+          component={OtDataVisualization}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'DataVisualization',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            )
+           
+          })}
+        />
+
+
 
   {/* ===================Ot End================= */}
 

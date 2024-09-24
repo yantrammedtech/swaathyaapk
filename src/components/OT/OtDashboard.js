@@ -245,9 +245,8 @@ const backgroundColor = getRandomColor();
       <TouchableOpacity
         style={styles.recentPatientContainer}
         onPress={() =>
-          navigation.navigate('PreOpRecord',{
-            patientId: item.id,
-          
+          navigation.navigate('PreOpRecord', {
+            patientId: item.patientID,
           })
         }
       >
