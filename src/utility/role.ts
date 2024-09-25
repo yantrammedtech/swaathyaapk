@@ -19,3 +19,29 @@ export const zoneList = {
   2: "yellow",
   3: "green",
 };
+
+export const Role_NAME = {
+  sAdmin: 10007,
+  admin: 9999,
+  management: 3001,
+  doctor: 4001,
+  nurse: 2003,
+  staff: 1003,
+  reception: 6001,
+};
+export const statusDict = {
+  0: "Open",
+  1: "Paused",
+  2: "Closed",
+};
+
+export const SCOPE_LIST = {
+  inpatient: 5001,
+  outpatient: 5002,
+  emergency_green_zone: 5003,
+  emergency_yellow_zone: 5004,
+  emergency_red_zone: 5005,
+  triage: 5006,
+  surgeon: 5007,
+  anesthetist: 5008,
+};

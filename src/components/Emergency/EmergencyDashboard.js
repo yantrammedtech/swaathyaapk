@@ -168,7 +168,10 @@ const getRandomColor = () => {
           </Pressable>
 
        
-          <Pressable style={[styles.box, styles.inPatient]}>
+          <Pressable style={[styles.box, styles.inPatient]}
+            onPress={() => navigation.navigate('EmergencyDischargePeopleList')}
+
+          >
             <View style={styles.boxContent}>
             <Image
                 source={require('../../assets/Clip path group.png')}
