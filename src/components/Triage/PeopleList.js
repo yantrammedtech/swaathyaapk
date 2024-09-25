@@ -8,28 +8,6 @@ import { useDispatch } from 'react-redux'
 import { authFetch } from '../../axios/authFetch';
 
 
-const patientlist = [
-  {
-    id: '2345',
-    name: 'Jones Doe',
-    image: require('../../assets/person.avif'),
-  },
-  {
-    id: '2346',
-    name: 'Jane Smith',
-    image: require('../../assets/person.avif'),
-  },
-  {
-    id: '2347',
-    name: 'Michael Johnson',
-    image: require('../../assets/person.avif'),
-  },
-  {
-    id: '2348',
-    name: 'Emily Davis',
-    image: require('../../assets/person.avif'),
-  },
-];
 
 const PeopleList = ({ navigation }) => {
 

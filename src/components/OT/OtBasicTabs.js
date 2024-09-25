@@ -11,14 +11,9 @@ import SymptomsTab from '../OtTabs/Symptoms/Symptoms';
 import VitalsTab from '../OtTabs/Vitals/Vitals';
 import Report from '../OtTabs/Reports/Report';
 import Medication from '../OtTabs/Medication/Medication';
-// import SymptomsTab from '../Tabs/Symptoms/Symptoms';
-// import TestTab from '../Tabs/TestTab/Test';
-// import VitalsTab from '../Tabs/Vitals/Vitals';
-// import TreatmentPlanScreen from '../Tabs/TreatmentPlan/TreatmentPlan';
+import MedicalHistory from '../OtTabs/MedicalHistory/MedicalHistory';
 // import MedicalHistoryScreen from '../Tabs/MedicalHistory/MedicalHistory';
-// import Report from '../Tabs/Reports/Report';
 // import PatientTimeline from '../Tabs/PatientTimeLine/PatientTimeLine';
-// import Pocus from '../Tabs/Pocus/Pocus';
 // import PhysicalExamination from '../Tabs/PhysicalExamination/PhysicalExamination';
 // import MedicalHistoryForm from '../Tabs/MedicalHistory/MedicalHistoryForm';
 
@@ -87,48 +82,16 @@ export default function OtBasicTabs() {
         >
           <Text style={styles.categoryText}>Reports</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.categoryButton,
-            selectedCategory === "Patient Timeline"
-              ? styles.activeButton
-              : styles.inactiveButton,
-          ]}
-          onPress={() => setSelectedCategory("Patient Timeline")}
-        >
-          <Text style={styles.categoryText}>Patient Timeline</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.categoryButton,
-            selectedCategory === "POCUS"
-              ? styles.activeButton
-              : styles.inactiveButton,
-          ]}
-          onPress={() => setSelectedCategory("POCUS")}
-        >
-          <Text style={styles.categoryText}>POCUS</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.categoryButton,
-            selectedCategory === "Physical Examination"
-              ? styles.activeButton
-              : styles.inactiveButton,
-          ]}
-          onPress={() => setSelectedCategory("Physical Examination")}
-        >
-          <Text style={styles.categoryText}>Physical Examination</Text>
-        </TouchableOpacity>
+       
+       
+        
       </ScrollView>
       <View style={styles.tabContent}>
         {selectedCategory === 'Symptoms' && <SymptomsTab/>}
       {selectedCategory === 'Vitals' && <VitalsTab />} 
          {selectedCategory === 'Medication' && <Medication />} 
-        {/* {selectedCategory === 'Medical History' && <MedicalHistoryForm />} */}
+        {selectedCategory === 'Medical History' && <MedicalHistory />}
          {selectedCategory === 'Reports' && <Report />} 
-        {/* {selectedCategory === 'Patient Timeline' && <PatientTimeline />} */}
-        {/* {selectedCategory === 'Physical Examination' && <PhysicalExamination />} */}
 
       </View>
       

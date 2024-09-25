@@ -105,7 +105,7 @@ const Medication = () => {
 };
 const backgroundColor = getRandomColor();
 
-
+console.log("medicineList===",medicineList)
   return (
     <ScrollView
       style={styles.container}
@@ -267,7 +267,6 @@ const styles = StyleSheet.create({
   },
   scrollContentContainer: {
     flexGrow: 1,
-    // Align items vertically
     alignItems: "center", // Align items horizontally
     padding: 20, // Add padding if necessary
   },

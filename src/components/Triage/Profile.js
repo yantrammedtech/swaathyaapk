@@ -8,7 +8,7 @@ import { authPatch } from '../../axios/usePatch';
 
 const Profile = () => {
   const currentUserData = useSelector((state) => state.currentUserData);
-  const [profileImage, setProfileImage] = useState(require('../../assets/person.avif')); // Default image
+  const [profileImage, setProfileImage] = useState(''); // Default image
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({
     firstName: currentUserData.firstName,
