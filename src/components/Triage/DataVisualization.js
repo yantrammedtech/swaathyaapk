@@ -158,15 +158,15 @@ console.log("data==",pieChartData)
       {/* Images */}
       <View style={styles.imageContainer}>
         <Image
-          source={require('../../assets/person.avif')}
+          source={{}}
           style={styles.image}
         />
         <Image
-          source={require('../../assets/person3.avif')}
+          source={{}}
           style={styles.image}
         />
         <Image
-          source={require('../../assets/person.avif')}
+          source={{}}
           style={styles.image}
         />
       </View>

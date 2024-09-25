@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const ProfilePage = () => {
-  const [profileImage, setProfileImage] = useState(require('../../assets/person.avif')); // Default image
+  const [profileImage, setProfileImage] = useState(''); // Default image
   const navigation = useNavigation();
 
   const selectImage = () => {

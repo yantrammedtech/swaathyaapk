@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { authFetch } from "../../../axios/authFetch";
 import { authDelete } from "../../../axios/authDelete";
 import { authPostAttachments } from "../../../axios/authPostAttachments";
+import { useNavigation } from "@react-navigation/native";
 
 const Report = () => {
   const user = useSelector((state) => state.currentUserData);
@@ -29,7 +30,7 @@ const Report = () => {
   const [reportToDelete, setReportToDelete] = useState(null);
 
   const [reports, setReports] = useState([]);
-
+const navigation = useNavigation()
  
   const handleUploadPress = async () => {
     try {
@@ -286,17 +287,32 @@ const Report = () => {
     }
   };
 
+  const handleNext = () => {
+    navigation.navigate("OtPhysicalExamination")
+  }
+
   return (
     <View style={styles.container}>
       {/* Upload Section */}
      
 
+
+
       {/* Display list of uploaded reports */}
-      <FlatList
-        data={reports}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderReportItem}
-      />
+      {reports.length > 0 ? (
+        <FlatList
+          data={reports}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderReportItem}
+        />
+      ) : (
+        <Text style={styles.noReportsText}>No reports added</Text> // Message when no reports are present
+      )}
+      
+
+<TouchableOpacity style={styles.savebutton} onPress={handleNext}>
+ <Text style={styles.buttonText}>Next</Text>
+</TouchableOpacity>
 
       {/* Confirmation delete Dialog */}
       <Modal
@@ -425,6 +441,31 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: 3,
     marginLeft: 10,
+  },
+  savebutton: {
+    backgroundColor: "#007BFF", // Blue background color
+    paddingVertical: 12, // Vertical padding for the button
+    paddingHorizontal: 24, // Horizontal padding for the button
+    borderRadius: 4, // Rounded corners
+    alignItems: "center", // Center the text horizontally
+    justifyContent: "center", // Center the text vertically
+    elevation: 3, // Add shadow for Android
+    shadowColor: "#000", // Shadow color for iOS
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
+    shadowOpacity: 0.2, // Shadow opacity for iOS
+    shadowRadius: 4, // Shadow blur radius for iOS
+    marginBottom: 25,
+  },
+  buttonText: {
+    color: "#FFFFFF", // White text color
+    fontSize: 16, // Font size
+    fontWeight: "bold", // Bold text
+  },
+  noReportsText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
+    color: '#888', // Optional: Style for the no reports message
   },
 });
 

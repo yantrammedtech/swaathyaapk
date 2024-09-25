@@ -51,6 +51,8 @@ import ElectivePatientList from "./src/components/OT/ElectivePatientList";
 import PreOpRecord from "./src/components/OT/PreOpRecord";
 import OtDataVisualization from './src/components/OT/OtDataVisualization'
 import OtPatientProfile from "./src/components/OT/OtPatientProfile";
+import OtPhysicalExamination from "./src/components/OtTabs/OtPhysicalExamination/OtPhysicalExamination";
+import PreOp from "./src/components/OtTabs/PreOP/PreOP";
 
 
 const Stack = createNativeStackNavigator();
@@ -623,6 +625,57 @@ const Routing = () => {
           })}
         />
 
+
+<Stack.Screen
+          name="OtPhysicalExamination"
+          component={OtPhysicalExamination}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'PhysicalExamination',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+        
+<Stack.Screen
+          name="OtPreOP"
+          component={PreOp}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Pre OP-Record',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
 
 
   {/* ===================Ot End================= */}

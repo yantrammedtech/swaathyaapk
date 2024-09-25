@@ -21,6 +21,7 @@ const getRandomColor = () => {
   }
   return color;
 };
+
 const renderPatient = ({ item }) => {
   const backgroundColor = getRandomColor();
   return (
@@ -88,6 +89,8 @@ const renderPatient = ({ item }) => {
   useEffect(() => {
     getAllPatient()
   },[])
+  const backgroundColor = getRandomColor();
+
 
   return (
     <View style={styles.mainContainer}>

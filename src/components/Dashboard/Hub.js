@@ -11,7 +11,7 @@ const hubs = [
 const HubScreen = () => {
   const renderHub = ({ item }) => (
     <View style={styles.hubCard}>
-      <Image source={{}} style={styles.hubIcon} />
+      <Image source={require('../../assets/medicalhistory/streamline_wifi-router.png')} style={styles.hubIcon} />
       <Text style={styles.hubName}>{item.name}</Text>
       <View style={styles.statusButton}>
         <Text style={styles.statusText}>{item.status}</Text>

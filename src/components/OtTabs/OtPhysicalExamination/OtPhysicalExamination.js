@@ -1,52 +1,27 @@
 import { View, Text, Image,Modal, StyleSheet, TouchableOpacity, Dimensions } from "react-native"
-import { useDispatch, useSelector } from "react-redux"
+import {  useSelector } from "react-redux"
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { authFetch } from "../../axios/authFetch";
-import { useEffect, useState } from "react";
-import BasicTabs from "../Emergency/BasicTabs";
-import { useNavigation } from "@react-navigation/native";
+import {  useState } from "react";
+import { useNavigation } from '@react-navigation/native';
 
+import OtPhyBasicTabs from "./OtPhyBasicTabs";
 const { height } = Dimensions.get('window');
 
 
-const PatientProfile = ({ route }) => {
-    const dispatch = useDispatch()
-    const { patientId } = route.params;
+const OtPhysicalExamination = () => {
+   
     const navigation = useNavigation()
 
     const [modalVisible, setModalVisible] = useState(false);
 
-    const user = useSelector((state) => {
-        return state.currentUserData
-    })
+   
     const currentPatientData = useSelector((state) => {
         return state.currentPatientData
     })
 
-    const handleBackPress = () => {
-        console.log("Can go back:", navigation.canGoBack()); // Check if it returns true or false
-        if (navigation.canGoBack()) {
-            navigation.goBack();
-        } else {
-            navigation.navigate('EmergencyDashboard');
-        }
-    };
+   
 
 
-
-    const getCurrentPatient = async () => {
-        const response = await authFetch(
-            `patient/${user.hospitalID}/patients/single/${patientId}`,
-            user.token
-        );
-        if (response.message == "success") {
-            dispatch({ type: "currentPatientData", payload: response.patient })
-        }
-    }
-
-    useEffect(() => {
-        getCurrentPatient()
-    }, [])
 
 
     const getRandomColor = () => {
@@ -58,6 +33,7 @@ const PatientProfile = ({ route }) => {
         return color;
     };
     const backgroundColor = getRandomColor();
+    
     return (
         <View style={styles.container}>
 
@@ -101,14 +77,14 @@ const PatientProfile = ({ route }) => {
                     <View  style={styles.shakecontainer}>
                     <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconContainer}>
        
-                    <Image source={require("../../assets/transfer/X.png")} style={styles.reverseImage} />
+                    <Image source={require("../../../assets/transfer/X.png")} style={styles.reverseImage} />
       </TouchableOpacity>
                     </View>
                 </View>
             </View>
 
             <View style={styles.tabsContainer}>
-                <BasicTabs />
+                <OtPhyBasicTabs />
             </View>
 
             <Modal
@@ -132,7 +108,7 @@ const PatientProfile = ({ route }) => {
       style={styles.option}
       onPress={() => navigation.navigate('Handshake')} 
     >
-      <Image source={require("../../assets/transfer/Transfer.png")} style={styles.optionIcon} />
+      <Image source={require('../../../assets/transfer/Transfer.png')} style={styles.optionIcon} />
       <Text style={styles.optionText}>Hand Shake</Text>
     </TouchableOpacity>
 
@@ -141,7 +117,7 @@ const PatientProfile = ({ route }) => {
     onPress={() => navigation.navigate('TransferPatient')} 
 
     >
-      <Image source={require("../../assets/transfer/Two transfer.png")} style={styles.optionIcon} />
+      <Image source={require("../../../assets/transfer/Two transfer.png")} style={styles.optionIcon} />
       <Text style={styles.optionText}>Transfer</Text>
     </TouchableOpacity>
   </View>
@@ -152,7 +128,7 @@ const PatientProfile = ({ route }) => {
     onPress={() => navigation.navigate('RequestSurgery')} 
 
      >
-      <Image source={require("../../assets/transfer/Three request.png")} style={styles.optionIcon} />
+      <Image source={require("../../../assets/transfer/Three request.png")} style={styles.optionIcon} />
       <Text style={styles.optionText}>Request</Text>
     </TouchableOpacity>
 
@@ -161,7 +137,7 @@ const PatientProfile = ({ route }) => {
     onPress={() => navigation.navigate('DischargePatient')} 
 
     >
-      <Image source={require("../../assets/transfer/medical-icon_i-outpatient.png")} style={styles.optionIcon} />
+      <Image source={require("../../../assets/transfer/medical-icon_i-outpatient.png")} style={styles.optionIcon} />
       <Text style={styles.optionText}>Discharge</Text>
     </TouchableOpacity>
   </View>
@@ -320,4 +296,4 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
       }
 })
-export default PatientProfile
+export default OtPhysicalExamination

@@ -1077,12 +1077,7 @@ const [selectedBloodType, setSelectedBloodType] = useState(medicalHistoryData?.b
   return (
     <ScrollView style={styles.container}>
       <View style={styles.column}>
-        <TouchableOpacity
-          style={styles.editIcon}
-          onPress={() => alert("Edit pressed")}
-        >
-          <Icon name="edit" size={24} color="#000" />
-        </TouchableOpacity>
+      
 
         {/* ======================History  given by==================== */}
 
