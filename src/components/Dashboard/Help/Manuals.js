@@ -4,15 +4,15 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'rea
 const manuals = [
   {
     title: 'NV-CORE',
-    imageUrl: require('../../../assets/help/nv_core.png'),
+    imageUrl: require('../../../assets/help/help_1.png'),
   },
   {
     title: 'V-TRACK',
-    imageUrl: require('../../../assets/help/v_track.png'),
+    imageUrl: require('../../../assets/help/help_1.png'),
   },
   {
     title: 'Vitals',
-    imageUrl:  require('../../../assets/help/vitals.png'), 
+    imageUrl:  require('../../../assets/help/help_1.png'), 
   },
 ];
 
