@@ -1,5 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, ScrollView , Modal} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
@@ -47,6 +48,10 @@ const medicineList = [{"addedOn": "2024-09-25T10:48:36.000Z", "daysCount": 5, "d
 const PreOp = () => {
     const [isBloodArranged, setIsBloodArranged] = useState(false);
     const [selectedTab, setSelectedTab] = useState("Tests");
+    const [rejectReason, setRejectReason] = React.useState("");
+const [visible, setVisible] = useState(false);
+
+const navigation = useNavigation()
 
     // Toggle function for button click
     const handleArrangeBloodClick = () => {
@@ -68,6 +73,23 @@ const PreOp = () => {
       </TouchableOpacity>
     </View>
   );
+
+
+  
+    
+  const handleReasonData = (text) => {
+    setRejectReason(text);
+  };
+
+
+  const onClose = () => {
+    setVisible(false);
+    setRejectReason(""); 
+  };
+
+  const submitHandler = (status) => {
+    console.log("status",status)
+  }
 
   return (
     <View style={styles.container}>
@@ -223,7 +245,7 @@ const PreOp = () => {
       <TouchableOpacity 
   style={styles.rejectButton} 
   onPress={() => {
-   
+    setVisible(true); 
   }}
 > 
   <Text style={styles.rejectbuttonText}>Reject</Text>
@@ -233,10 +255,47 @@ const PreOp = () => {
       {/* Accept Button */}
       <TouchableOpacity style={styles.acceptButton}>
         <Text style={styles.acceptButtonText} onPress={() => {
-        
+          submitHandler("approved");
+          navigation.navigate("ConsentForm")
   }} >Accept</Text>
       </TouchableOpacity>
     </View>
+
+
+
+    
+
+ {/* ====================dailog box for reject============== */}
+ <Modal
+      transparent={true}
+      animationType="slide"
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.overlay}>
+        <View style={styles.dialogContainer}>
+          <Text style={styles.modaltitle}>Write a Reason for Rejection</Text>
+          <TextInput
+            style={styles.modaltextInput}
+            placeholder="Enter Reason"
+            multiline
+            numberOfLines={4}
+            value={rejectReason}
+            onChangeText={handleReasonData}
+          />
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.submitButton} onPress={() => submitHandler("rejected")}>
+              <Text style={styles.modalbuttonText}>Submit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+  <Text style={styles.modalbuttonText}>Cancel</Text>
+</TouchableOpacity>
+
+          </View>
+        </View>
+      </View>
+    </Modal>
+
       </ScrollView>
     )}
 
@@ -445,6 +504,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     margin: 5,
+    width:"100%",
   },
   rejectButton: {
     paddingVertical: 10,
@@ -469,6 +529,55 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+  },
+  dialogContainer: {
+    width: '80%', // Adjust width as needed
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5, // For Android shadow
+  },
+  modaltitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modaltextInput: {
+    height: 100,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  submitButton: {
+    backgroundColor: 'green',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  modalbuttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  cancelButton: {
+    backgroundColor: 'lightgray', // Example background color
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center', // Center text horizontally
+    marginLeft: 10, // Space between buttons if in a row
+  },
+ 
 
 });
 

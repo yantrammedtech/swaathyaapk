@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Footer from './Footer';
 import { useSelector } from 'react-redux';
 import { authFetch } from '../../axios/authFetch';
 
@@ -116,7 +115,7 @@ const renderPatient = ({ item }) => {
         renderItem={renderPatient}
         keyExtractor={(item) => item.id}
       />
-      <Footer activeRoute="peopleList" navigation={navigation} />
+      
     </View>
   );
 };
