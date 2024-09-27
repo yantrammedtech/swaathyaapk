@@ -9,7 +9,10 @@ export async function authPost(url, body, token) {
     method: "post",
     headers: {
       Authorization: token,
+      'Content-Type': 'application/json'
+
     },
+    
   });
   try {
     const response = await authPost.post(url, body);

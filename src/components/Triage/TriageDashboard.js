@@ -122,9 +122,9 @@ const getRandomColor = () => {
       <Text style={styles.subText}>People visited by in month and zone</Text>
 
       <View style={styles.imageContainer}>
-        <Image source={require('../../assets/person.avif')} style={styles.images} />
-        <Image source={require('../../assets/person3.avif')} style={styles.images} />
-        <Image source={require('../../assets/person.avif')} style={styles.images} />
+        <Image source={{}} style={styles.images} />
+        <Image source={{}} style={styles.images} />
+        <Image source={{}} style={styles.images} />
       </View>
     </TouchableOpacity>
 

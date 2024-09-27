@@ -121,7 +121,9 @@ const Dashboard = ({ onNotificationPress }) => {
 
         {/* OT */}
         {(hasSurgeon || hasAnesthesia) &&
-          <Pressable style={[styles.box, styles.otPatient]}>
+          <Pressable style={[styles.box, styles.otPatient]}
+          onPress={() => navigation.navigate('OtDashboard')}
+          >
             <View style={styles.boxContent}>
               <Image
                 source={require('../../assets/Clip path group-3.png')}

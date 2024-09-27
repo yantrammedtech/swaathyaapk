@@ -34,6 +34,28 @@ import EmergencyZoneSelector from "./src/components/Emergency/switchZone";
 import InPatientsList from "./src/components/InPatient/InPatientsList";
 import OutPatientsList from "./src/components/OutPatient/OutPatientsList";
 import EmrgDataVisualization from "./src/components/Emergency/EmrgDataVisualization";
+import EmergencyDischargePeopleList from "./src/components/Emergency/EmergencyDischargePeopleList";
+import HandshakeModal from "./src/components/Emergency/HandShake";
+import TransferPatientForm from "./src/components/Emergency/TransferPatient";
+import RequestSurgeryForm from "./src/components/Emergency/ReqSurgery";
+import DischargeForm from "./src/components/Emergency/DischargeForm";
+import HubScreen from "./src/components/Dashboard/Hub";
+import HelpSupportScreen from "./src/components/Dashboard/Help/HelpScreen";
+import VideosScreen from "./src/components/Dashboard/Help/VideosScreen";
+import ManualsScreen from "./src/components/Dashboard/Help/Manuals";
+import SupportScreen from "./src/components/Dashboard/Help/Support";
+import ChatScreen from "./src/components/Dashboard/Help/Chat";
+import OtDashboard from "./src/components/OT/OtDashboard";
+import EmergencyPatientList from "./src/components/OT/EmergencyPatientList";
+import ElectivePatientList from "./src/components/OT/ElectivePatientList";
+import PreOpRecord from "./src/components/OT/PreOpRecord";
+import OtDataVisualization from './src/components/OT/OtDataVisualization'
+import OtPatientProfile from "./src/components/OT/OtPatientProfile";
+import OtPhysicalExamination from "./src/components/OtTabs/OtPhysicalExamination/OtPhysicalExamination";
+import PreOp from "./src/components/OtTabs/PreOP/PreOP";
+import ConsentForm from "./src/components/OtTabs/PreOP/ConsentForm";
+import ScheduleScreen from "./src/components/OtTabs/PreOP/Schedule";
+import Calendar from "./src/components/OT/Calendar";
 
 
 const Stack = createNativeStackNavigator();
@@ -49,6 +71,18 @@ const Routing = () => {
         <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
         <Stack.Screen name="dashboard" component={Dashboard} options={{ headerShown: false }} />
         <Stack.Screen name="TriageDashboard" component={TriageDashboard} options={{ headerShown: false }} />
+        <Stack.Screen name="Hub" component={HubScreen}  options={{
+    headerStyle: {
+      backgroundColor: '#1977f3',
+    },
+  }}  />
+        {/* ============Help =============== */}
+
+        <Stack.Screen name="helpScreen" component={HelpSupportScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Videos" component={VideosScreen} />
+        <Stack.Screen name="Manuals" component={ManualsScreen} />
+        <Stack.Screen name="Support" component={SupportScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} />
         {/* ============common patient profile=========== */}
         <Stack.Screen
           name="CommonPatientProfile"
@@ -137,8 +171,48 @@ const Routing = () => {
           })}
         />
 
+<Stack.Screen
+          name="EmergencyDischargePeopleList"
+          component={EmergencyDischargePeopleList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Discharged  Patient List',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+          })}
+        />
 
-{/* ==========================triage Routing start======== */}
+<Stack.Screen name="Handshake" component={HandshakeModal} options={{ headerShown: false }} />
+<Stack.Screen name="TransferPatient" component={TransferPatientForm} options={{ headerShown: false }} />
+<Stack.Screen name="RequestSurgery" component={RequestSurgeryForm} options={{ headerShown: false }} />
+<Stack.Screen name="DischargePatient" component={DischargeForm} options={{ headerShown: false }} />
+
+
+{/* ==========================triage Routing start==RequestSurgery====== */}
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen
           name="DataVisualization"
@@ -343,8 +417,9 @@ const Routing = () => {
           component={EmrgDataVisualization}
           options={{ headerShown: false }}
         />
-         {/* <Stack.Screen name="PDFViewer" component={PDFViewerScreen} /> */}
+       
 
+{/* =====================red=end=============== */}
 
 
 
@@ -403,7 +478,288 @@ const Routing = () => {
         />
          {/* ===================OutPatient End================= */}
 
+  {/* ===================Ot Start================= */}
 
+         <Stack.Screen name="OtDashboard" component={OtDashboard} options={{ headerShown: false }} />
+         <Stack.Screen
+          name="EmergencyPatientList"
+          component={EmergencyPatientList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Emergency Patient List ',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+          })}
+        />
+
+<Stack.Screen
+          name="ElectivePatientList"
+          component={ElectivePatientList}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Elective Patient List ',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+          })}
+        />
+
+        
+<Stack.Screen
+          name="PreOpRecord"
+          component={PreOpRecord}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Pre-Op Record',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            )
+            
+          })}
+        />
+
+<Stack.Screen
+          name="OtPatientProfile"
+          component={OtPatientProfile}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Patient Profile',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+
+<Stack.Screen
+          name="OtDataVisualization"
+          component={OtDataVisualization}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'DataVisualization',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            )
+           
+          })}
+        />
+
+
+<Stack.Screen
+          name="OtPhysicalExamination"
+          component={OtPhysicalExamination}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'PhysicalExamination',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+        
+<Stack.Screen
+          name="OtPreOP"
+          component={PreOp}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Pre OP-Record',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+               
+<Stack.Screen
+          name="ConsentForm"
+          component={ConsentForm}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Consent Form',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+                      
+<Stack.Screen
+          name="Schedule"
+          component={ScheduleScreen}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Schedule',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+                     
+<Stack.Screen
+          name="Calendar"
+          component={Calendar}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Calendar',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+
+  {/* ===================Ot End================= */}
 
         <Stack.Screen name="Page1" component={Page1} options={{ title: 'Page1' }} />
       </Stack.Navigator>

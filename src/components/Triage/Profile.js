@@ -8,7 +8,7 @@ import { authPatch } from '../../axios/usePatch';
 
 const Profile = () => {
   const currentUserData = useSelector((state) => state.currentUserData);
-  const [profileImage, setProfileImage] = useState(require('../../assets/person.avif')); // Default image
+  const [profileImage, setProfileImage] = useState(''); // Default image
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({
     firstName: currentUserData.firstName,
@@ -74,6 +74,7 @@ const Profile = () => {
       dispatch({ type: "currentUserData", payload: data.data })
     } 
     navigation.navigate('TriageDashboard');
+    setIsEditing(false)
   };
 
   const handleChange = (field, value) => {
@@ -83,6 +84,18 @@ const Profile = () => {
     }));
   };
 
+  
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+  const backgroundColor = getRandomColor();
+
+
   return (
     <View style={styles.container}>
       <Pressable onPress={() => navigation.navigate('TriageDashboard')}>
@@ -90,7 +103,15 @@ const Profile = () => {
       </Pressable>
 
       <View style={styles.profileContainer}>
-        <Image source={profileImage} style={styles.profileImage} />
+      {currentUserData.imageURL ? (
+          <Image source={{ uri: currentUserData.imageURL }} style={styles.profileImage} />
+        ) : (
+          <View style={[styles.placeholderImage, { backgroundColor }]}>
+            <Text style={styles.placeholderText}>
+              {currentUserData.firstName ? currentUserData.firstName.charAt(0).toUpperCase() : ''}
+            </Text>
+          </View>
+        )}
         {isEditing && (
           <Pressable style={styles.editIcon} onPress={selectImage}>
             <Icon name="camera-alt" size={20} color="#000" />
@@ -113,6 +134,17 @@ const Profile = () => {
           value={editedData.lastName}
           onChangeText={(text) => handleChange('lastName', text)}
           editable={isEditing}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+         label='Email'
+          value={currentUserData.email}
+        
+          keyboardType="phone-pad"
+          editable={false}
         />
       </View>
 
@@ -157,7 +189,7 @@ const styles = StyleSheet.create({
   profileContainer: {
     alignItems: 'center',
     marginBottom: 20,
-    position: 'relative',
+    width:"100%",
   },
   profileImage: {
     width: 120,
@@ -167,7 +199,7 @@ const styles = StyleSheet.create({
   editIcon: {
     position: 'absolute',
     bottom: 0,
-    right: 0,
+    right: 100,
     backgroundColor: '#FFFFFF',
     borderRadius: 15,
     padding: 5,
@@ -177,7 +209,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   inputContainer: {
-    marginBottom: 15,
+    marginBottom: 10,
   },
   label: {
     fontSize: 16,
@@ -191,6 +223,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingLeft: 10,
     backgroundColor: '#FFFFFF',
+    marginBottom: 5,
   },
   saveButton: {
     backgroundColor: '#0A84FF',
@@ -213,6 +246,18 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  placeholderImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight:"bold",
   },
 });
 

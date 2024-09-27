@@ -1,8 +1,8 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from "react-native"
+import { View, Text, Image,Modal, StyleSheet, TouchableOpacity, Dimensions } from "react-native"
 import { useDispatch, useSelector } from "react-redux"
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { authFetch } from "../../axios/authFetch";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import BasicTabs from "../Emergency/BasicTabs";
 import { useNavigation } from "@react-navigation/native";
 
@@ -13,6 +13,8 @@ const PatientProfile = ({ route }) => {
     const dispatch = useDispatch()
     const { patientId } = route.params;
     const navigation = useNavigation()
+
+    const [modalVisible, setModalVisible] = useState(false);
 
     const user = useSelector((state) => {
         return state.currentUserData
@@ -56,7 +58,6 @@ const PatientProfile = ({ route }) => {
         return color;
     };
     const backgroundColor = getRandomColor();
-    console.log("patietdata==", currentPatientData)
     return (
         <View style={styles.container}>
 
@@ -97,12 +98,79 @@ const PatientProfile = ({ route }) => {
                             {currentPatientData?.addedOn ? new Date(currentPatientData.startTime).toLocaleDateString() : 'Not Available'}
                         </Text>
                     </View>
+                    <View  style={styles.shakecontainer}>
+                    <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconContainer}>
+       
+                    <Image source={require("../../assets/transfer/X.png")} style={styles.reverseImage} />
+      </TouchableOpacity>
+                    </View>
                 </View>
             </View>
 
             <View style={styles.tabsContainer}>
                 <BasicTabs />
             </View>
+
+            <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+              <Icon name="close" size={30} color="black" />
+            </TouchableOpacity>
+
+            <Text style={styles.modalTitle}>Select Options</Text>
+            
+            {/* Options */}
+            <View style={styles.optionContainer}>
+  <View style={styles.row}>
+  <TouchableOpacity
+      style={styles.option}
+      onPress={() => navigation.navigate('Handshake')} 
+    >
+      <Image source={require("../../assets/transfer/Transfer.png")} style={styles.optionIcon} />
+      <Text style={styles.optionText}>Hand Shake</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity 
+    style={styles.option}
+    onPress={() => navigation.navigate('TransferPatient')} 
+
+    >
+      <Image source={require("../../assets/transfer/Two transfer.png")} style={styles.optionIcon} />
+      <Text style={styles.optionText}>Transfer</Text>
+    </TouchableOpacity>
+  </View>
+
+  <View style={styles.row}>
+    <TouchableOpacity
+     style={styles.option}
+    onPress={() => navigation.navigate('RequestSurgery')} 
+
+     >
+      <Image source={require("../../assets/transfer/Three request.png")} style={styles.optionIcon} />
+      <Text style={styles.optionText}>Request</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity 
+    style={styles.option}
+    onPress={() => navigation.navigate('DischargePatient')} 
+
+    >
+      <Image source={require("../../assets/transfer/medical-icon_i-outpatient.png")} style={styles.optionIcon} />
+      <Text style={styles.optionText}>Discharge</Text>
+    </TouchableOpacity>
+  </View>
+</View>
+
+          </View>
+        </View>
+      </Modal>
+
         </View>
     )
 }
@@ -193,6 +261,63 @@ const styles = StyleSheet.create({
         height: height * 0.7,
         alignItems: 'center',
         width: "100%",
-    }
+    },
+    shakecontainer: {
+        flexDirection: 'row', // Ensure child elements are aligned horizontally
+        justifyContent: 'flex-end', // Align elements to the right
+        alignItems: 'center', // Center align vertically
+        width: '100%', // Ensure the container takes the full width
+      },
+      iconContainer: {
+        flexDirection: 'row', // Ensure icon and text are aligned horizontally
+        alignItems: 'center',
+        marginRight:20,
+      },
+      modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      },
+      modalContainer: {
+        width: '80%',
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 10,
+      },
+      closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+      },
+      modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+      },
+      optionContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        flexWrap: 'wrap',
+      },
+      option: {
+        alignItems: 'center',
+        marginVertical: 15,
+      },
+      optionIcon: {
+        width: 50,
+        height: 50,
+        marginBottom: 10,
+      },
+      optionText: {
+        fontSize: 16,
+        textAlign: 'center',
+      },
+      reverseImage:{
+        height:30,
+        width:30,
+        resizeMode: 'contain',
+      }
 })
 export default PatientProfile

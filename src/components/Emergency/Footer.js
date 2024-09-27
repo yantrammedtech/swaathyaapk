@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet ,Image} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import EmergencyActivePeopleList from './EmergencyActivePeopleList';
+import EmergencyZoneSelector from './switchZone';
 
 const Footer = ({ activeRoute, navigation }) => {
   const getIconColor = (routeName) => activeRoute === routeName ? '#FFA500' : '#000';
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
 
   return (
     <View style={styles.footerContainer}>
@@ -17,7 +28,9 @@ const Footer = ({ activeRoute, navigation }) => {
         <Icon name="home" size={28} color={getIconColor('home')} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
-        onPress={() => navigation.navigate('switchZone')} >
+        // onPress={() => navigation.navigate('switchZone')}
+        onPress={handleOpenModal}
+         >
         <Image source={require('../../assets/home 2.png')} style={styles.images} />
 
       </TouchableOpacity>
@@ -25,6 +38,8 @@ const Footer = ({ activeRoute, navigation }) => {
         onPress={() => navigation.navigate('Profile')} >
         <Icon name="person" size={28} color={getIconColor('profile')} />
       </TouchableOpacity>
+      <EmergencyZoneSelector    visible={modalVisible}
+        onClose={handleCloseModal}/>
     </View>
   );
 };

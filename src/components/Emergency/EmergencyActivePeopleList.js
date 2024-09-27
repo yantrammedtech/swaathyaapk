@@ -21,6 +21,7 @@ const getRandomColor = () => {
   }
   return color;
 };
+
 const renderPatient = ({ item }) => {
   const backgroundColor = getRandomColor();
   return (
@@ -50,7 +51,7 @@ const renderPatient = ({ item }) => {
           <View style={styles.recentPatientDateRow}>
             <Icon name="access-time" size={20} color="#666" />
             <Text style={styles.recentPatientDateText}>
-              {new Date(item.dob).toDateString()} | 10:00 AM
+              {new Date(item.startTime).toDateString()} 
             </Text>
           </View>
         </View>
@@ -88,7 +89,8 @@ const renderPatient = ({ item }) => {
   useEffect(() => {
     getAllPatient()
   },[])
-  console.log("allPatient==",allPatient)
+  const backgroundColor = getRandomColor();
+
 
   return (
     <View style={styles.mainContainer}>

@@ -1,30 +1,292 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Modal,Platform ,Alert } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { authPost } from '../../../axios/authPost';
+import { authFetch } from '../../../axios/authFetch';
+import { useSelector } from 'react-redux';
 
 const VitalCard =({ visible, onClose, onSave }) => {
+
+  const user = useSelector((state) => state.currentUserData);
+  const currentPatient = useSelector((state) => state.currentPatientData);
+  const patientTimeLineID = currentPatient?.patientTimeLineID;
+
+  const [wardList, setWardList] = React.useState([]);
+
+
     const [vitals, setVitals] = useState({
-        oxygen: '',
+        oxygen: 0,
         bpH: '',
         bpL: '',
-        temperature: '',
-        pulse: '',
-        respiratoryRate: '',
+        temperature: 0,
+        pulse: 0,
+        respiratoryRate: 0,
         time: '',
+        bpTime: "",
+        oxygenTime: "",
+        temperatureTime: "",
+        pulseTime: "",
+        respiratoryRateTime: "",
         errors: {},
       });
     
-      const handleChange = (field, value) => {
-        setVitals(prev => ({
-          ...prev,
-          [field]: value,
+     const handleChange = (field, value) => {
+  let updatedValue = value;
+
+  // Ensure numeric fields are treated as numbers
+  const intFields = ["pulse", "temperature", "oxygen", "bpH", "bpL", "respiratoryRate"];
+  if (intFields.includes(field)) {
+    updatedValue = Number(value);
+  }
+
+  // Validation logic
+  const newErrors = { ...vitals.errors };
+
+  if (field === "oxygen") {
+    if (updatedValue > 100 || updatedValue < 50) {
+      newErrors.oxygen = "Oxygen should be between 50 and 100.";
+    } else {
+      delete newErrors.oxygen;
+    }
+    setVitals((prevVitals) => ({
+      ...prevVitals,
+      oxygen: updatedValue,
+      // oxygenTime: prevVitals.time,
+      errors: newErrors,
+    }));
+  } else if (field === "temperature") {
+    if (updatedValue > 45 || updatedValue < 20) {
+      newErrors.temperature = "Temperature should be between 20°C and 45°C.";
+    } else {
+      delete newErrors.temperature;
+    }
+    setVitals((prevVitals) => ({
+      ...prevVitals,
+      temperature: updatedValue,
+      // temperatureTime: vitals.time,
+      errors: newErrors,
+    }));
+  } else if (field === "bpH") {
+    if (updatedValue > 200 || updatedValue < vitals.bpL || updatedValue < 50) {
+      newErrors.bpH = `BP High should be between ${vitals.bpL || 50} and 200 mm Hg.`;
+    } else {
+      delete newErrors.bpH;
+    }
+   
+    setVitals((prevVitals) => ({
+      ...prevVitals,
+      bpH: updatedValue,
+      // bpTime: prevVitals.time,
+      errors: newErrors,
+    }));
+  } else if (field === "bpL") {
+    if (updatedValue < 30 || updatedValue > vitals.bpH) {
+      newErrors.bpL = 'BP Low should be between 30 and 200 mm Hg.';
+    } else {
+      delete newErrors.bpL;
+    }
+   
+    setVitals((prevVitals) => ({
+      ...prevVitals,
+      bpL: updatedValue,
+      // bpTime: vitals.time,
+      errors: newErrors,
+    }));
+  } else if (field === "pulse") {
+    if (updatedValue > 200 || updatedValue < 30) {
+      newErrors.pulse = "Pulse should be between 30 and 200 bpm.";
+    } else {
+      delete newErrors.pulse;
+    }
+    setVitals((prevVitals) => ({
+      ...prevVitals,
+      pulse: updatedValue,
+      // pulseTime: vitals.time,
+      errors: newErrors,
+    }));
+  } else if (field === "respiratoryRate") {
+    if (updatedValue < 1 || updatedValue > 40) {
+      newErrors.respiratoryRate = "Respiratory Rate should be between 1 and 40 breaths per minute.";
+    } else {
+      delete newErrors.respiratoryRate;
+    }
+    setVitals((prevVitals) => ({
+      ...prevVitals,
+      respiratoryRate: updatedValue,
+      // respiratoryRateTime: vitals.time,
+      errors: newErrors,
+    }));
+  }
+};
+
+
+// Convert time to a Date object
+const convertTimeToISO = (time) => {
+  console.log("time 123====", time);
+
+  const timeParts = time.match(/(\d{1,2}):(\d{2}):(\d{2})\s*(am|pm)/i);
+  if (timeParts) {
+    let [_, hours, minutes, seconds, period] = timeParts;
+
+    // Convert hours to 24-hour format
+    hours = parseInt(hours, 10);
+    if (period.toLowerCase() === 'pm' && hours < 12) {
+      hours += 12;
+    } else if (period.toLowerCase() === 'am' && hours === 12) {
+      hours = 0;
+    }
+
+    // Create a Date object with the current date and the parsed time
+    const now = new Date();
+    const dateWithTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, seconds);
+
+    // Convert Date object to ISO 8601 format
+    const isoString = dateWithTime.toISOString();
+
+    console.log("time2 ===", isoString); // Output: 2024-09-14T13:00:00.000Z (example)
+    return isoString;
+  } else {
+    console.log("Invalid time format");
+  }
+};
+
+
+      
+      const [showTimePicker, setShowTimePicker] = useState(false);
+      const [selectedTime, setSelectedTime] = useState(new Date());
+
+      const onChangeTime = (event, selectedTime) => {
+        const currentTime = selectedTime || new Date();
+        const formattedTime = currentTime.toLocaleTimeString(); // Adjust formatting as needed
+        setShowTimePicker(Platform.OS === 'ios'); 
+        setVitals((prevVitals) => ({
+          ...prevVitals,
+          time: formattedTime,
         }));
       };
+      
+      
+
+  const showTimepicker = () => {
+    setShowTimePicker(true); // Show the time picker when the clock icon is clicked
+  };
+
+  function calculateAge(dob) {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+
+    // If birth month is greater than the current month or the same month but birth date is greater, decrease age by 1
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  }
     
-      const handleSavePress = () => {
-        // Validation logic can be added here
+      const handleSavePress = async() => {
+        const wardName = currentPatient?.wardID ? wardList.find((ward) => ward.id == currentPatient.wardID)?.name : ''
+      const patientAge = calculateAge(user.dob)
+      // console.log("oxytime===",vitals.time, vitals.temperatureTime)
+      console.log("object",vitals.oxygenTime ? convertTimeToISO(vitals.time) : "")
+        const response = await authPost(
+          `vitals/${user.hospitalID}/${patientTimeLineID}`,
+          {
+            userID: user.id,
+            oxygen: vitals.oxygen,
+            respiratoryRate: vitals.respiratoryRate,
+            pulse: vitals.pulse,
+            temperature: vitals.temperature,
+            bp: vitals.bpH ? vitals.bpH + "/" + vitals.bpL : "",
+            bpTime: vitals.bpTime ? convertTimeToISO(vitals.time) : "",
+            oxygenTime: vitals.oxygenTime ? convertTimeToISO(vitals.time) : "",
+            respiratoryRateTime: vitals.respiratoryRateTime ? convertTimeToISO(vitals.time) : "",
+            temperatureTime: vitals.temperatureTime
+              ? convertTimeToISO(vitals.time)
+              : "",
+            pulseTime: vitals.pulseTime ? convertTimeToISO(vitals.time) : "",
+            ward: wardName,
+            age: patientAge,
+          },
+          user.token
+        );
+        console.log("response vitals====",response)
+        if (response.message === "success") {
+        Alert.alert("Success", "Vital added successfully!");
+
+        } 
         onSave(vitals);
         onClose();
       };
+
+      React.useEffect(() => {
+        async function wardsData() {
+          const wardResonse = await authFetch(
+            `ward/${user.hospitalID}`,
+            user.token
+          );
+          if (wardResonse.message == "success") {
+            setWardList(wardResonse.wards);
+          }
+        }
+        wardsData();
+      }, []);
+
+      React.useEffect(() => {
+        if (vitals?.time) {
+          if(vitals?.oxygen){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              oxygenTime: vitals.time,
+             
+            }));
+          }
+          if(vitals?.temperature){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              temperatureTime: vitals.time,
+             
+            }));
+          }
+          if(vitals?.bpH || vitals?.bpL){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              bpTime: vitals.time,
+             
+            }));
+          }
+          if(vitals?.pulse){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              pulseTime: vitals.time,
+             
+            }));
+          }
+          if(vitals?.respiratoryRate){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              respiratoryRateTime: vitals.time,
+             
+            }));
+          }
+          
+         
+        }
+      }, [vitals?.time]);
+
+
+      console.log("time===",vitals.time, selectedTime)
+      console.log("ox",vitals.temperatureTime)
 
       return (
         <Modal
@@ -82,6 +344,7 @@ const VitalCard =({ visible, onClose, onSave }) => {
                     style={[styles.bpInput, vitals.errors.temperature ? styles.inputError : null]}
                     value={vitals.temperature}
                     onChangeText={(value) => handleChange('temperature', value)}
+                     keyboardType="numeric"
                   />
                   {vitals.errors.temperature && (
                     <Text style={styles.errorText}>{vitals.errors.temperature}</Text>
@@ -93,6 +356,7 @@ const VitalCard =({ visible, onClose, onSave }) => {
                     style={[styles.bpInput, vitals.errors.pulse ? styles.inputError : null]}
                     value={vitals.pulse}
                     onChangeText={(value) => handleChange('pulse', value)}
+                     keyboardType="numeric"
                   />
                   {vitals.errors.pulse && (
                     <Text style={styles.errorText}>{vitals.errors.pulse}</Text>
@@ -106,6 +370,7 @@ const VitalCard =({ visible, onClose, onSave }) => {
                   style={[styles.input, vitals.errors.respiratoryRate ? styles.inputError : null]}
                   value={vitals.respiratoryRate}
                   onChangeText={(value) => handleChange('respiratoryRate', value)}
+                   keyboardType="numeric"
                 />
                 {vitals.errors.respiratoryRate && (
                   <Text style={styles.errorText}>{vitals.errors.respiratoryRate}</Text>
@@ -113,16 +378,36 @@ const VitalCard =({ visible, onClose, onSave }) => {
               </View>
     
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Time of observation</Text>
-                <TextInput
-                  style={[styles.input, vitals.errors.time ? styles.inputError : null]}
-                  value={vitals.time}
-                  onChangeText={(value) => handleChange('time', value)}
-                />
-                {vitals.errors.time && (
-                  <Text style={styles.errorText}>{vitals.errors.time}</Text>
-                )}
-              </View>
+      <Text style={styles.label}>Time of observation</Text>
+      <View style={styles.timeInputContainer}>
+        <TextInput
+          style={[styles.input, vitals.errors.time ? styles.inputError : null, { flex: 1 }]} // Flex to take remaining space
+          value={vitals.time}
+          editable={false} // Prevent manual typing, use the picker
+        />
+       <TouchableOpacity onPress={showTimepicker}>
+  <Text>
+    <Icon name="access-time" size={24} color="gray" style={styles.icon} />
+  </Text>
+</TouchableOpacity>
+
+      </View>
+      {vitals.errors.time && (
+        <Text style={styles.errorText}>{vitals.errors.time}</Text> 
+      )}
+
+{showTimePicker && (
+  <DateTimePicker
+    value={new Date()}
+    mode="time"
+    display="default"
+    onChange={onChangeTime}
+  />
+)}
+
+
+    </View>
+
     
               <View style={styles.footer}>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
@@ -228,6 +513,12 @@ const VitalCard =({ visible, onClose, onSave }) => {
           buttonText: {
             color: '#fff',
             fontSize: 16,
+          },
+          timeInputContainer: {
+            flexDirection: 'row', // Align elements in a row
+            alignItems: 'center', // Vertically align items
+            width: '100%', // Full width of the container
+            justifyContent: 'space-between', // Space between input and icon
           },
       });
       
