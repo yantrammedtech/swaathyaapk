@@ -56,6 +56,8 @@ import PreOp from "./src/components/OtTabs/PreOP/PreOP";
 import ConsentForm from "./src/components/OtTabs/PreOP/ConsentForm";
 import ScheduleScreen from "./src/components/OtTabs/PreOP/Schedule";
 import Calendar from "./src/components/OT/Calendar";
+import AnaesthesiaRecord from "./src/components/OtTabs/PreOP/AnaesthesiaRecord ";
+import PreOpRecordAfterSchedule from "./src/components/OtTabs/PreOP/preOpAfterSchedule";
 
 
 const Stack = createNativeStackNavigator();
@@ -759,7 +761,60 @@ const Routing = () => {
         />
 
 
-  {/* ===================Ot End================= */}
+                   
+<Stack.Screen
+          name="AnaesthesiaRecord"
+          component={AnaesthesiaRecord}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Anaesthesia Record',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+
+    
+<Stack.Screen
+          name="PreOpRecordAfterSchedule"
+          component={PreOpRecordAfterSchedule}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Pre OP-Record',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+  {/* ===================Ot End====PreOpRecordAfterSchedule============= */}
 
         <Stack.Screen name="Page1" component={Page1} options={{ title: 'Page1' }} />
       </Stack.Navigator>

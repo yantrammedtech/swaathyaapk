@@ -26,7 +26,7 @@ export default function ScheduleScreen() {
     if (selectedTime) {
       setTime(selectedTime);
     }
-    setShowPicker(false); // Close the picker after selecting the time
+    setShowPicker(false);
   };
 
   const showTimePicker = () => {
@@ -261,7 +261,7 @@ const formatDate = () => {
           />
         </View>
 
-       
+       {!time &&  <Text style={styles.errorText}>Please confirm time</Text>}
 
         <TouchableOpacity
          style={[

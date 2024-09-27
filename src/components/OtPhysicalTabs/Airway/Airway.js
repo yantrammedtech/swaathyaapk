@@ -2,9 +2,15 @@ import React, { useState } from 'react'
 import { View, Text, Button, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const Airway = () => {
+  const mainData =   useSelector((state) => state.otPhysicalExamination.mainFormFields);
+
+
+  const dispatch = useDispatch()
+
   const [mainFormFields, setMainFormFields] = useState({
     mp1: false,
     mp2: false,
@@ -28,6 +34,18 @@ const Airway = () => {
       ...prevFields,
       [field]: value,
     }));
+
+  
+
+    dispatch({
+      type: "updateOtPhysicalExamination",
+      payload: {
+        mainFormFields: {
+          ...mainFormFields, // Preserve other fields in generalphysicalExamination
+          [field]: value, // Update the specific field being changed
+        },
+      },
+    });
   };
 
   const handleButtonGroupChange = (field, value) => {
@@ -35,6 +53,14 @@ const Airway = () => {
       ...prevFields,
       [field]: value,
     }));
+
+    dispatch({
+      type: "updateOtPhysicalExamination",
+      payload: {
+        ...mainFormFields,
+        [field]: value,
+      }
+    });
   };
 
   const handleTextFieldInput = (text) => {
@@ -42,9 +68,18 @@ const Airway = () => {
       ...prevFields,
       tmDistance: text,
     }));
+
+    dispatch({
+      type: "updateOtPhysicalExamination",
+      payload: {
+        ...mainFormFields,
+        [field]: value,
+      }
+    });
   };
 
   console.log("mainFormFields=====",mainFormFields)
+  console.log("maindata=======", mainData)
   return (
     <ScrollView style={styles.container}>
       {/* Checkbox Group */}
@@ -184,6 +219,7 @@ const Airway = () => {
           onPress={() => handleCheckboxChange('prominentIncisors', !mainFormFields.prominentIncisors)}
         />
       </View>
+      
     </ScrollView>
   );
 }
@@ -193,6 +229,7 @@ const styles = StyleSheet.create({
       flex: 1,
       padding: 20,
       backgroundColor: '#fff',
+     
     },
     title: {
       fontSize: 18,
@@ -244,10 +281,13 @@ const styles = StyleSheet.create({
     },
     buttonGroup: {
       marginBottom: 20,
+      flexDirection: 'row',
+      width:"100%"
     },
     buttonContainer: {
       flexDirection: 'row',
       justifyContent: 'space-around',
+
     },
     button: {
       padding: 10,
@@ -255,6 +295,8 @@ const styles = StyleSheet.create({
       borderRadius: 4,
       width: 80,
       alignItems: 'center',
+      marginLeft:10,
+
     },
     selectedButton: {
       backgroundColor: '#007bff',
