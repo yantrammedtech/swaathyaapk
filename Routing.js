@@ -53,6 +53,9 @@ import OtDataVisualization from './src/components/OT/OtDataVisualization'
 import OtPatientProfile from "./src/components/OT/OtPatientProfile";
 import OtPhysicalExamination from "./src/components/OtTabs/OtPhysicalExamination/OtPhysicalExamination";
 import PreOp from "./src/components/OtTabs/PreOP/PreOP";
+import ConsentForm from "./src/components/OtTabs/PreOP/ConsentForm";
+import ScheduleScreen from "./src/components/OtTabs/PreOP/Schedule";
+import Calendar from "./src/components/OT/Calendar";
 
 
 const Stack = createNativeStackNavigator();
@@ -664,6 +667,84 @@ const Routing = () => {
               color: '#fff',
             },
             headerTitle: 'Pre OP-Record',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+               
+<Stack.Screen
+          name="ConsentForm"
+          component={ConsentForm}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Consent Form',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+                      
+<Stack.Screen
+          name="Schedule"
+          component={ScheduleScreen}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Schedule',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
+
+                     
+<Stack.Screen
+          name="Calendar"
+          component={Calendar}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Calendar',
             headerLeft: () => (
               <Icon
                 name="chevron-left"

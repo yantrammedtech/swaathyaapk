@@ -49,11 +49,10 @@ const VitalCard =({ visible, onClose, onSave }) => {
     } else {
       delete newErrors.oxygen;
     }
-    // Update the oxygenTime
     setVitals((prevVitals) => ({
       ...prevVitals,
       oxygen: updatedValue,
-      oxygenTime: prevVitals.time,
+      // oxygenTime: prevVitals.time,
       errors: newErrors,
     }));
   } else if (field === "temperature") {
@@ -62,11 +61,10 @@ const VitalCard =({ visible, onClose, onSave }) => {
     } else {
       delete newErrors.temperature;
     }
-    // Update the temperatureTime
     setVitals((prevVitals) => ({
       ...prevVitals,
       temperature: updatedValue,
-      temperatureTime: vitals.time,
+      // temperatureTime: vitals.time,
       errors: newErrors,
     }));
   } else if (field === "bpH") {
@@ -75,11 +73,11 @@ const VitalCard =({ visible, onClose, onSave }) => {
     } else {
       delete newErrors.bpH;
     }
-    // Update the bpTime
+   
     setVitals((prevVitals) => ({
       ...prevVitals,
       bpH: updatedValue,
-      bpTime: prevVitals.time,
+      // bpTime: prevVitals.time,
       errors: newErrors,
     }));
   } else if (field === "bpL") {
@@ -88,11 +86,11 @@ const VitalCard =({ visible, onClose, onSave }) => {
     } else {
       delete newErrors.bpL;
     }
-    // Update the bpTime
+   
     setVitals((prevVitals) => ({
       ...prevVitals,
       bpL: updatedValue,
-      bpTime: vitals.time,
+      // bpTime: vitals.time,
       errors: newErrors,
     }));
   } else if (field === "pulse") {
@@ -101,11 +99,10 @@ const VitalCard =({ visible, onClose, onSave }) => {
     } else {
       delete newErrors.pulse;
     }
-    // Update the pulseTime
     setVitals((prevVitals) => ({
       ...prevVitals,
       pulse: updatedValue,
-      pulseTime: vitals.time,
+      // pulseTime: vitals.time,
       errors: newErrors,
     }));
   } else if (field === "respiratoryRate") {
@@ -114,11 +111,10 @@ const VitalCard =({ visible, onClose, onSave }) => {
     } else {
       delete newErrors.respiratoryRate;
     }
-    // Update the respiratoryRateTime
     setVitals((prevVitals) => ({
       ...prevVitals,
       respiratoryRate: updatedValue,
-      respiratoryRateTime: vitals.time,
+      // respiratoryRateTime: vitals.time,
       errors: newErrors,
     }));
   }
@@ -241,11 +237,56 @@ const convertTimeToISO = (time) => {
         wardsData();
       }, []);
 
-
+      React.useEffect(() => {
+        if (vitals?.time) {
+          if(vitals?.oxygen){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              oxygenTime: vitals.time,
+             
+            }));
+          }
+          if(vitals?.temperature){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              temperatureTime: vitals.time,
+             
+            }));
+          }
+          if(vitals?.bpH || vitals?.bpL){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              bpTime: vitals.time,
+             
+            }));
+          }
+          if(vitals?.pulse){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              pulseTime: vitals.time,
+             
+            }));
+          }
+          if(vitals?.respiratoryRate){
+            setVitals((prevVitals) => ({
+              ...prevVitals,
+             
+              respiratoryRateTime: vitals.time,
+             
+            }));
+          }
+          
+         
+        }
+      }, [vitals?.time]);
 
 
       console.log("time===",vitals.time, selectedTime)
-      console.log("ox",vitals.bpTime)
+      console.log("ox",vitals.temperatureTime)
 
       return (
         <Modal

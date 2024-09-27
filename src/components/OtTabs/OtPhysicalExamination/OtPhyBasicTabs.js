@@ -14,10 +14,41 @@ import CardioVascular from '../../OtPhysicalTabs/CardioVascular/CardioVascular';
 import Neuro from '../../OtPhysicalTabs/Neuro/Neuro';
 import Renal from '../../OtPhysicalTabs/Renal/Renal'
 import Other from '../../OtPhysicalTabs/Other/Other';
+import { useSelector } from 'react-redux';
+import { authFetch } from '../../../axios/authFetch';
 
 
 export default function OtPhyBasicTabs() {
+
+  const user = useSelector((state) => state.currentUserData);
+  const currentPatient = useSelector((state) => state.currentPatientData);
+  const patientTimeLineID = currentPatient?.patientTimeLineID;
+
   const [selectedCategory, setSelectedCategory] = React.useState('Air way');
+
+
+
+  const getOTData = async () => {
+    try {
+      const response = await authFetch(
+        `ot/${user.hospitalID}/${patientTimeLineID}/getOTData`,
+        user.token
+      );
+      console.log("response=====",response)
+      if (response.status == 200) {
+        const physicalExaminationData = response.data[0].physicalExamination;
+       
+        const preOPData = response.data[0].preopRecord;
+        
+      }
+    } catch (error) {
+      // console.log("error");
+    }
+  };
+
+  React.useEffect(() => {
+    getOTData()
+  },[])
 
   return (
     <View style={styles.container}>

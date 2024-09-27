@@ -19,26 +19,24 @@ const Footer = ({ activeRoute, navigation }) => {
     <View style={styles.footerContainer}>
       <TouchableOpacity style={styles.iconContainer}
         onPress={() => navigation.navigate('dashboard')} >
-        <Image source={require('../../assets/Property 1=search 3.png')} style={styles.images} />
-
+        <Icon name="dashboard" size={24} color={getIconColor('dashboard')} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
-        onPress={() => navigation.navigate('TriageDashboard')} >
+        onPress={() => navigation.navigate('OtDashboard')} >
         <Icon name="home" size={28} color={getIconColor('home')} />
       
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
         onPress={() => navigation.navigate('OtDataVisualization')}
          >
-        <Icon name="bar-chart" size={30} color="#000" />
+        <Icon name="bar-chart" size={30} color={getIconColor('bar-chart')} />
 
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}
-        onPress={() => navigation.navigate('Profile')} >
-        <Icon name="person" size={28} color={getIconColor('profile')} />
+        onPress={() => navigation.navigate('Calendar')} >
+        <Icon name="calendar-today" size={28} color={getIconColor('Calendar')} />
       </TouchableOpacity>
-      {/* <EmergencyZoneSelector    visible={modalVisible}
-        onClose={handleCloseModal}/> */}
+    
     </View>
   );
 };
