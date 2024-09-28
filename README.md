@@ -1,4 +1,4 @@
-#############start app amd##############
+#############start app cmd##############
 npx expo start --web --port 8082
 
 
