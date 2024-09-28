@@ -1,11 +1,73 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Switch, Button, ScrollView, StyleSheet, TouchableOpacity,FlatList ,Modal } from 'react-native';
+import { View, Text, TextInput, Switch, Button, ScrollView, StyleSheet, TouchableOpacity, FlatList, Modal, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import dayjs from 'dayjs';
+import { useSelector } from 'react-redux';
+import { authFetch } from '../../../axios/authFetch';
+import { Role_NAME } from '../../../utility/role';
+import { Checkbox } from 'react-native-paper';
+import { color } from 'react-native-elements/dist/helpers';
+import { authPost } from '../../../axios/authPost';
+const addAttendeesStyles = {
+  addAttendeesLabel: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  addAttendeesInput: {
+    borderWidth: 1,
+    padding: 12,
+    borderRadius: 8,
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+    color: 'black'
+  },
+  addAttendeesModalContainer: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f9f9f9',
+  },
+  addAttendeesModalTitle: {
+    fontSize: 20,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  addAttendeesItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  addAttendeesItemText: {
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  addAttendeesCloseButton: {
+    padding: 15,
+    backgroundColor: '#007BFF',
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  addAttendeesCloseButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+};
+
+import { BASE_URL } from '@env';
+
 
 export default function ScheduleScreen() {
+
+  const currentPatientData = useSelector((state) => state.currentPatientData);
+  const currentUserData = useSelector((state) => state.currentUserData);
+  const [showDatePicker, setShowDatePicker] = React.useState(false);
+
   const [patientName, setPatientName] = useState('Joe');
   const [patientID, setPatientID] = useState('01678');
   const [gender, setGender] = useState('Female');
@@ -16,25 +78,47 @@ export default function ScheduleScreen() {
   const [attendant, setAttendant] = useState('Dr. Rajkumar');
   const [allDay, setAllDay] = useState(true);
   const [alert, setAlert] = useState(true);
-  const [time, setTime] = useState(null);
-  const [showPicker, setShowPicker] = useState(false);
+  const [selectDate, setselectDate] = useState(null);
+
+  const [fromtime, setFromTime] = useState(null);
+  const [fromshowPicker, setfromshowPicker] = useState(false);
+  const [totime, setToTime] = useState(null);
+  const [toshowPicker, setToshowPicker] = useState(false);
   const [dates, setDates] = useState([]);
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [attendeesList, setAttendeesList] = useState([]);
+  const [selectedAttendees, setSelectedAttendees] = useState([]);
+  const [addAttendeesModalVisible, setAddAttendeesModalVisible] = useState(false);
 
-  const onTimeChange = (event, selectedTime) => {
-    if (selectedTime) {
-      setTime(selectedTime);
+  const handleDateChange = (event, selectedDate) => {
+    setShowDatePicker(false); // Ensure the date picker closes after selection
+    if (selectedDate) {
+      const dateString = selectedDate.toISOString().split('T')[0]; // Format date as 'YYYY-MM-DD'
+      setselectDate(dateString)
     }
-    setShowPicker(false); // Close the picker after selecting the time
+  };
+
+  const onFromTimeChange = (event, selectedTime) => {
+    if (selectedTime) {
+      setFromTime(selectedTime);
+    }
+    setfromshowPicker(false); // Close the picker after selecting the time
+  };
+
+  const onToTimeChange = (event, selectedTime) => {
+    if (selectedTime) {
+      setToTime(selectedTime);
+    }
+    setToshowPicker(false); // Close the picker after selecting the time
   };
 
   const showTimePicker = () => {
-    setShowPicker(true);
+    setfromshowPicker(true);
   };
 
-// Function to generate dates from the selected date
-const generateDates = (startIndex) => {
+  // Function to generate dates from the selected date
+  const generateDates = (startIndex) => {
     const today = new Date();
     const daysArray = [];
 
@@ -51,6 +135,9 @@ const generateDates = (startIndex) => {
 
   // Initially generate dates starting from today
   useEffect(() => {
+
+    //fill currentPatientData 
+    // console.log("currentPatientData=========schedule============",currentPatientData)
     generateDates(0);  // Start from today
   }, []);
 
@@ -75,18 +162,18 @@ const generateDates = (startIndex) => {
       </Text>
     </TouchableOpacity>
   );
-  
- // Function to format the date
-const formatDate = () => {
-    const date = new Date();
-    
+
+  // Function to format the date
+  const formatDate = () => {
+    const date = selectDate ? new Date(selectDate) : new Date();
+
     const options = { month: 'long', day: 'numeric', year: 'numeric' };
     const formattedDate = date.toLocaleDateString('en-US', options);
-  
+
     // Extract day to add ordinal suffix (st, nd, rd, th)
     const day = date.getDate();
     let suffix = 'th';
-    
+
     if (day === 1 || day === 21 || day === 31) {
       suffix = 'st';
     } else if (day === 2 || day === 22) {
@@ -94,7 +181,7 @@ const formatDate = () => {
     } else if (day === 3 || day === 23) {
       suffix = 'rd';
     }
-  
+
     return formattedDate.replace(/\d+/, `${day}${suffix}`);
   };
 
@@ -106,7 +193,7 @@ const formatDate = () => {
     // Get weekday, day, and month
     const options = { weekday: 'long', month: 'short', day: 'numeric' };
     const formattedDateParts = date.toLocaleDateString('en-US', options).split(' ');
-  
+
     // Get the day and its suffix
     const day = date.getDate();
     const suffix = (day) => {
@@ -118,54 +205,221 @@ const formatDate = () => {
         default: return 'th';
       }
     };
-  
+
     // Build final formatted string
     return `${formattedDateParts[0]}, ${day}${suffix(day)} ${formattedDateParts[1]}`;
   };
-  
 
-  const onPressConfirm = () => {
-    setModalVisible(true);
-    setTimeout(() => {
+  const validateForm = () => {
+
+    if (!room) {
+      Alert.alert("Room Number is required");
+      return false
+    }
+    if (!fromtime) {
+      Alert.alert("From Time is required");
+      return false
+    }
+    if (!totime) {
+      Alert.alert("To Time is required");
+      return false
+    }
+    if (selectedAttendees?.length === 0) {
+      Alert.alert("At least one attendee is required");
+      return false
+    }
+
+    return true
+  };
+
+
+  const handleSubmit = async () => {
+    if (validateForm()) {
+      const fromTimeUpdate = fromtime.toString().split(" ")[4];
+      const endTimeUpdate = totime.toString().split(" ")[4];
+
+
+
+      // Construct startTime and endTime in the format 'YYYY-MM-DDTHH:MM'
+      const startTime = `${selectDate}T${fromTimeUpdate}`;
+      const endTime = `${selectDate}T${endTimeUpdate}`;
+
+
+      const attendeesString = selectedAttendees
+        .map((attendee) => {
+          const firstName = attendee.firstName || ''; // Ensure first name is defined
+          const lastName = attendee.lastName || '';   // Ensure last name is defined
+          return `${firstName} ${lastName}`.trim();   // Combine and trim spaces
+        })
+        .join(", "); // Join names with commas
+
+
+
+      const scheduleData = {
+        startTime: startTime,
+        endTime: endTime,
+        roomId: room,
+        attendees: attendeesString,
+        baseURL: BASE_URL,
+      };
+
+
+      try {
+        const response = await authPost(
+          `schedule/${currentUserData.hospitalID}/${currentUserData.id}/${currentPatientData.patientTimeLineID}/${currentPatientData.id}/addSchedule`,
+          scheduleData,
+          currentUserData.token,
+          
+        );
+
+        console.log("success=============================res", response);
+        if (response.status === 201) {
+          setModalVisible(true);
+          Alert.alert("Success", "Schedule added successfully!");
+        } else if (response.status === 403) {
+          console.log("Already Scheduled");
+          Alert.alert("Error", "This schedule has already been made.");
+        } else {
+          console.log("Scheduled Failed");
+          Alert.alert("Error", "Scheduling failed. Please try again.");
+        }
+      } catch (err) {
+        console.log(err);
+        Alert.alert("Error", "An error occurred while scheduling.");
+      }
+
       setModalVisible(false);
-    }, 2000); // Close modal after 2 seconds
+    }
+  };
+
+
+
+
+
+
+
+
+  // ==================before schedule get data===================
+  useEffect(() => {
+    const getAllAttendees = async () => {
+      const doctorResponse = await authFetch(
+        `user/${currentUserData.hospitalID}/list/${Role_NAME.doctor}`,
+        currentUserData.token
+      );
+
+      // console.log("doctorResponse=========", doctorResponse)
+      if (doctorResponse.message == "success") {
+        setAttendeesList(doctorResponse.users);
+      }
+    };
+
+    // const getAllEvents = async () => {
+    //   try {
+    //     const response = await authFetch(
+    //       `schedule/${user.hospitalID}/${user.id}/viewSchedule`,
+    //       user.token
+    //     );
+    //     if (response.status == 200) {
+    //       const arr = response.data.map((eventData: any) => {
+    //         const newEvent: Event = {
+    //           id: eventData.pID,
+    //           title:
+    //             `PatientName: ${eventData.pName}\n` +
+    //             `PatientId: ${eventData.pID}\n` +
+    //             `Attendees: ${eventData.attendees}\n` +
+    //             `Room Number: ${eventData.roomID}\n` +
+    //             `Surgery Type: ${eventData.surgeryType}`,
+    //           start: eventData.startTime,
+    //           end: eventData.endTime,
+    //           extendedProps: {
+    //             patientId: eventData.pID,
+    //             patientName: eventData.pName,
+    //             attendees: eventData.attendees,
+    //             surgeryType: eventData.surgeryType,
+    //             roomNumber: eventData.roomNumber,
+    //           },
+    //         };
+    //         return newEvent;
+    //       });
+    //       setEvents(arr);
+    //     }
+    //   } catch (error) {
+    //     // console.log(error);
+    //   }
+    // };
+
+    getAllAttendees();
+    // getAllEvents();
+  }, [currentUserData]);
+
+  // Function to toggle selection of a single attendee
+  const toggleAttendantSelection = (doctor) => {
+    if (selectedAttendees.includes(doctor)) {
+      setSelectedAttendees(selectedAttendees.filter((attendee) => attendee !== doctor));
+    } else {
+      setSelectedAttendees([...selectedAttendees, doctor]);
+    }
+  };
+
+  // Function to toggle "Select All" option
+  const toggleSelectAll = () => {
+    if (selectedAttendees.length === attendeesList.length) {
+      // Deselect all if all are selected
+      setSelectedAttendees([]);
+    } else {
+      // Select all attendees if not already selected
+      setSelectedAttendees(attendeesList);
+    }
   };
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
+      <TouchableOpacity style={styles.header} onPress={() => { setShowDatePicker(true); }}>
         <Text style={styles.headerText}>{formatDate()}</Text>
-      </View>
+        <Icon name="calendar-today" size={25} color="#1E90FF" style={styles.icon} />
+      </TouchableOpacity>
 
-      <View style={styles.calendar}>
-        <FlatList
-          horizontal
-          data={dates}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderDateItem}
-          showsHorizontalScrollIndicator={false}
-        />
-      </View>
+
 
       <View style={styles.timePickerContainer}>
-      <Text style={styles.labell}>Schedule</Text>
+        {/* ===============from time==================== */}
         <View style={styles.timePicker}>
-          <Text style={styles.timelabel}>Set Time</Text>
+          <Text style={styles.timelabel}>From Time</Text>
           <TouchableOpacity
-          style={styles.timeBox}
-          onPress={() => setShowPicker(true)}
-        >
-          <Text style={styles.timeText}>{formatTime(time)}</Text>
-        </TouchableOpacity>
+            style={styles.timeBox}
+            onPress={() => setfromshowPicker(true)}
+          >
+            <Text style={styles.timeText}>{formatTime(fromtime)}</Text>
+          </TouchableOpacity>
 
-         {showPicker && (
-          <DateTimePicker
-          value={time || new Date()}
-            mode="time"
-            display="default"
-            onChange={onTimeChange}
-          />
-        )}
+          {fromshowPicker && (
+            <DateTimePicker
+              value={fromtime || new Date()}
+              mode="time"
+              display="default"
+              onChange={onFromTimeChange}
+            />
+          )}
+        </View>
+
+        {/* =====================to time=============== */}
+        <View style={styles.timePicker}>
+          <Text style={styles.timelabel}>To Time</Text>
+          <TouchableOpacity
+            style={styles.timeBox}
+            onPress={() => setToshowPicker(true)}
+          >
+            <Text style={styles.timeText}>{formatTime(totime)}</Text>
+          </TouchableOpacity>
+
+          {toshowPicker && (
+            <DateTimePicker
+              value={totime || new Date()}
+              mode="time"
+              display="default"
+              onChange={onToTimeChange}
+            />
+          )}
         </View>
       </View>
 
@@ -231,18 +485,79 @@ const formatDate = () => {
           <Picker.Item label="No" value={false} />
         </Picker>
 
-        <Text style={styles.label}>Add Required Attendance</Text>
+
+        <View>
+          <Text style={addAttendeesStyles.addAttendeesLabel}>Attendee (Doctor)</Text>
+
+          {/* TextInput to display selected attendees */}
+          <TouchableOpacity onPress={() => setAddAttendeesModalVisible(true)}>
+            <TextInput
+              style={addAttendeesStyles.addAttendeesInput}
+              value={selectedAttendees.length > 0 ? selectedAttendees.map((doctor) => doctor.firstName).join(', ') : 'Select Doctors'}
+              placeholder="Select Doctors"
+              editable={false} // Disable manual input, modal opens on TouchableOpacity press
+            />
+          </TouchableOpacity>
+
+          {/* Modal for multi-selection */}
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={addAttendeesModalVisible}
+            onRequestClose={() => setAddAttendeesModalVisible(false)}
+          >
+            <View style={addAttendeesStyles.addAttendeesModalContainer}>
+              <Text style={addAttendeesStyles.addAttendeesModalTitle}>Select Doctors</Text>
+
+              {/* "Select All" option */}
+              <View style={addAttendeesStyles.addAttendeesItem}>
+                <Checkbox
+                  status={selectedAttendees.length === attendeesList.length ? 'checked' : 'unchecked'}
+                  onPress={toggleSelectAll}
+                />
+                <Text style={addAttendeesStyles.addAttendeesItemText}>Select All</Text>
+              </View>
+
+              <FlatList
+                data={attendeesList}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <View style={addAttendeesStyles.addAttendeesItem}>
+                    <Checkbox
+                      status={selectedAttendees.includes(item) ? 'checked' : 'unchecked'}
+                      onPress={() => toggleAttendantSelection(item)}
+                    />
+                    <Text style={addAttendeesStyles.addAttendeesItemText}>{item.firstName}</Text>
+                  </View>
+                )}
+              />
+
+              <TouchableOpacity
+                style={addAttendeesStyles.addAttendeesCloseButton}
+                onPress={() => setAddAttendeesModalVisible(false)}
+              >
+                <Text style={addAttendeesStyles.addAttendeesCloseButtonText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+        </View>
+
+
+
+
+
+        {/* <Text style={styles.label}>Add Required Attendance</Text>
         <TextInput
           style={styles.input}
           value={attendant}
           onChangeText={setAttendant}
-        />
+        /> */}
 
         <View style={styles.switchRow}>
-         <View>
-         <Text style={styles.label}>All Day</Text>
-         <Text style={styles.alert}>{formatDate2(new Date())}</Text>
-         </View>
+          <View>
+            <Text style={styles.label}>All Day</Text>
+            <Text style={styles.alert}>{formatDate2(new Date())}</Text>
+          </View>
           <Switch
             value={allDay}
             onValueChange={setAllDay}
@@ -250,26 +565,26 @@ const formatDate = () => {
         </View>
 
         <View style={styles.switchRow}>
-            <View>
+          <View>
             <Text style={styles.label}>Alert</Text>
             <Text style={styles.alert}>1 day before</Text>
-            </View>
-         
+          </View>
+
           <Switch
             value={alert}
             onValueChange={setAlert}
           />
         </View>
 
-       
+
 
         <TouchableOpacity
-         style={[
+          style={[
             styles.button,
-            { backgroundColor: time ? '#1E90FF' : '#A9A9A9' }, // Change color based on time selection
+            { backgroundColor: (fromtime && totime) ? '#1E90FF' : '#A9A9A9' }, // Change color based on time selection
           ]}
-        onPress={onPressConfirm}  disabled={!time} >
-          <Text style={styles.buttonText}>Confirm Schedule</Text>
+          onPress={handleSubmit} disabled={!fromtime && !totime} >
+          <Text style={styles.buttonText}>Confirm Schedule..</Text>
         </TouchableOpacity>
 
         {/* <Text style={styles.errorText}>Please confirm time</Text> */}
@@ -277,19 +592,27 @@ const formatDate = () => {
 
 
         <Modal
-        transparent={true}
-        animationType="fade"
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-          <Icon name="calendar-today" size={50} color="#1E90FF" style={styles.icon} />
-           
-            <Text style={styles.modalText}>Your schedule confirmed!</Text>
+          transparent={true}
+          animationType="fade"
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Icon name="calendar-today" size={50} color="#1E90FF" style={styles.icon} />
+
+              <Text style={styles.modalText}>Your schedule confirmed!</Text>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+        {showDatePicker && (
+          <DateTimePicker
+            value={selectDate ? new Date(selectDate) : new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
       </View>
     </ScrollView>
   );
@@ -302,9 +625,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     borderRadius: 8,
-    marginBottom: 16,
   },
   headerText: {
     color: '#000',
@@ -385,7 +709,7 @@ const styles = StyleSheet.create({
   selectedDateItem: {
     backgroundColor: '#1E90FF', // Highlight selected date
     borderRadius: 8,
-    
+
   },
   dateText: {
     fontSize: 16,
@@ -400,10 +724,10 @@ const styles = StyleSheet.create({
     color: 'white', // White text for selected date
     fontWeight: 'bold', // Bold text
   },
-  timePickerContainer:{
+  timePickerContainer: {
     padding: 10,
     flexDirection: 'row',
-    justifyContent:"space-between",
+    justifyContent: "space-between",
     alignItems: 'center',
   },
   labell: {
@@ -414,7 +738,7 @@ const styles = StyleSheet.create({
   timeBox: {
     width: 80,
     height: 30,
-    borderColor: '#ccc', 
+    borderColor: '#ccc',
     borderWidth: 2,
     borderRadius: 5,
     justifyContent: 'center', // Center content vertically
@@ -424,13 +748,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1E90FF', // Blue text color
   },
-  timelabel:{
-        fontSize: 16,
-        marginRight: 10, // Space between "Set Time" and the box
-        fontWeight:'600'
+  timelabel: {
+    fontSize: 16,
+    marginRight: 10, // Space between "Set Time" and the box
+    fontWeight: '600'
   },
-  alert:{
-    color:'#1E90FF'
+  alert: {
+    color: '#1E90FF'
   },
   modalContainer: {
     flex: 1,
@@ -453,5 +777,8 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     textAlign: 'center',
+  },
+  inputGroup: {
+    marginBottom: 15,
   },
 });
