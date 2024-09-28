@@ -14,7 +14,7 @@ import CardioVascular from '../../OtPhysicalTabs/CardioVascular/CardioVascular';
 import Neuro from '../../OtPhysicalTabs/Neuro/Neuro';
 import Renal from '../../OtPhysicalTabs/Renal/Renal'
 import Other from '../../OtPhysicalTabs/Other/Other';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { authFetch } from '../../../axios/authFetch';
 
 
@@ -23,10 +23,156 @@ export default function OtPhyBasicTabs() {
   const user = useSelector((state) => state.currentUserData);
   const currentPatient = useSelector((state) => state.currentPatientData);
   const patientTimeLineID = currentPatient?.patientTimeLineID;
+  const { otPhysicalExamination } = useSelector((state) => state);
+
+  const dispatch = useDispatch()
 
   const [selectedCategory, setSelectedCategory] = React.useState('Air way');
 
+React.useEffect(() => {
+  dispatch({
+    type: 'updateOtPhysicalExamination',
+    payload: otPhysicalExamination ,
+  });
+},[currentPatient])
 
+
+
+
+const initialMainFormFields = {
+  mouthOpening: null,
+  neckRotation: null,
+  tmDistance: null,
+  mp1: false,
+  mp2: false,
+  mp3: false,
+  mp4: false,
+  morbidObesity: false,
+  difficultAirway: false,
+  teethPoorRepair: false,
+  micrognathia: false,
+  edentulous: false,
+  beard: false,
+  shortMuscularNeck: false,
+  prominentIncisors: false,
+};
+
+const initialExaminationFindingNotes = {
+  examinationFindingNotes: '',
+  smokingTobacco: '',
+  cardioVascularExamination: '',
+  abdominalExamination: '',
+  alcohol: '',
+  neuroMuscularExamination: '',
+  spineExamination: '',
+};
+
+const initialGeneralPhysicalExamination = {
+  jvp: false,
+  pallor: false,
+  cyanosis: false,
+  icterus: false,
+  pupils: false,
+  edema: false,
+  syncopatAttack: false,
+  paipitation: false,
+  other: false,
+};
+
+const initialMallampatiGrade = {
+  class : 0,
+};
+
+const initialRespiratory = {
+  dryCough: false,
+  productiveCough: false,
+  asthma: false,
+  recentURILRTI: false,
+  tb: false,
+  pneumonia: false,
+  copd: false,
+  osa: false,
+  recurrentTonsils: false,
+  breathlessness: false,
+  dyspnea: false,
+};
+
+const initialHepato = {
+  vomiting: false,
+  gerd: false,
+  diarrhoea: false,
+  galbladderDS: false,
+  jaundice: false,
+  cirrhosis: false,
+};
+
+const initialCardioVascular = {
+  hypertension: false,
+  cafDOE: false,
+  ischemicHeartDisease: false,
+  rheumaticFever: false,
+  orthpneaPND: false,
+  murmurs: false,
+  cad: false,
+  exerciseTolerance: false,
+  cardicEnlargement: false,
+  angina: false,
+  mi: false,
+  mtdLessThan4: false,
+  mtdGreaterThan4: false,
+};
+
+const initialNeuroMuscular = {
+  rhArthritis: false,
+  gout: false,
+  backache: false,
+  headAche: false,
+  seizures: false,
+  scoliosisKyphosis: false,
+  paresthesia: false,
+  locUnconscious: false,
+  muscleWeakness: false,
+  cvaTia: false,
+  headInjury: false,
+  paralysis: false,
+  psychDisorder: false,
+};
+
+const initialRenal = {
+  uti: false,
+  haemateria: false,
+  renalInsufficiency: false,
+  aorenocorticalInsuff: false,
+  thyroidDisorder: false,
+  pituitaryDisorder: false,
+  diabeticsMalitus: false,
+};
+
+const initialOthers = {
+  hematDisorder: false,
+  pregnant: false,
+  radiotherapy: false,
+  chemotherapy: false,
+  immuneSuppressed: false,
+  steroidUse: false,
+  cervicalSpineMovement: false,
+  intraopUrineOutput: false,
+  bloodLossToBeRecorded: false,
+};
+
+
+const otPhysicalExaminationForm ={
+  mainFormFields: initialMainFormFields,
+  examinationFindingNotes: initialExaminationFindingNotes,
+  generalphysicalExamination: initialGeneralPhysicalExamination,
+  mallampatiGrade: initialMallampatiGrade,
+  respiratory: initialRespiratory,
+  hepato: initialHepato,
+  cardioVascular: initialCardioVascular,
+  neuroMuscular: initialNeuroMuscular,
+  renal: initialRenal,
+  others: initialOthers,
+}
 
   const getOTData = async () => {
     try {
@@ -34,9 +180,25 @@ export default function OtPhyBasicTabs() {
         `ot/${user.hospitalID}/${patientTimeLineID}/getOTData`,
         user.token
       );
-      console.log("response=====",response)
+      console.log("response=====123454=========",response)
       if (response.status == 200) {
         const physicalExaminationData = response.data[0].physicalExamination;
+        console.log("physicalExaminationData=========", physicalExaminationData)
+        // Check for null before dispatching
+      if(physicalExaminationData){
+        dispatch({
+          type: 'updateOtPhysicalExamination',
+          payload: physicalExaminationData,
+        });
+      }
+      else{
+        dispatch({
+          type: 'updateOtPhysicalExamination',
+          payload: otPhysicalExaminationForm,
+        });
+      }
+
+
        
         const preOPData = response.data[0].preopRecord;
         
@@ -48,7 +210,10 @@ export default function OtPhyBasicTabs() {
 
   React.useEffect(() => {
     getOTData()
-  },[])
+  },[patientTimeLineID,currentPatient ])
+
+console.log("otPhysicalExamination=====",otPhysicalExamination)
+console.log("currentPatient==opi=============================",currentPatient)
 
   return (
     <View style={styles.container}>

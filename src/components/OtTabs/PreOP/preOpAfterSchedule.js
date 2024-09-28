@@ -1,21 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView,Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IoIcon from 'react-native-vector-icons/MaterialIcons';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { Menu, Divider, Provider as PaperProvider } from 'react-native-paper';
 
-
-const PreOpRecordAfterSchedule = () => {
+const PreOpRecordAfterSchedule =  () => {
     const user = useSelector((state) => state.currentUserData);
     const currentPatient = useSelector((state) => state.currentPatientData);
     const patientTimeLineID = currentPatient?.patientTimeLineID;
 
     const dispatch  =useDispatch()
     const navigation = useNavigation();
-
-  
+   
 
     
 const getRandomColor = () => {
@@ -63,86 +62,120 @@ if (currentPatient?.gender === 1) {
 }
 
   return (
-    <ScrollView style={styles.container}   contentContainerStyle={styles.scrollViewContent}>
+    <PaperProvider>
+ <ScrollView style={styles.container}   contentContainerStyle={styles.scrollViewContent}>
      
 
-      <View style={styles.profileContainer}>
-        <View style={styles.profileHeader}>
-        {currentPatient?.imageURL ? (
-          <Image source={{ uri: currentPatient?.imageURL }} style={styles.profileimage} />
-        ) : (
-          <View style={[styles.placeholderImage, { backgroundColor }]}>
-            <Text style={styles.placeholderText}>
-              {currentPatient?.pName ? currentPatient?.pName.charAt(0).toUpperCase() : ''}
-            </Text>
-          </View>
-        )}
-          
-          <View style={styles.profileDetails}>
-            <Text style={styles.profileName}>{currentPatient?.pName}</Text>
-            <Text style={styles.infoValue}>{genderText}</Text>
-          </View>
-          <TouchableOpacity style={styles.editButton}>
-            <Icon name="edit" size={20} color="#4A90E2" />
-          </TouchableOpacity>
-        </View>
-      </View>
+     <View style={styles.profileContainer}>
+       <View style={styles.profileHeader}>
+       {currentPatient?.imageURL ? (
+         <Image source={{ uri: currentPatient?.imageURL }} style={styles.profileimage} />
+       ) : (
+         <View style={[styles.placeholderImage, { backgroundColor }]}>
+           <Text style={styles.placeholderText}>
+             {currentPatient?.pName ? currentPatient?.pName.charAt(0).toUpperCase() : ''}
+           </Text>
+         </View>
+       )}
+         
+         <View style={styles.profileDetails}>
+           <Text style={styles.profileName}>{currentPatient?.pName}</Text>
+           <Text style={styles.infoValue}>{genderText}</Text>
+         </View>
+         <TouchableOpacity style={styles.editButton}>
+           <Icon name="edit" size={20} color="#4A90E2" />
+         </TouchableOpacity>
+       </View>
+     </View>
 
-      <View style={styles.infoContainer}>
-      <View style={styles.subcontainer}>
-  <Text style={styles.infoText}>Name</Text>
-  <Text style={styles.infoValue}>{currentPatient?.pName}</Text>
+     <View style={styles.infoContainer}>
+     <View style={styles.subcontainer}>
+ <Text style={styles.infoText}>Name</Text>
+ <Text style={styles.infoValue}>{currentPatient?.pName}</Text>
 </View>
 
-      <View style={styles.infoRow}>
-        <Text style={styles.infoText}>Date of Birth</Text>
-        <Text style={styles.infoValue}> {new Date(currentPatient?.dob).toLocaleDateString()}</Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Text style={styles.infoText}>Age</Text>
-        <Text style={styles.infoValue}>{calculateAge(currentPatient?.dob)}</Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Text style={styles.infoText}>HUID</Text>
-        <Text style={styles.infoValue}>{currentPatient?.pUHID}</Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Text style={styles.infoText}>Admit date</Text>
-        <Text style={styles.infoValue}>
-      {new Date(currentPatient?.startTime).toLocaleDateString()}
-    </Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Text style={styles.infoText}>Treating Doctor</Text>
-        
-        <Text style={styles.infoValue}>Dr. {currentPatient?.doctorName}</Text>
-        </View>
-        
+     <View style={styles.infoRow}>
+       <Text style={styles.infoText}>Date of Birth</Text>
+       <Text style={styles.infoValue}> {new Date(currentPatient?.dob).toLocaleDateString()}</Text>
+     </View>
+     <View style={styles.infoRow}>
+       <Text style={styles.infoText}>Age</Text>
+       <Text style={styles.infoValue}>{calculateAge(currentPatient?.dob)}</Text>
+     </View>
+     <View style={styles.infoRow}>
+       <Text style={styles.infoText}>HUID</Text>
+       <Text style={styles.infoValue}>{currentPatient?.pUHID}</Text>
+     </View>
+     <View style={styles.infoRow}>
+       <Text style={styles.infoText}>Admit date</Text>
+       <Text style={styles.infoValue}>
+     {new Date(currentPatient?.startTime).toLocaleDateString()}
+   </Text>
+     </View>
+     <View style={styles.infoRow}>
+       <Text style={styles.infoText}>Treating Doctor</Text>
+       
+       <Text style={styles.infoValue}>Dr. {currentPatient?.doctorName}</Text>
+       </View>
+       
 <View style={styles.infoRow}>
-        <Text style={styles.infoText}>Departmet</Text>
-        <Text style={styles.infoValue}>{currentPatient?.department}</Text>
-      </View>
-      </View>
+       <Text style={styles.infoText}>Departmet</Text>
+       <Text style={styles.infoValue}>{currentPatient?.department}</Text>
+     </View>
+     </View>
 
-    <Text style={styles.Patient}>Patient Data</Text>
+   <Text style={styles.Patient}>Patient Data</Text>
+   <View style={styles.boxContainer}>
+       
+   <Pressable
+           style={[styles.box, styles.outPatient]}
+           onPress={() => navigation.navigate('ConsentForm')}
+         >
+           <View style={styles.boxContent}>
+            
+             <Text style={styles.boxText}>Consent {'\n'}From</Text>
+             <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
+               <IoIcon name="arrow-upward" size={24} color="#FFA500" />
+             </TouchableOpacity>
+           </View>
+         </Pressable>
 
-    <Pressable
-            style={[styles.box, styles.outPatient]}
-            onPress={() => navigation.navigate('EmergencyActivePeopleList')}
-          >
-            <View style={styles.boxContent}>
-             
-              <Text style={styles.boxText}>Active {'\n'}Patient List</Text>
-              <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
-                <IoIcon name="arrow-upward" size={24} color="#FFA500" />
-              </TouchableOpacity>
-            </View>
-          </Pressable>
+         <Pressable
+           style={[styles.box, styles.outPatient]}
+           onPress={() => navigation.navigate('AnaesthesiaRecord')}
+         >
+           <View style={styles.boxContent}>
+            
+             <Text style={styles.boxText}>Anaesthesia {'\n'}Record</Text>
+             <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
+               <IoIcon name="arrow-upward" size={24} color="#FFA500" />
+             </TouchableOpacity>
+           </View>
+         </Pressable>
 
-      <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate("OtPatientProfile") }>
-        <Text style={styles.nextButtonText}>NEXT</Text>
-      </TouchableOpacity>
-    </ScrollView>
+   </View>
+
+   <Pressable
+           style={[styles.box, styles.outPatient]}
+           onPress={() => navigation.navigate('EmergencyActivePeopleList')}
+         >
+           <View style={styles.boxContent}>
+            
+             <Text style={styles.boxText}>Post-OP {'\n'}Record </Text>
+             <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
+               <IoIcon name="arrow-upward" size={24} color="#FFA500" />
+             </TouchableOpacity>
+           </View>
+         </Pressable>
+
+
+     <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate("OtPatientProfile") }>
+       <Text style={styles.nextButtonText}>NEXT</Text>
+     </TouchableOpacity>
+   </ScrollView>
+    </PaperProvider>
+
+   
   );
 };
 
@@ -265,20 +298,21 @@ const styles = StyleSheet.create({
       box: {
         width: '45%', // Adjust width as needed
         marginBottom: 20,
-        height: '20%',
+        height: 130,
         borderRadius: 8,
         overflow: 'hidden',
         elevation: 3, // For shadow effect on Android
         backgroundColor: '#fff',
+        margin:5,
       },
       boxContent: {
         flexDirection: 'column',
         alignItems: 'center',
         padding: 10,
-        
       },
       outPatient: {
-        backgroundColor: '#69FFFF',
+        backgroundColor: '#95c0f9',
+        
       },
       inPatient: {
         backgroundColor: '#FF69B4',
@@ -308,6 +342,12 @@ const styles = StyleSheet.create({
       rotatedIcon2: {
         transform: [{ rotate: '90deg' }],
         textAlign: "right",
+      },
+      boxContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        padding: 5,
       },
   });
 

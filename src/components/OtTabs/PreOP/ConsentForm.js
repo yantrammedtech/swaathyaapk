@@ -152,7 +152,7 @@ const ConsentForm = () => {
   const handlePress = () => {
     console.log("Add Schedule button pressed");
     navigation.navigate("Schedule")
-    // Add your button action here
+    // navigate to anesthesiarecord
   };
 
   return (
@@ -185,7 +185,7 @@ const ConsentForm = () => {
 
 <View style={styles.btncontainer}>
       <TouchableOpacity style={styles.button} onPress={handlePress}>
-        <Text style={styles.buttonText}>Add Schedule</Text>
+        <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>
     </View>
    </View>

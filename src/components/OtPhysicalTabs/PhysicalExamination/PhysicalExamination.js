@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { CheckBox } from 'react-native-elements';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 const PhysicalExamination = () => {
 
   const generalphysicalExamination =   useSelector((state) => state.otPhysicalExamination.generalphysicalExamination);
+  const currentPatient = useSelector((state) => state.currentPatientData);
  
  const dispatch = useDispatch()
  
@@ -26,53 +27,89 @@ const PhysicalExamination = () => {
  
  console.log("generalphysicalExamination====",generalphysicalExamination)
   return (
-    <View style={styles.checkboxGroup}>
+    <ScrollView style={styles.checkboxGroup}>
       <CheckBox
         title="JVP"
         checked={generalphysicalExamination.jvp}
         onPress={() => handleCheckboxChange('jvp', !generalphysicalExamination.jvp)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Pallor"
         checked={generalphysicalExamination.pallor}
         onPress={() => handleCheckboxChange('pallor', !generalphysicalExamination.pallor)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Cyanosis"
         checked={generalphysicalExamination.cyanosis}
         onPress={() => handleCheckboxChange('cyanosis', !generalphysicalExamination.cyanosis)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Icterus"
         checked={generalphysicalExamination.icterus}
         onPress={() => handleCheckboxChange('icterus', !generalphysicalExamination.icterus)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Pupils"
         checked={generalphysicalExamination.pupils}
         onPress={() => handleCheckboxChange('pupils', !generalphysicalExamination.pupils)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Edema"
         checked={generalphysicalExamination.edema}
         onPress={() => handleCheckboxChange('edema', !generalphysicalExamination.edema)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Syncopat Attack"
         checked={generalphysicalExamination.syncopatAttack}
         onPress={() => handleCheckboxChange('syncopatAttack', !generalphysicalExamination.syncopatAttack)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Palpitation"
         checked={generalphysicalExamination.paipitation}
         onPress={() => handleCheckboxChange('paipitation', !generalphysicalExamination.paipitation)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Other"
         checked={generalphysicalExamination.other}
         onPress={() => handleCheckboxChange('other', !generalphysicalExamination.other)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -117,6 +154,7 @@ const styles = StyleSheet.create({
   },
   checkboxGroup: {
     padding: 10,
+    marginBottom:30,
   },
 });
 

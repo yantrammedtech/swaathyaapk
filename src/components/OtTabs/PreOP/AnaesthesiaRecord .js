@@ -5,6 +5,23 @@ import { CheckBox } from 'react-native-elements';
 
 const AnaesthesiaRecord = () => {
   const [selected, setSelected] = useState(null);
+  const [airwayChecked, setAirwayChecked] = useState(false); // Checkbox state for Airway Size
+  const [selectedAirwaySize, setSelectedAirwaySize] = useState(''); // Track selected Airway Size option
+
+  const [airwayManagementChecked, setAirwayManagementChecked] = useState(false);
+  const [vascularAccessChecked, setVascularAccessChecked] = useState(false);
+  const [laryngoscopyChecked, setLaryngoscopyChecked] = useState(false);
+
+  const [selectedAirwayOption, setSelectedAirwayOption] = useState('');
+  const [selectedVascularOption, setSelectedVascularOption] = useState('');
+  const [selectedLaryngoscopyOption, setSelectedLaryngoscopyOption] = useState('');
+
+  const responseOptions = {
+    airway: ['Size 1', 'Size 2', 'Size 3'],
+    airwayManagement: ['Oral', 'Nasal', 'ETT', 'SGD', 'Tracheostomy'],
+    vascularAccess:['IV', 'Central'],
+    laryngoscopy:['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4'],
+  };
 
   const handleSelect = (item) => {
     setSelected(item);
@@ -13,49 +30,124 @@ const AnaesthesiaRecord = () => {
   return (
     <ScrollView style={styles.container}>
 
-<View style={eyeMovementChecked && styles.section}>
+<View style={airwayChecked && styles.section}>
+      {/* CheckBox for Airway Size */}
+      <CheckBox
+        title="Airway Size *"
+        checked={airwayChecked}
+        onPress={() => setAirwayChecked(!airwayChecked)}
+        containerStyle={styles.checkBoxRow}
+      />
+
+      {/* Display Airway Size options if checkbox is checked */}
+      {airwayChecked && (
+        <View style={styles.optionsContainer}>
+          {responseOptions.airway.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.optionButton,
+                selectedAirwaySize === option && styles.selectedOption,
+              ]}
+              onPress={() => setSelectedAirwaySize(option)}
+            >
+              <Text style={styles.optionText}>{option}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+   
+    </View>
+
+    <View style={airwayManagementChecked && styles.section}>
         <CheckBox
-          title="Eye movement *"
-          checked={eyeMovementChecked}
-          onPress={() => setEyeMovementChecked(!eyeMovementChecked)}
+          title="Airway Management *"
+          checked={airwayManagementChecked}
+          onPress={() => setAirwayManagementChecked(!airwayManagementChecked)}
           containerStyle={styles.checkBoxRow}
         />
-        {eyeMovementChecked && (
+
+        {airwayManagementChecked && (
           <View style={styles.optionsContainer}>
-            {responseOptions.eye.map((option, index) => (
+            {responseOptions.airwayManagement.map((option, index) => (
               <TouchableOpacity
                 key={index}
                 style={[
                   styles.optionButton,
-                  selectedEyeMovement === option && styles.selectedOption,
+                  selectedAirwayOption === option && styles.selectedOption,
                 ]}
-                onPress={() => setSelectedEyeMovement(option)}
+                onPress={() => setSelectedAirwayOption(option)}
               >
                 <Text style={styles.optionText}>{option}</Text>
               </TouchableOpacity>
             ))}
           </View>
         )}
-        {errors.eyeMovement && <Text style={styles.errorText}>{errors.eyeMovement}</Text>}
+
+        {/* {errors.airwayManagement && <Text style={styles.errorText}>{errors.airwayManagement}</Text>} */}
       </View>
-    
-      <View style={styles.section}>
-        <TouchableOpacity style={styles.option} onPress={() => handleSelect('Airway Size')}>
-          <Text style={selected === 'Airway Size' ? styles.selectedOption : styles.optionText}>Airway Size</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option} onPress={() => handleSelect('Airway Management')}>
-          <Text style={selected === 'Airway Management' ? styles.selectedOption : styles.optionText}>Airway Management</Text>
-        </TouchableOpacity>
+      {/* Section for Vascular Access */}
+      <View style={vascularAccessChecked && styles.section}>
+        <CheckBox
+          title="Vascular Access *"
+          checked={vascularAccessChecked}
+          onPress={() => setVascularAccessChecked(!vascularAccessChecked)}
+          containerStyle={styles.checkBoxRow}
+        />
 
-        <TouchableOpacity style={styles.option} onPress={() => handleSelect('Vascular Access')}>
-          <Text style={selected === 'Vascular Access' ? styles.selectedOption : styles.optionText}>Vascular Access</Text>
-        </TouchableOpacity>
+        {vascularAccessChecked && (
+          <View style={styles.optionsContainer}>
+            {responseOptions.vascularAccess.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.optionButton,
+                  selectedVascularOption === option && styles.selectedOption,
+                ]}
+                onPress={() => setSelectedVascularOption(option)}
+              >
+                <Text style={styles.optionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
-        <TouchableOpacity style={styles.option} onPress={() => handleSelect('Laryngoscopy')}>
-          <Text style={selected === 'Laryngoscopy' ? styles.selectedOption : styles.optionText}>Laryngoscopy</Text>
-        </TouchableOpacity>
+        {/* {errors.vascularAccess && <Text style={styles.errorText}>{errors.vascularAccess}</Text>} */}
       </View>
+
+      {/* Section for Laryngoscopy */}
+      <View style={laryngoscopyChecked && styles.section}>
+        <CheckBox
+          title="Laryngoscopy *"
+          checked={laryngoscopyChecked}
+          onPress={() => setLaryngoscopyChecked(!laryngoscopyChecked)}
+          containerStyle={styles.checkBoxRow}
+        />
+
+        {laryngoscopyChecked && (
+          <View style={styles.optionsContainer}>
+            {responseOptions.laryngoscopy.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.optionButton,
+                  selectedLaryngoscopyOption === option && styles.selectedOption,
+                ]}
+                onPress={() => setSelectedLaryngoscopyOption(option)}
+              >
+                <Text style={styles.optionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {/* {errors.laryngoscopy && <Text style={styles.errorText}>{errors.laryngoscopy}</Text>} */}
+      </View>
+
+
+      
 
       <Text style={styles.subHeader}>Breathing/Ventilation</Text>
 
@@ -137,6 +229,39 @@ const styles = StyleSheet.create({
   gridItemText: {
     fontSize: 16,
     textAlign: 'center',
+  },
+  section: {
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 5,
+    padding: 10,
+    backgroundColor: '#ffffff',
+  },
+  checkBoxRow: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    padding: 0,
+    marginBottom: 10,
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  optionButton: {
+    backgroundColor: '#e0e0e0',
+    padding: 10,
+    borderRadius: 20,
+    marginBottom: 10,
+    width: '48%',
+    alignItems: 'center',
+  },
+  selectedOption: {
+    backgroundColor: '#007AFF',
+  },
+  optionText: {
+    color: '#000',
   },
 });
 

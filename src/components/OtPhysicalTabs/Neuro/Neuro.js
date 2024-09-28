@@ -8,6 +8,8 @@ import { CheckBox } from 'react-native-elements';
 const Neuro = () => {
 
   const neuroMuscular =   useSelector((state) => state.otPhysicalExamination.neuroMuscular);
+  const currentPatient = useSelector((state) => state.currentPatientData);
+
   const dispatch = useDispatch()
 
   const handleCheckboxChange = (field, value) => {
@@ -31,66 +33,118 @@ const Neuro = () => {
         title="Rh arthritis"
         checked={neuroMuscular.rhArthritis}
         onPress={() => handleCheckboxChange('rhArthritis', !neuroMuscular.rhArthritis)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Gout"
         checked={neuroMuscular.gout}
         onPress={() => handleCheckboxChange('gout', !neuroMuscular.gout)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Backache"
         checked={neuroMuscular.backache}
         onPress={() => handleCheckboxChange('backache', !neuroMuscular.backache)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Head Ache"
         checked={neuroMuscular.headAche}
         onPress={() => handleCheckboxChange('headAche', !neuroMuscular.headAche)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Seizures"
         checked={neuroMuscular.seizures}
         onPress={() => handleCheckboxChange('seizures', !neuroMuscular.seizures)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Scoliosis/Kyphosis"
         checked={neuroMuscular.scoliosisKyphosis}
         onPress={() => handleCheckboxChange('scoliosisKyphosis', !neuroMuscular.scoliosisKyphosis)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Paresthesia"
         checked={neuroMuscular.paresthesia}
         onPress={() => handleCheckboxChange('paresthesia', !neuroMuscular.paresthesia)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Loc/Unconscious"
         checked={neuroMuscular.locUnconscious}
         onPress={() => handleCheckboxChange('locUnconscious', !neuroMuscular.locUnconscious)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Muscle Weakness"
         checked={neuroMuscular.muscleWeakness}
         onPress={() => handleCheckboxChange('muscleWeakness', !neuroMuscular.muscleWeakness)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="CVA/TIA"
         checked={neuroMuscular.cvaTia}
         onPress={() => handleCheckboxChange('cvaTia', !neuroMuscular.cvaTia)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Head Injury"
         checked={neuroMuscular.headInjury}
         onPress={() => handleCheckboxChange('headInjury', !neuroMuscular.headInjury)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Paralysis"
         checked={neuroMuscular.paralysis}
         onPress={() => handleCheckboxChange('paralysis', !neuroMuscular.paralysis)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Psych Disorder"
         checked={neuroMuscular.psychDisorder}
         onPress={() => handleCheckboxChange('psychDisorder', !neuroMuscular.psychDisorder)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
     </ScrollView>
   );

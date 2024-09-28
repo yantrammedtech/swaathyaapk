@@ -326,7 +326,8 @@ function Reducer(state = initialData, action) {
         case "updateOtPhysicalExamination":
           return { ...state,
             otPhysicalExamination: {
-              ...state.otPhysicalExamination,
+              // ...state.otPhysicalExamination,
+              
               // Update only the properties provided in the payload
               mainFormFields: action.payload.mainFormFields
                 ? action.payload.mainFormFields

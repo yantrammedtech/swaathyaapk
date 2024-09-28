@@ -144,56 +144,96 @@ const [patientStage, setPatientStage]=useState(0)
         title="Hemat Disorder"
         checked={others.hematDisorder}
         onPress={() => handleCheckboxChange('hematDisorder', !others.hematDisorder)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Pregnant"
         checked={others.pregnant}
         onPress={() => handleCheckboxChange('pregnant', !others.pregnant)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Radiotherapy"
         checked={others.radiotherapy}
         onPress={() => handleCheckboxChange('radiotherapy', !others.radiotherapy)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Chemotherapy"
         checked={others.chemotherapy}
         onPress={() => handleCheckboxChange('chemotherapy', !others.chemotherapy)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Immune suppressed"
         checked={others.immuneSuppressed}
         onPress={() => handleCheckboxChange('immuneSuppressed', !others.immuneSuppressed)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Steroid use"
         checked={others.steroidUse}
         onPress={() => handleCheckboxChange('steroidUse', !others.steroidUse)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Cervical spine movement"
         checked={others.cervicalSpineMovement}
         onPress={() => handleCheckboxChange('cervicalSpineMovement', !others.cervicalSpineMovement)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Intraop urine output"
         checked={others.intraopUrineOutput}
         onPress={() => handleCheckboxChange('intraopUrineOutput', !others.intraopUrineOutput)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
       <CheckBox
         title="Blood loss to be recorded"
         checked={others.bloodLossToBeRecorded}
         onPress={() => handleCheckboxChange('bloodLossToBeRecorded', !others.bloodLossToBeRecorded)}
+        disabled={currentPatient.status === "approved"}
+        containerStyle={{
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
       />
     </View>
 
           <Text  style={styles.heading}>Examination Finding Notes</Text>
             <View>
             <TextInput
-        style={styles.textInput}
+        style={[styles.textInput, {
+          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+          backgroundColor: currentPatient.status === "approved" ? '#e0e0e0' : '#fff', // Change background color to indicate disabled
+        }]}
         placeholder="Type here"
         value={text}
         onChangeText={(value) => setText(value)}
+        editable={currentPatient.status !== "approved"}
       />
             </View>
 
@@ -246,6 +286,13 @@ const [patientStage, setPatientStage]=useState(0)
         paddingHorizontal: 15,
         marginRight: 10,
         marginBottom: 10,
+      },
+      disabledText: {
+        color: '#999999', // Disabled text color
+      },
+      disabledButton: {
+        backgroundColor: '#cccccc', // Disabled background color
+        opacity: 0.5, // Visually indicate that the button is disabled
       },
       tagText: {
         color: "#007AFF",

@@ -1,7 +1,7 @@
 
 
 import { View, Text } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./src/components/Dashboard/Home";
@@ -59,6 +59,7 @@ import Calendar from "./src/components/OT/Calendar";
 import AnaesthesiaRecord from "./src/components/OtTabs/PreOP/AnaesthesiaRecord ";
 import PreOpRecordAfterSchedule from "./src/components/OtTabs/PreOP/preOpAfterSchedule";
 
+import { IconButton, Menu, Divider } from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
 
@@ -66,6 +67,9 @@ const Stack = createNativeStackNavigator();
 // const Stack = createStackNavigator();
 
 const Routing = () => {
+
+ 
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -810,6 +814,19 @@ const Routing = () => {
                 onPress={() => navigation.goBack()}
               />
             ),
+
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+           
            
           })}
         />

@@ -193,8 +193,32 @@ useEffect(() => {
     navigation.navigate("PreOpRecordAfterSchedule")
   }
 
-console.log("======================", patientStage, userType, patientStage === OTPatientStages.APPROVED ,
-  userType === OTUserTypes.SURGEON)
+  const getOTData = async () => {
+    try {
+      const response = await authFetch(
+        `ot/${user.hospitalID}/${patientTimeLineID}/getOTData`,
+        user.token
+      );
+      if (response.status == 200) {
+        const physicalExaminationData = response.data[0].physicalExamination;
+      
+        const preOPData = response.data[0].preopRecord;
+        setArrangeBlood(preOPData.arrangeBlood)
+        setRiskConsent(preOPData.riskConsent)
+        setNotes(preOPData.notes)
+        
+      }
+    } catch (error) {
+      // console.log("error");
+    }
+  };
+
+  React.useEffect(() => {
+    getOTData()
+  },[patientTimeLineID,currentPatient ])
+
+
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -207,8 +231,10 @@ console.log("======================", patientStage, userType, patientStage === O
         style={[
           styles.arrangeBloodButton,
           arrangeBlood && styles.arrangedBloodButton, // Apply blue border if toggled
+          currentPatient.status === 'approved' && styles.disabledButton
         ]}
         onPress={handleArrangeBloodClick}
+        disabled={currentPatient.status === 'approved'}
       >
         {arrangeBlood ? (
           <Icon name="check" size={20} color="blue" style={styles.arrangeBloodIcon} />
@@ -218,6 +244,7 @@ console.log("======================", patientStage, userType, patientStage === O
             styles.arrangeBloodText,
             arrangeBlood && { color: 'blue' }, // Change text color to blue if toggled
           ]}
+          disabled={currentPatient.status === 'approved'}
         >
           Arrange Blood
         </Text>
@@ -290,7 +317,8 @@ console.log("======================", patientStage, userType, patientStage === O
           placeholder="Note"
           style={styles.noteInput}
           value={notes}  // Bind the value of the input to the state
-          onChangeText={(text) => setNotes(text)} 
+          onChangeText={(text) => setNotes(text)}
+          editable={currentPatient.status !== "approved"} 
         />
       </View>
 
@@ -364,7 +392,8 @@ console.log("======================", patientStage, userType, patientStage === O
           placeholder="Note"
           style={styles.noteInput}
           value={notes}  // Bind the value of the input to the state
-          onChangeText={(text) => setNotes(text)} 
+          onChangeText={(text) => setNotes(text)}
+          editable={currentPatient.status !== "approved"} 
         />
       </View>
 
