@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal,Image ,FlatList} from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal,Image ,FlatList, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Picker } from '@react-native-picker/picker';
 import { authPost } from '../../../axios/authPost';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
 
-const MedicineForm = ({ visible, onClose }) => {
+const PostOpMedication = ({ visible, onClose, medData }) => {
     const user = useSelector((state) => state.currentUserData);
     const currentPatient = useSelector((state) => state.currentPatientData);
     const patientTimeLineID = currentPatient?.patientTimeLineID;
@@ -18,19 +18,6 @@ const MedicineForm = ({ visible, onClose }) => {
     const [errorMessage, setErrorMessage] = useState(null);
 
   
-
-   
-    // const medicineTypeImagese = {
-    //     tablet: require('../../../assets/treatmentplan/tablet.png'),
-    //     capsule: require('../../../assets/treatmentplan/image 50.png'),
-    //     syrup: require('../../../assets/treatmentplan/image 53.png'),
-    //     injection: require('../../../assets/treatmentplan/image 51.png'),
-    //     iv_line: require('../../../assets/treatmentplan/image 52.png'),
-    //     drops: require('../../../assets/treatmentplan/image 54.png'),
-    //     spray: require('../../../assets/treatmentplan/image 55.png'),
-    //     tubing: require('../../../assets/treatmentplan/image 56.png'),
-    // };
-    
     const medicineTypeImages = {
         1: require('../../../assets/treatmentplan/image 50.png'), // capsule
         2: require('../../../assets/treatmentplan/image 53.png'), // syrup
@@ -40,7 +27,7 @@ const MedicineForm = ({ visible, onClose }) => {
         6: require('../../../assets/treatmentplan/image 56.png'), // tubing
         7: require('../../../assets/treatmentplan/image 55.png'), // spray
         8: require('../../../assets/treatmentplan/image 54.png'), // drops
-       // 9: require('../../../assets/treatmentplan/image 57.png'), // topical (you can replace with the correct path)
+       // 9: require('../../../assets/treatmentplan/image 57.png'), // topical
       };
    
   
@@ -79,6 +66,8 @@ const MedicineForm = ({ visible, onClose }) => {
           }));
          
           if (finalData[0]?.medicineType == 0) {
+    Alert.alert("Error",'Please select MedicineType');
+
             Toast.show({
                 type: 'error',
                 text1: 'Error',
@@ -88,16 +77,19 @@ const MedicineForm = ({ visible, onClose }) => {
             return;
           }
           if (finalData[0]?.medicineName === "") {
+            Alert.alert("Error", "Please select medicineName");
             Toast.show({
                 type: 'error',
                 text1: 'Error',
                 text2: 'Please select medicineName',
-                position: 'top', // 'top', 'bottom', 'center'
+                position: 'top',
               });
             return;
           }
           // Check if doseCount is less than 1
   if (finalData[0]?.doseCount < 1) {
+    Alert.alert("Error",'Dose count must be at least 1');
+
     Toast.show({
       type: 'error',
       text1: 'Error',
@@ -107,6 +99,8 @@ const MedicineForm = ({ visible, onClose }) => {
     return;
   }
   if (finalData[0]?.daysCount < 1) {
+    Alert.alert("Error",'Please select Days count');
+
     Toast.show({
       type: 'error',
       text1: 'Error',
@@ -115,11 +109,15 @@ const MedicineForm = ({ visible, onClose }) => {
     });
     return;
   }
+  const medicationTimeLength = finalData[0].medicationTime ? finalData[0].medicationTime.split(",").length : 0;
+  
           if (
             !finalData[0] ||
-            finalData[0].medicationTime.split(",").length <
+            medicationTimeLength <
               (finalData[0].Frequency ?? 0)
           ) {
+    Alert.alert("Error",'Please select Time of Medication');
+
             Toast.show({
                 type: 'error',
                 text1: 'Error',
@@ -131,6 +129,8 @@ const MedicineForm = ({ visible, onClose }) => {
       
           if (!finalData[0] || finalData[0].medicationTime.split(',').length > (finalData[0].Frequency ?? 0)) {
             if(!finalData[0].medicationTime.includes("As Per Need")){
+    Alert.alert("Error", `Please Select ${finalData[0].Frequency} Time of Medication`);
+
               Toast.show({
                 type: 'error',
                 text1: 'Error',
@@ -141,28 +141,13 @@ const MedicineForm = ({ visible, onClose }) => {
               return;
             }
           }
-          const response = await authPost(
-            `medicine`,
-            { medicines: finalData },
-            user.token
-          );
-          
-          if (response.message === "success") {
-            Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'Medicine successfully added',
-                position: 'top', // or 'bottom' or 'center'
-                visibilityTime: 4000, // how long the toast will be visible (in milliseconds)
-              });
-            setMedicineData([medicineInitialState]);
-            // setNewMedicineList(response.medicines);
-            onClose();
-          } else {
-            
-            showErrorToast(response.message); // Show toast for error
-          }
-        // onClose()
+          medData(finalData);
+          onClose();
+          setMedicineData([medicineInitialState]);
+
+          return
+        
+         
     }
 
 
@@ -420,6 +405,7 @@ const MedicineForm = ({ visible, onClose }) => {
     placeholder="Enter number of days"
     style={styles.textInput}
     maxLength={3}  // Set a limit to how many digits can be entered
+      label="Enter number of days"
   />
 </View>
       
@@ -640,7 +626,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 20,
         width: '90%',
-        elevation: 5,
     },
     header: {
         backgroundColor: '#007bff',
@@ -839,4 +824,4 @@ const styles = StyleSheet.create({
     
 });
 
-export default MedicineForm
+export default PostOpMedication

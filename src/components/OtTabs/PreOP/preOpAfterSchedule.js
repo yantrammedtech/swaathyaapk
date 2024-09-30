@@ -61,6 +61,10 @@ if (currentPatient?.gender === 1) {
   genderText = "Other"; 
 }
 
+
+
+
+
   return (
     <PaperProvider>
  <ScrollView style={styles.container}   contentContainerStyle={styles.scrollViewContent}>
@@ -157,7 +161,7 @@ if (currentPatient?.gender === 1) {
 
    <Pressable
            style={[styles.box, styles.outPatient]}
-           onPress={() => navigation.navigate('EmergencyActivePeopleList')}
+           onPress={() => navigation.navigate('PostOpRecord')}
          >
            <View style={styles.boxContent}>
             
