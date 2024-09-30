@@ -186,7 +186,7 @@ const Dashboard = ({ onNotificationPress }) => {
               style={styles.boxImage}
               resizeMode="contain"
             />
-            <Text style={styles.boxText}>Record</Text>
+            <Text style={styles.boxText}>Discharge Record</Text>
           </View>
           <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
             <Icon name="arrow-upward" size={24} color="#fff" />
