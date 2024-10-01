@@ -240,6 +240,8 @@ const getRandomColor = () => {
 const backgroundColor = getRandomColor();
 
   const renderPatient = ({ item }) => {
+console.log("current item===========",item)
+
     const backgroundColor = getRandomColor();
     return (
       <TouchableOpacity
@@ -290,33 +292,37 @@ const backgroundColor = getRandomColor();
             <Icon name="arrow-upward" size={24} color="#FFA500" />
           </TouchableOpacity>
         </View>
-        <View style={styles.btncontainer}>
-      {/* Reject Button */}
-      <TouchableOpacity 
-  style={styles.rejectButton} 
-  onPress={() => {
-    setVisible(true); 
-    setCurrentPatientTimelineId(item.patientTimeLineID);
-  }}
+
+        {item.status !== 'approved' && (
+ <View style={styles.btncontainer}>
+ {/* Reject Button */}
+ <TouchableOpacity 
+style={styles.rejectButton} 
+onPress={() => {
+setVisible(true); 
+setCurrentPatientTimelineId(item.patientTimeLineID);
+}}
 > 
-  <Text style={styles.rejectbuttonText}>Reject</Text>
+<Text style={styles.rejectbuttonText}>Reject</Text>
 </TouchableOpacity>
 
 
-      {/* Accept Button */}
-      <TouchableOpacity style={styles.acceptButton}>
-        <Text style={styles.acceptButtonText} onPress={() => {
-          setCurrentPatientTimelineId(item.patientTimeLineID);
-    submitHandler("approved");
-  }} >Accept</Text>
-      </TouchableOpacity>
-    </View>
+ {/* Accept Button */}
+ <TouchableOpacity style={styles.acceptButton}>
+   <Text style={styles.acceptButtonText} onPress={() => {
+     setCurrentPatientTimelineId(item.patientTimeLineID);
+submitHandler("approved");
+}} >Accept</Text>
+ </TouchableOpacity>
+</View>
+        )}
+       
       </TouchableOpacity>
     );
   };
  
   
-
+console.log("current pat===========",currentPatient)
 
   return (
     <View style={styles.container}>

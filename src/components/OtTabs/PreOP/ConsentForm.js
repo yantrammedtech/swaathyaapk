@@ -1,13 +1,46 @@
 import React, { useState } from 'react'
-import { View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, ScrollView , Modal, Alert} from 'react-native';
+  
+  import { View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, ScrollView ,Button, Modal, Alert,Linking } from 'react-native';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import * as DocumentPicker from "expo-document-picker";
 import { useNavigation } from '@react-navigation/native';
+import { authFetch } from '../../../axios/authFetch';
+import { useSelector } from 'react-redux';
+import PdfIcon from "react-native-vector-icons/FontAwesome"; // PDF icon from FontAwesome
+import { authPostAttachments } from '../../../axios/authPostAttachments';
+import Toast from 'react-native-toast-message';
+import { authDelete } from '../../../axios/authDelete';
+
+
 
 const ConsentForm = () => {
+  const user = useSelector((state) => state.currentUserData);
+  const currentPatient = useSelector((state) => state.currentPatientData);
+  const patientTimeLineID = currentPatient?.patientTimeLineID;
 
     const [reports, setReports] = useState([]);
     const navigation = useNavigation()
+    
+  const [modalVisible, setModalVisible] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState(null);
+  const [flag,setFlag] = useState(false)
+
+    
+  const getAllReports = async () => {
+    const response = await authFetch(
+      `attachment/${user.hospitalID}/all/${patientTimeLineID}/consentform`,
+      user.token
+    );
+    if (response.message == 'success') {
+      setReports(response.attachments);
+    }
+  };
+  React.useEffect(() => {
+    if (patientTimeLineID && user.token) {
+      getAllReports();
+    }
+  }, [patientTimeLineID, user,flag]);
+
     
   const handleUploadPress = async () => {
     try {
@@ -46,11 +79,6 @@ const ConsentForm = () => {
         return;
       }
   
-//temporary----------------
-      const newReport = { uri, name, type: mimeType };
-      setReports(prevReports => [...prevReports, newReport]);
-
-
       // Prepare form data for the file upload
       const form = new FormData();
   
@@ -69,18 +97,35 @@ const ConsentForm = () => {
       form.append("category", String(category));
   
       // Perform the API call for file upload
-      return
+      
       const reportResponse = await authPostAttachments(
-`attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
+`attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}/consentform`,
         form,
         user.token
       );
-  
       // Handle the response from the server
       if (reportResponse.message === "success") {
-        Alert.alert("Success", "Report successfully uploaded");
+        Toast.show({
+          type: 'success',
+          position: 'top',
+          text1: 'Success',
+          text2: 'Consent Form successfully uploaded',
+          visibilityTime: 3000,
+          autoHide: true,
+          bottomOffset: 40,
+        });
+        setFlag(!flag)
       } else {
-        Alert.alert("Error", "An error occurred: " + reportResponse.message);
+        Toast.show({
+          type: 'error',
+          position: 'top',
+          text1: 'Error',
+          text2: reportResponse.message,
+          visibilityTime: 3000,
+          autoHide: true,
+          bottomOffset: 40,
+        });
+        // Alert.alert("Error", "An error occurred: " + reportResponse.message);
       }
     } catch (err) {
       Alert.alert("Error", "An error occurred: " + err.message);
@@ -115,8 +160,13 @@ const ConsentForm = () => {
         </View>
         <View style={styles.fileInfo}>
           <Text style={styles.fileName}>
-            {item.fileName ? item.fileName : "No file name"}
+            {item.fileName ? item.fileName : ""}
           </Text>
+         {item.name && (
+           <Text style={styles.fileName}>
+           {item.name ? item.name : "No file name"}
+         </Text>
+         )}
           <Text style={styles.fileDetails}>
             {" "}
             Added on:
@@ -126,7 +176,7 @@ const ConsentForm = () => {
               year: "2-digit",
             })}
           </Text>
-          <Text style={styles.fileSubmitter}>Submitted by: 123</Text>
+          <Text style={styles.fileSubmitter}>Submitted by:  {item.userID}</Text>
         </View>
 
         {/* Download and Delete Icons */}
@@ -139,7 +189,7 @@ const ConsentForm = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            // onPress={() => handleOpenModal(item.id)}
+            onPress={() => handleOpenModal(item.id)}
             style={styles.iconButton}
           >
             <Icon name="delete" size={20} color="#000" />
@@ -151,9 +201,42 @@ const ConsentForm = () => {
 
   const handlePress = () => {
     console.log("Add Schedule button pressed");
-    navigation.navigate("Schedule")
+    navigation.navigate("AnaesthesiaRecord")
     // navigate to anesthesiarecord
   };
+
+  const handleDeleteReport = async (id) => {
+    try {
+      await authDelete(`attachment/${user.hospitalID}/${id}/consentform`, user.token);
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Success',
+        text2: 'Deleted  successfully ',
+        visibilityTime: 3000,
+        autoHide: true,
+        bottomOffset: 40,
+      });
+      // Optionally, update state or notify the user
+      setModalVisible(false);
+      setFlag(!flag)
+    } catch (error) {
+      console.error("Error deleting report:", error);
+    }
+  };
+
+  const handleOpenModal = (id) => {
+    setReportToDelete(id);
+    setModalVisible(true);
+  };
+
+  const handleClose = () => {
+    setModalVisible(false);
+    setReportToDelete(null);
+  };
+
+  console.log("patientTimeLineID====",patientTimeLineID)
+
 
   return (
    <View style={styles.container}>
@@ -188,6 +271,37 @@ const ConsentForm = () => {
         <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>
     </View>
+
+
+      {/* Confirmation delete Dialog */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleClose}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Delete</Text>
+            <Text style={styles.modalText}>
+              Are you sure you want to permanently delete this file?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <Button title="No" onPress={handleClose} />
+              <View style={styles.buttonSpacing} />
+              <Button
+                title="Yes"
+                onPress={() => {
+                  if (reportToDelete) {
+                    handleDeleteReport(reportToDelete);
+                  }
+                }}
+                color="#f00" // Optional: Red color for the "Yes" button
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
    </View>
   )
 }
@@ -280,7 +394,33 @@ const styles = StyleSheet.create({
         fontSize: 16,               // Font size
         textAlign: 'center',        // Center text
         fontWeight: 'bold',         // Bold text
-      }
+      },
+      modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0,0,0,0.5)", // Semi-transparent background
+      },
+      modalContent: {
+        width: 300,
+        backgroundColor: "white",
+        borderRadius: 10,
+        padding: 20,
+      },
+      modalTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+      },
+      modalText: {
+        marginVertical: 20,
+      },
+      buttonContainer: {
+        flexDirection: "row",
+        justifyContent: "flex-end",
+      },
+      buttonSpacing: {
+        width: 10, // Space between buttons
+      },
 })
 
 export default ConsentForm

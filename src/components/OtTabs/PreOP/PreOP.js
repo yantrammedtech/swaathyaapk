@@ -166,7 +166,7 @@ useEffect(() => {
                 bottomOffset: 40,
               });
               
-             // navigate("/hospital-dashboard/ot");
+             
             } else {
               Alert.alert(
                 "Error",                  
@@ -191,6 +191,11 @@ useEffect(() => {
 
   const handleNext = () => {
     navigation.navigate("PreOpRecordAfterSchedule")
+  }
+
+  
+  const handleScheduleNext = () => {
+    navigation.navigate("Schedule")
   }
 
   const getOTData = async () => {
@@ -219,6 +224,27 @@ useEffect(() => {
 
 
 
+   
+const isAnesthesiaFormVisible = () => {
+  if (
+    patientStage > OTPatientStages.APPROVED &&
+    userType === OTUserTypes.ANESTHETIST
+  )
+    return true;
+  if (
+    patientStage >= OTPatientStages.SCHEDULED &&
+    userType === OTUserTypes.SURGEON
+  )
+    return true;
+  return false;
+};
+
+  useEffect(() => {
+    isAnesthesiaFormVisible()
+
+  },[patientStage, userType, user, currentPatient])
+
+console.log("isAnesthesiaFormVisible=========",isAnesthesiaFormVisible())
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -422,13 +448,22 @@ useEffect(() => {
           </View>
           )}
 
-    
+    {/* SURGEON to schedule surgery  */}
     {patientStage === OTPatientStages.APPROVED &&
   userType === OTUserTypes.SURGEON && (
-    <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+    <TouchableOpacity style={styles.nextButton} onPress={handleScheduleNext}>
       <Text style={styles.nextButtonText}>NEXT</Text>
     </TouchableOpacity>
 )}
+
+
+{/* after surgery schedule  navigato to pre-op(consent-form, anesthesia record, postop) */}
+{isAnesthesiaFormVisible()  && (
+    <TouchableOpacity style={styles.nextButton2} onPress={handleNext}>
+      <Text style={styles.nextButtonText}>NEXT</Text>
+    </TouchableOpacity>
+)}
+
 
 
  {/* ====================dailog box for reject============== */}
@@ -581,6 +616,15 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     width:"30%",
+   
+  },
+  nextButton2: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    borderRadius: 25,
+    alignItems: 'center',
+    width:"30%",
+
   },
   nextButtonText: {
     color: 'white',

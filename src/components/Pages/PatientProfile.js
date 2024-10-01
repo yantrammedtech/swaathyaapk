@@ -43,7 +43,7 @@ const PatientProfile = ({ route }) => {
             dispatch({ type: "currentPatientData", payload: response.patient })
         }
     }
-
+// console.log("currentPatientData",currentPatientData)
     useEffect(() => {
         getCurrentPatient()
     }, [])
@@ -95,7 +95,7 @@ const PatientProfile = ({ route }) => {
                         <Text style={styles.label}>Admit Date</Text>
                         <Text style={styles.colon}>:</Text>
                         <Text style={styles.value}>
-                            {currentPatientData?.addedOn ? new Date(currentPatientData.startTime).toLocaleDateString() : 'Not Available'}
+                            {currentPatientData?.startTime ? new Date(currentPatientData.startTime).toLocaleDateString() : 'Not Available'}
                         </Text>
                     </View>
                     <View  style={styles.shakecontainer}>
