@@ -61,6 +61,7 @@ import PreOpRecordAfterSchedule from "./src/components/OtTabs/PreOP/preOpAfterSc
 
 import { IconButton, Menu, Divider } from 'react-native-paper';
 import PostOpRecord from "./src/components/OtTabs/PreOP/PostOpRecord";
+import Record from "./src/components/Record/Record";
 
 const Stack = createNativeStackNavigator();
 
@@ -858,6 +859,42 @@ const Routing = () => {
         />
 
   {/* ===================Ot End====PreOpRecordAfterSchedule============= */}
+
+  
+<Stack.Screen
+          name="Record"
+          component={Record}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Record',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Icon
+                name="more-vert" // This is the icon resembling a colon (vertical ellipsis)
+                size={24}
+                color="#fff"
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  // Handle press event here
+                }}
+              />
+            ),
+          })}
+        />
 
         <Stack.Screen name="Page1" component={Page1} options={{ title: 'Page1' }} />
       </Stack.Navigator>

@@ -6,13 +6,18 @@ import { useSelector } from 'react-redux';
 
 import { useNavigation } from '@react-navigation/native';
 import { authFetch } from '../../axios/authFetch';
-import { patientStatus } from '../../utility/role';
+import { patientStatus, Role_NAME } from '../../utility/role';
 import BasicTabs from '../Emergency/BasicTabs';
 
 const InPatientsList = () => {
     const navigation = useNavigation();
     const [recentPatient, setRecentPatient] = useState([])
     const [activeTab, setActiveTab] = useState('LatestPatients');
+
+  const [allList, setAllList] = React.useState([]);
+  const [search, setSearch] = React.useState("");
+
+
 
     const user = useSelector((state) => {
         return state.currentUserData
@@ -110,6 +115,34 @@ const InPatientsList = () => {
     };
 
 
+    async function getAllPatient() {
+        setAllList([]);
+        const opdListResponse = await authFetch(
+          `patient/${user.hospitalID}/patients/${
+            String(patientStatus.outpatient) +
+            '$' +
+            String(patientStatus.discharged) +
+            '$' +
+            String(patientStatus.inpatient) +
+            '$' +
+            String(patientStatus.emergency)
+          }?role=${Role_NAME.nurse}&userID=${user.id}`,
+          user.token
+        );
+        if (opdListResponse.message == 'success') {
+          setAllList(() => {
+            return [...opdListResponse.patients];
+          });
+        }
+      }
+      React.useEffect(() => {
+        if (user.token) getAllPatient();
+      }, [user]);
+
+    
+const data = allList.filter((el) => String(el.phoneNumber).includes(search))
+    
+
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
@@ -117,12 +150,16 @@ const InPatientsList = () => {
                     <TextInput
                         style={styles.searchInput}
                         placeholder="Search patient data..."
+                        value={search} 
+                        onChangeText={text => setSearch(text)} 
                     />
                     <Icon name="search" size={20} color="#999" style={styles.searchIcon} />
                 </View>
             </View>
 
-            <View style={styles.tabButtonContainer}>
+            {!search ? (
+                <>
+  <View style={styles.tabButtonContainer}>
                 {/* Latest Patient List Tab */}
                 <TouchableOpacity
                     style={[
@@ -160,6 +197,18 @@ const InPatientsList = () => {
                 />
 
             </ScrollView>
+                </>
+            ) :(
+                <>
+                 <FlatList
+                    data={data}
+                    renderItem={renderPatient}
+                    keyExtractor={(item) => item.id.toString()}
+                />
+                </>
+            )}
+
+          
         </View>
     );
 };

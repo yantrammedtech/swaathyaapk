@@ -62,36 +62,36 @@ const Airway = () => {
           title="MP 1"
           checked={mainFormFields.mp1}
           onPress={() => handleCheckboxChange('mp1', !mainFormFields.mp1)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity:currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="MP 2"
           checked={mainFormFields.mp2}
           onPress={() => handleCheckboxChange('mp2', !mainFormFields.mp2)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity:currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="MP 3"
           checked={mainFormFields.mp3}
           onPress={() => handleCheckboxChange('mp3', !mainFormFields.mp3)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="MP 4"
           checked={mainFormFields.mp4}
           onPress={() => handleCheckboxChange('mp4', !mainFormFields.mp4)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -102,12 +102,12 @@ const Airway = () => {
         <TextInput
         
         style={[styles.input, {
-          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
-          backgroundColor: currentPatient.status === "approved" ? '#e0e0e0' : '#fff', // Change background color to indicate disabled
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
+          backgroundColor: currentPatient.status !== "pending" ? '#e0e0e0' : '#fff', // Change background color to indicate disabled
         }]}
           value={mainFormFields.tmDistance}
           onChangeText={(value) => handleTextFieldInput("tmDistance", value)}
-          editable={currentPatient.status !== "approved"} // Disable input if status is approved
+          editable={currentPatient.status === "pending"} // Disable input if status is approved
         
         />
       </View>
@@ -120,23 +120,23 @@ const Airway = () => {
             style={[
               styles.button,
               mainFormFields.mouthOpening === 'yes' && styles.selectedButton,
-              currentPatient.status === 'approved' && styles.disabledButton
+              currentPatient.status !== "pending" && styles.disabledButton
             ]}
             onPress={() => handleButtonGroupChange('mouthOpening', 'yes')}
             disabled={currentPatient.status === 'approved'}
           >
-              <Text style={currentPatient.status === 'approved' ? styles.disabledText : null}>Yes</Text>
+              <Text style={currentPatient.status !== "pending" ? styles.disabledText : null}>Yes</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.button,
               mainFormFields.mouthOpening === 'no' && styles.selectedButton,
-              currentPatient.status === 'approved' && styles.disabledButton
+              currentPatient.status !== "pending" && styles.disabledButton
             ]}
             onPress={() => handleButtonGroupChange('mouthOpening', 'no')}
-            disabled={currentPatient.status === 'approved'}
+            disabled={currentPatient.status !== "pending"}
           >
-            <Text style={currentPatient.status === 'approved' ? styles.disabledText : null}>No</Text>
+            <Text style={currentPatient.status !== "pending" ? styles.disabledText : null}>No</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -150,12 +150,12 @@ const Airway = () => {
       style={[
         styles.button,
         mainFormFields.neckRotation === 'full' && styles.selectedButton,
-        currentPatient.status === 'approved' && styles.disabledButton, // Apply disabled style
+        currentPatient.status !== "pending" && styles.disabledButton, // Apply disabled style
       ]}
       onPress={() => handleButtonGroupChange('neckRotation', 'full')}
-      disabled={currentPatient.status === 'approved'} // Disable if status is approved
+      disabled={currentPatient.status !== "pending"} // Disable if status is approved
     >
-      <Text style={currentPatient.status === 'approved' ? styles.disabledText : null}>
+      <Text style={currentPatient.status !== "pending" ? styles.disabledText : null}>
         Full
       </Text>
     </TouchableOpacity>
@@ -165,12 +165,12 @@ const Airway = () => {
       style={[
         styles.button,
         mainFormFields.neckRotation === 'limited' && styles.selectedButton,
-        currentPatient.status === 'approved' && styles.disabledButton, // Apply disabled style
+        currentPatient.status !== "pending" && styles.disabledButton, // Apply disabled style
       ]}
       onPress={() => handleButtonGroupChange('neckRotation', 'limited')}
-      disabled={currentPatient.status === 'approved'} // Disable if status is approved
+      disabled={currentPatient.status !== "pending"} // Disable if status is approved
     >
-      <Text style={currentPatient.status === 'approved' ? styles.disabledText : null}>
+      <Text style={currentPatient.status !== "pending" ? styles.disabledText : null}>
         Limited
       </Text>
     </TouchableOpacity>
@@ -180,12 +180,12 @@ const Airway = () => {
       style={[
         styles.button,
         mainFormFields.neckRotation === 'no' && styles.selectedButton,
-        currentPatient.status === 'approved' && styles.disabledButton, // Apply disabled style
+        currentPatient.status !== "pending" && styles.disabledButton, // Apply disabled style
       ]}
       onPress={() => handleButtonGroupChange('neckRotation', 'no')}
-      disabled={currentPatient.status === 'approved'} // Disable if status is approved
+      disabled={currentPatient.status !== "pending"} // Disable if status is approved
     >
-      <Text style={currentPatient.status === 'approved' ? styles.disabledText : null}>
+      <Text style={currentPatient.status !== "pending" ? styles.disabledText : null}>
         No
       </Text>
     </TouchableOpacity>
@@ -198,72 +198,72 @@ const Airway = () => {
           title="Morbid obesity"
           checked={mainFormFields.morbidObesity}
           onPress={() => handleCheckboxChange('morbidObesity', !mainFormFields.morbidObesity)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="H/o difficult airway"
           checked={mainFormFields.difficultAirway}
           onPress={() => handleCheckboxChange('difficultAirway', !mainFormFields.difficultAirway)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="Teeth poor repair/loose"
           checked={mainFormFields.teethPoorRepair}
           onPress={() => handleCheckboxChange('teethPoorRepair', !mainFormFields.teethPoorRepair)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="Micrognathia"
           checked={mainFormFields.micrognathia}
           onPress={() => handleCheckboxChange('micrognathia', !mainFormFields.micrognathia)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity:currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="Edentulous"
           checked={mainFormFields.edentulous}
           onPress={() => handleCheckboxChange('edentulous', !mainFormFields.edentulous)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="Beard"
           checked={mainFormFields.beard}
           onPress={() => handleCheckboxChange('beard', !mainFormFields.beard)}
-          disabled={currentPatient.status === "approved"}
+          disabled={ currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="Short muscular neck"
           checked={mainFormFields.shortMuscularNeck}
           onPress={() => handleCheckboxChange('shortMuscularNeck', !mainFormFields.shortMuscularNeck)}
-          disabled={currentPatient.status === "approved"}
+          disabled={ currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity:  currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
         <CheckBox
           title="Prominent incisors"
           checked={mainFormFields.prominentIncisors}
           onPress={() => handleCheckboxChange('prominentIncisors', !mainFormFields.prominentIncisors)}
-          disabled={currentPatient.status === "approved"}
+          disabled={ currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity:  currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>

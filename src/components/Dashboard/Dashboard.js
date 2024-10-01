@@ -179,7 +179,7 @@ const Dashboard = ({ onNotificationPress }) => {
         }
 
         {/* Record */}
-        <Pressable style={[styles.box, styles.recordPatient]}>
+        <Pressable style={[styles.box, styles.recordPatient]} onPress={() => navigation.navigate('Record')}>
           <View style={styles.boxContent}>
             <Image
               source={require('../../assets/Clip path group-1.png')}

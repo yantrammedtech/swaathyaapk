@@ -109,6 +109,8 @@ const categorizeMedication = (medData) => {
       );
   
       if (category && medications[category]) {
+      setSelectedType(category)
+
         // Push the medication data into the corresponding category array
         updatedMedications[category].push(item);
       }
@@ -177,6 +179,10 @@ const categorizeMedication = (medData) => {
       // console.log(err);
     }
   };
+
+  const handleTransfer = () => {
+     navigation.navigate('TransferPatient')
+  }
 
   return (
     <View style={styles.container}>
@@ -331,6 +337,11 @@ const categorizeMedication = (medData) => {
     </TouchableOpacity>
 
 
+    <TouchableOpacity style={styles.transferbtn} onPress={handleTransfer}>
+      <Text style={styles.nextButtonText}>Transfer</Text>
+    </TouchableOpacity>
+
+
       </ScrollView>
     )}
 
@@ -468,6 +479,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width:"30%",
 
+  },
+  transferbtn: {
+    backgroundColor: '#28a745',
+    paddingVertical: 12,
+    borderRadius: 25,
+    width:"30%",
+    alignItems: 'center',
+    width: '30%',
+    position: 'absolute',  // Position it absolutely
+    bottom: 20,            // Distance from the bottom of the screen
+    alignSelf: 'center',
   },
   centerContainer: {
     flex: 1,                 // Ensures it takes up the available space

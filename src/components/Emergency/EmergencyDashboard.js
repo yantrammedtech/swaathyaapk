@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView,Pressable,Dimensions, FlatList } from 'react-native'; // Added Image import
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView,Pressable,Dimensions, FlatList , TextInput} from 'react-native'; // Added Image import
 import Header from '../Dashboard/Header';
 import Sidebar from '../Dashboard/Sidebar';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -17,6 +17,10 @@ const EmergencyDashboard = ({ onNotificationPress }) => {
   const [recentPatient, setRecentPatient] = useState([])
 const user = useSelector((state) =>state.currentUserData)
 const currentZone = useSelector((state) =>state.currentZone)
+
+const [allList, setAllList] = React.useState([]);
+const [search, setSearch] = React.useState("");
+
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
@@ -110,8 +114,34 @@ const getRandomColor = () => {
           return 'gray'; // Default color if no zone matches
       }
     };
+
+
+     const getAllPatient = useCallback(
+    async function () {
+      setAllList([]);
+
+      const opdListResponse = await authFetch(
+        `patient/${user.hospitalID}/patients/${String(
+          patientStatus.emergency
+        )}?zone=${zoneType}`,
+        user.token
+      );
+      if (opdListResponse.message == 'success') {
+        setAllList(() => {
+          return [...opdListResponse.patients];
+        });
+      }
+    },
+    [user.hospitalID, user.token]
+  );
+
+  React.useEffect(() => {
+    if (user.token) getAllPatient();
+  }, [getAllPatient, user, currentZone]);
   
   console.log("response===",recentPatient)
+  const data = allList.filter((el) => String(el.phoneNumber).includes(search))
+
   return (
     <View style={styles.container}>
       <Header toggleSidebar={toggleSidebar} onNotificationPress={onNotificationPress} />
@@ -123,85 +153,111 @@ const getRandomColor = () => {
       <View style={[styles.redbox, { backgroundColor: getBackgroundColor() }]}>
         <Text style={styles.redtext}>{currentZone} </Text>
       </View>
+      <View style={styles.searchInputContainer}>
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search patient data..."
+                        value={search} 
+                        onChangeText={text => setSearch(text)} 
+                    />
+                    <Icon name="search" size={20} color="#999" style={styles.searchIcon} />
+                </View>
     </View>
-        <View style={styles.imgcontent}>
 
-          <Image source={require('../../assets/imge.png')} style={styles.image} />
-        </View>
-        <TouchableOpacity style={styles.cardContainer} onPress={navigateToVisualization}>
-          <View style={styles.header}>
-            <Text style={styles.numberText}>400 +</Text>
-            <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon]} onPress={navigateToVisualization}>
-              <Icon name="arrow-upward" size={24} color="#FFA500" />
-            </TouchableOpacity>
-          </View>
+{!search ? (
+  <>
 
-          <Text style={styles.subText}>People visited by in month and zone</Text>
+<View style={styles.imgcontent}>
 
-          <View style={styles.imageContainer}>
-            <Image source={require('../../assets/pp1.png')} style={styles.images} />
-            <Image source={require('../../assets/pp3.png')} style={styles.images} />
-            <Image source={require('../../assets/pp1.png')} style={styles.images} />
-            <Image source={require('../../assets/pp3.png')} style={styles.images} />
+<Image source={require('../../assets/imge.png')} style={styles.image} />
+</View>
+<TouchableOpacity style={styles.cardContainer} onPress={navigateToVisualization}>
+<View style={styles.header}>
+  <Text style={styles.numberText}>400 +</Text>
+  <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon]} onPress={navigateToVisualization}>
+    <Icon name="arrow-upward" size={24} color="#FFA500" />
+  </TouchableOpacity>
+</View>
+
+<Text style={styles.subText}>People visited by in month and zone</Text>
+
+<View style={styles.imageContainer}>
+  <Image source={require('../../assets/pp1.png')} style={styles.images} />
+  <Image source={require('../../assets/pp3.png')} style={styles.images} />
+  <Image source={require('../../assets/pp1.png')} style={styles.images} />
+  <Image source={require('../../assets/pp3.png')} style={styles.images} />
 
 
-          </View>
-        </TouchableOpacity>
+</View>
+</TouchableOpacity>
 
-        <View style={styles.boxContainer}>
-        
-        <Pressable
-            style={[styles.box, styles.outPatient]}
-            onPress={() => navigation.navigate('EmergencyActivePeopleList')}
-          >
-            <View style={styles.boxContent}>
-              <Image
-                source={require('../../assets/plus.svg')}
-                style={styles.boxImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.boxText}>Active {'\n'}Patient List</Text>
-              <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
-                <Icon name="arrow-upward" size={24} color="#FFA500" />
-              </TouchableOpacity>
-            </View>
-          </Pressable>
+<View style={styles.boxContainer}>
 
-       
-          <Pressable style={[styles.box, styles.inPatient]}
-            onPress={() => navigation.navigate('EmergencyDischargePeopleList')}
-
-          >
-            <View style={styles.boxContent}>
-            <Image
-                source={require('../../assets/Clip path group.png')}
-                style={styles.boxImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.boxText}>Discharge {'\n'}Patient List</Text>
-              <View style={styles.moveEnd}>
-
-              <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
-                <Icon name="arrow-upward" size={24} color="#FFA500" />
-              </TouchableOpacity>
-              </View>
-            </View>
-            
-          </Pressable>
-        </View>
-
-        <View style={styles.headerContainer}>
-          <Text style={styles.headingText}>Latest Patient Data</Text>
-          <Text style={styles.seeAllText}>See All</Text>
-        </View>
-
-      
-        
-    <FlatList
-      data={recentPatient}
-      renderItem={renderPatient}
-      keyExtractor={(item) => item.id.toString()}
+<Pressable
+  style={[styles.box, styles.outPatient]}
+  onPress={() => navigation.navigate('EmergencyActivePeopleList')}
+>
+  <View style={styles.boxContent}>
+    <Image
+      source={require('../../assets/plus.svg')}
+      style={styles.boxImage}
+      resizeMode="contain"
     />
+    <Text style={styles.boxText}>Active {'\n'}Patient List</Text>
+    <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
+      <Icon name="arrow-upward" size={24} color="#FFA500" />
+    </TouchableOpacity>
+  </View>
+</Pressable>
+
+
+<Pressable style={[styles.box, styles.inPatient]}
+  onPress={() => navigation.navigate('EmergencyDischargePeopleList')}
+
+>
+  <View style={styles.boxContent}>
+  <Image
+      source={require('../../assets/Clip path group.png')}
+      style={styles.boxImage}
+      resizeMode="contain"
+    />
+    <Text style={styles.boxText}>Discharge {'\n'}Patient List</Text>
+    <View style={styles.moveEnd}>
+
+    <TouchableOpacity style={[styles.closeButton, styles.rotatedIcon2]}>
+      <Icon name="arrow-upward" size={24} color="#FFA500" />
+    </TouchableOpacity>
+    </View>
+  </View>
+  
+</Pressable>
+</View>
+
+<View style={styles.headerContainer}>
+<Text style={styles.headingText}>Latest Patient Data</Text>
+<Text style={styles.seeAllText}>See All</Text>
+</View>
+
+
+
+<FlatList
+data={recentPatient}
+renderItem={renderPatient}
+keyExtractor={(item) => item.id.toString()}
+/>
+
+  </>
+) : (
+  <>
+  <FlatList
+data={data}
+renderItem={renderPatient}
+keyExtractor={(item) => item.id.toString()}
+/>
+  </>
+)}
+
+
 
 
 
@@ -462,9 +518,11 @@ const styles = StyleSheet.create({
     flex: 1, // Ensures the container takes up the full screen
     justifyContent: 'flex-start', // Aligns children to the top
     alignItems: 'flex-start', // Aligns children to the left
+    flexDirection:'row',
+    marginTop:10,
   },
   redbox: {
-  
+    margin:8,
     padding: 10, // Add some padding inside the box
     borderRadius: 5, // Optional: rounds the corners of the box
   },
@@ -472,6 +530,26 @@ const styles = StyleSheet.create({
     color: '#000', // White text color
     fontSize: 16, // Adjust font size as needed
   },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    height: 40,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff',
+    margin:8,
+    width:'75%'
+},
+searchInput: {
+    flex: 1,
+    height: '100%',
+    paddingLeft: 10,
+},
+searchIcon: {
+    paddingLeft: 10,
+},
  
 });
 
