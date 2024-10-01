@@ -60,6 +60,7 @@ import AnaesthesiaRecord from "./src/components/OtTabs/PreOP/AnaesthesiaRecord "
 import PreOpRecordAfterSchedule from "./src/components/OtTabs/PreOP/preOpAfterSchedule";
 
 import { IconButton, Menu, Divider } from 'react-native-paper';
+import PostOpRecord from "./src/components/OtTabs/PreOP/PostOpRecord";
 
 const Stack = createNativeStackNavigator();
 
@@ -791,6 +792,31 @@ const Routing = () => {
           })}
         />
 
+                  
+<Stack.Screen
+          name="PostOpRecord"
+          component={PostOpRecord}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Post OP-Record',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
+          })}
+        />
 
     
 <Stack.Screen
