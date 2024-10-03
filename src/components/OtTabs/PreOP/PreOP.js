@@ -1,61 +1,106 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, ScrollView , Modal} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { authFetch } from '../../../axios/authFetch';
+import { useSelector } from 'react-redux';
+import { authPost } from '../../../axios/authPost';
+import Toast from 'react-native-toast-message';
+import PostOpMedication from './PostOpMedication';
 
 
-const reports = [
-  {
-    id: '1',
-    type: 'PDF',
-    title: 'CBP test report',
-    icdCode: 'ICD - 10',
-    submittedBy: 'Submitted by Laxmi',
-    fileIcon: 'file-pdf',
-    fileColor: 'red',
-  },
-  {
-    id: '2',
-    type: 'JPG',
-    title: 'Blood test report',
-    icdCode: 'ICD - 10',
-    submittedBy: 'Submitted by Laxmi',
-    fileIcon: 'file-image',
-    fileColor: 'orange',
-  },
-  {
-    id: '3',
-    type: 'PDF',
-    title: 'Fever test report',
-    icdCode: 'ICD - 10',
-    submittedBy: 'Submitted by Laxmi',
-    fileIcon: 'file-pdf',
-    fileColor: 'blue',
-  },
-  {
-    id: '4',
-    type: 'PDF',
-    title: 'CRP test report',
-    icdCode: 'ICD - 10',
-    submittedBy: 'Submitted by Laxmi',
-    fileIcon: 'file-pdf',
-    fileColor: 'red',
-  },
-];
 
-const medicineList = [{"addedOn": "2024-09-25T10:48:36.000Z", "daysCount": 5, "doseCount": 100, "doseTimings": "16:18", "id": 1871, "lastModified": "2024-09-25T10:48:36.000Z", "medicationTime": "After Breakfast", "medicineName": "mnil 10mg tablet", "medicineType": 2, "notes": "", "timeLineID": 2404, "userID": 378},]
+const reports = [];
 
+// const medicineList = [{"addedOn": "2024-09-25T10:48:36.000Z", "daysCount": 5, "doseCount": 100, "doseTimings": "16:18", "id": 1871, "lastModified": "2024-09-25T10:48:36.000Z", "medicationTime": "After Breakfast", "medicineName": "mnil 10mg tablet", "medicineType": 2, "notes": "", "timeLineID": 2404, "userID": 378},]
+
+const medicineList = []
 const PreOp = () => {
-    const [isBloodArranged, setIsBloodArranged] = useState(false);
+  const user = useSelector((state) =>state.currentUserData)
+  const currentPatient = useSelector((state) => state.currentPatientData);
+  const patientTimeLineID = currentPatient?.patientTimeLineID;
+  const  userType=useSelector((state)  => state.userType)
+
+  const navigation = useNavigation()
+
+    const [arrangeBlood, setArrangeBlood] = useState(false);
+    const [riskConsent, setRiskConsent] = useState(false)
     const [selectedTab, setSelectedTab] = useState("Tests");
     const [rejectReason, setRejectReason] = React.useState("");
 const [visible, setVisible] = useState(false);
+const [notes, setNotes] = useState('');
+const [patientStage, setPatientStage]=useState(0)
 
-const navigation = useNavigation()
+const [modalVisible, setModalVisible] = useState(false);
+const  [medicineList, setMedicineList] = useState([])
+
+const [medications, setMedications] = useState({
+    capsules: [],
+    syrups: [],
+    tablets: [],
+    injections: [],
+    ivLine: [],
+    tubing: [],
+    topical: [],
+    drop: [],
+    spray: [],
+  });
+
+
+
+
+ // Function to categorize the received medication data
+ const categorizeMedication = (medData) => {
+  const updatedMedications = { ...medications };
+  medData.forEach((item) => {
+    // Find the correct category based on the medicineType
+    const category = Object.keys(medicineCategory).find(
+      (key) => medicineCategory[key] === item.medicineType
+    );
+
+    if (category && medications[category]) {
+      // Push the medication data into the corresponding category array
+      updatedMedications[category].push(item);
+    }
+  });
+  setMedications(updatedMedications); 
+};
+
+const handleCloseModal = () => {
+  setModalVisible(false);
+};
+
+const handleSaveMed = () => {
+  setModalVisible(false);
+};
+
+
+const handleMedData  = (data) => {
+  const receivedMedData = data
+categorizeMedication(receivedMedData);
+setMedicineList(receivedMedData)
+
+}
+
+const medicineCategory = {
+  capsules: 1,
+  syrups: 2,
+  tablets: 3,
+  injections: 4,
+  ivLine: 5,
+  Tubing: 6,
+  Topical: 7,
+  Drops: 8,
+  Spray: 9,
+};
 
     // Toggle function for button click
     const handleArrangeBloodClick = () => {
-      setIsBloodArranged(!isBloodArranged);
+      setArrangeBlood(!arrangeBlood);
+    };
+
+    const handleRiskClick = () => {
+      setRiskConsent(!riskConsent);
     };
 
   const renderItem = ({ item }) => (
@@ -87,10 +132,176 @@ const navigation = useNavigation()
     setRejectReason(""); 
   };
 
-  const submitHandler = (status) => {
-    console.log("status",status)
+  
+  const OTPatientStages = {
+    PENDING: 1,
+    APPROVED: 2,
+    SCHEDULED: 3,
+    OPERATED: 4,
+  };
+
+  
+const OTUserTypes = {
+  ANESTHETIST: "ANESTHETIST",
+  SURGEON: "SURGEON",
+};
+
+useEffect(() => {
+  async function getPatientStatus() {
+    try {
+      
+      const res = await authFetch(
+        `ot/${user.hospitalID}/${patientTimeLineID}/getStatus`,
+        user.token
+      );
+      if (res.status === 200) {
+        const patientStatus =
+          res.data[0].status.toUpperCase()   ;
+        setPatientStage(OTPatientStages[patientStatus]);
+      }
+    } catch (err) {
+      // console.log(err);
+    }
+  }
+  if (user.token && user.hospitalID &&  patientTimeLineID) {
+    getPatientStatus();
+  }
+}, [setPatientStage, user.token, user.hospitalID, currentPatient,patientTimeLineID]);
+
+
+
+  const isInitialTabsAPICallAllowed = () => {
+    //const { patientStage, userType } = get();
+    return (
+      patientStage === OTPatientStages.PENDING &&
+      userType === OTUserTypes.ANESTHETIST
+    );
+  };
+
+  const submitHandler =  useCallback(
+    (status) => {
+       
+        const preopRecordData = {
+          notes,  
+          tests: [],  
+          medications:medications,
+          arrangeBlood,
+          riskConsent,
+        };
+  
+        if (status == "rejected" && rejectReason.length == 0) {
+          Alert.alert(
+            "Error",                  
+            "Please Enter reason",     
+            [{ text: "OK" }]          
+          );
+          return 
+        }
+  
+        const postPreOpRecord = async () => {
+          try {
+           
+            const response = await authPost(
+              `ot/${user.hospitalID}/${patientTimeLineID}/${user.id}/preopRecord`,
+              {
+                preopRecordData: preopRecordData,
+                status: status,
+                rejectReason: rejectReason,
+              },
+              user.token
+            );
+            if (response.status === 201) {
+             
+              Toast.show({
+                type: 'success',
+                position: 'top',
+                text1: 'Success',
+                text2: `Successfully Surgery ${status}`,
+                visibilityTime: 4000,
+                autoHide: true,
+                bottomOffset: 40,
+              });
+              
+             
+            } else {
+              Alert.alert(
+                "Error",                  
+                "PreOpRecord Failed",     
+                [{ text: "OK" }]          
+              );
+            }
+          } catch (err) {
+            // console.log(err);
+          }
+          setVisible(false); // Close the modal after submission
+          setRejectReason("");
+        };
+        if (isInitialTabsAPICallAllowed()) { 
+          postPreOpRecord();
+        }
+      },[patientTimeLineID, user.hospitalID,
+        user.id,
+        isInitialTabsAPICallAllowed,
+        rejectReason,
+      user.token, navigation ])
+
+  const handleNext = () => {
+    navigation.navigate("PreOpRecordAfterSchedule")
   }
 
+  
+  const handleScheduleNext = () => {
+    navigation.navigate("Schedule")
+  }
+
+  const getOTData = async () => {
+    try {
+      const response = await authFetch(
+        `ot/${user.hospitalID}/${patientTimeLineID}/getOTData`,
+        user.token
+      );
+      if (response.status == 200) {
+        const physicalExaminationData = response.data[0].physicalExamination;
+      
+        const preOPData = response.data[0].preopRecord;
+        setArrangeBlood(preOPData.arrangeBlood)
+        setRiskConsent(preOPData.riskConsent)
+        setNotes(preOPData.notes)
+        
+      }
+    } catch (error) {
+      // console.log("error");
+    }
+  };
+
+  React.useEffect(() => {
+    getOTData()
+  },[patientTimeLineID,currentPatient ])
+
+
+
+   
+const isAnesthesiaFormVisible = () => {
+  if (
+    patientStage > OTPatientStages.APPROVED &&
+    userType === OTUserTypes.ANESTHETIST
+  )
+    return true;
+  if (
+    patientStage >= OTPatientStages.SCHEDULED &&
+    userType === OTUserTypes.SURGEON
+  )
+    return true;
+  return false;
+};
+
+  useEffect(() => {
+    isAnesthesiaFormVisible()
+
+  },[patientStage, userType, user, currentPatient])
+
+console.log("isAnesthesiaFormVisible=========",isAnesthesiaFormVisible())
+console.log("medications==================",medications)
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -102,23 +313,47 @@ const navigation = useNavigation()
        <TouchableOpacity
         style={[
           styles.arrangeBloodButton,
-          isBloodArranged && styles.arrangedBloodButton, // Apply blue border if toggled
+          arrangeBlood && styles.arrangedBloodButton, // Apply blue border if toggled
+          currentPatient.status === 'approved' && styles.disabledButton
         ]}
         onPress={handleArrangeBloodClick}
+        disabled={currentPatient.status === 'approved'}
       >
-        {isBloodArranged ? (
+        {arrangeBlood ? (
           <Icon name="check" size={20} color="blue" style={styles.arrangeBloodIcon} />
         ) : null}
         <Text
           style={[
             styles.arrangeBloodText,
-            isBloodArranged && { color: 'blue' }, // Change text color to blue if toggled
+            arrangeBlood && { color: 'blue' }, // Change text color to blue if toggled
           ]}
+          disabled={currentPatient.status === 'approved'}
         >
           Arrange Blood
         </Text>
       </TouchableOpacity>
 
+
+      <TouchableOpacity
+        style={[
+          styles.arrangeBloodButton2,
+          riskConsent && styles.arrangedBloodButton, // Apply blue border if toggled
+        ]}
+        onPress={handleRiskClick}
+      >
+        {riskConsent ? (
+          <Icon name="check" size={20} color="blue" style={styles.arrangeBloodIcon} />
+        ) : null}
+        <Text
+          style={[
+            styles.arrangeBloodText,
+            riskConsent && { color: 'blue' }, // Change text color to blue if toggled
+          ]}
+        >
+         Written Informed Consent/High Risk Consent
+
+        </Text>
+      </TouchableOpacity>
       </View>
 
       <View style={styles.tabContainer}>
@@ -164,11 +399,14 @@ const navigation = useNavigation()
         <TextInput
           placeholder="Note"
           style={styles.noteInput}
+          value={notes}  // Bind the value of the input to the state
+          onChangeText={(text) => setNotes(text)}
+          editable={currentPatient.status !== "approved"} 
         />
       </View>
 
       <TouchableOpacity style={styles.nextButton} onPress={() => setSelectedTab('Pre medication')}>
-        <Text style={styles.nextButtonText}>NEXT</Text>
+      <Text style={styles.nextButtonText}>NEXT</Text>
       </TouchableOpacity>
         </>
     ):(
@@ -177,6 +415,23 @@ const navigation = useNavigation()
         contentContainerStyle={styles.scrollContentContainer}
       >
        
+
+        
+       <View style={styles.imgcontainer}>
+  <TouchableOpacity onPress={() => setModalVisible(true)}>
+    <Image
+      source={require('../../../assets/Frame 3473.png')} // Make sure this path is correct
+      style={styles.botIcon}
+    />
+  </TouchableOpacity>
+</View>
+
+  <PostOpMedication
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        onSave={handleSaveMed}
+        medData={handleMedData}
+      />
   
         {/* Treatment Card */}
   
@@ -236,34 +491,54 @@ const navigation = useNavigation()
         <TextInput
           placeholder="Note"
           style={styles.noteInput}
+          value={notes}  // Bind the value of the input to the state
+          onChangeText={(text) => setNotes(text)}
+          editable={currentPatient.status !== "approved"} 
         />
       </View>
 
 
-      <View style={styles.btncontainer}>
-      {/* Reject Button */}
-      <TouchableOpacity 
-  style={styles.rejectButton} 
-  onPress={() => {
-    setVisible(true); 
-  }}
-> 
-  <Text style={styles.rejectbuttonText}>Reject</Text>
-</TouchableOpacity>
-
-
-      {/* Accept Button */}
-      <TouchableOpacity style={styles.acceptButton}>
-        <Text style={styles.acceptButtonText} onPress={() => {
-          submitHandler("approved");
-          navigation.navigate("ConsentForm")
-  }} >Accept</Text>
+{  patientStage === OTPatientStages.PENDING &&
+          userType === OTUserTypes.ANESTHETIST && (
+            <View style={styles.btncontainer}>
+            {/* Reject Button */}
+            <TouchableOpacity 
+        style={styles.rejectButton} 
+        onPress={() => {
+          setVisible(true); 
+        }}
+      > 
+        <Text style={styles.rejectbuttonText}>Reject</Text>
       </TouchableOpacity>
-    </View>
+      
+      
+            {/* Accept Button */}
+            <TouchableOpacity style={styles.acceptButton}>
+              <Text style={styles.acceptButtonText} onPress={() => {
+                submitHandler("approved");
+                // navigation.navigate("ConsentForm")
+        }} >Accept</Text>
+            </TouchableOpacity>
+          </View>
+          )}
+
+    {/* SURGEON to schedule surgery  */}
+    {patientStage === OTPatientStages.APPROVED &&
+  userType === OTUserTypes.SURGEON && (
+    <TouchableOpacity style={styles.nextButton} onPress={handleScheduleNext}>
+      <Text style={styles.nextButtonText}>NEXT</Text>
+    </TouchableOpacity>
+)}
 
 
+{/* after surgery schedule  navigato to pre-op(consent-form, anesthesia record, postop) */}
+{isAnesthesiaFormVisible()  && (
+    <TouchableOpacity style={styles.nextButton2} onPress={handleNext}>
+      <Text style={styles.nextButtonText}>NEXT</Text>
+    </TouchableOpacity>
+)}
 
-    
+
 
  {/* ====================dailog box for reject============== */}
  <Modal
@@ -307,7 +582,7 @@ const navigation = useNavigation()
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#fff',
     padding: 16,
   },
   header: {
@@ -414,6 +689,16 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     alignItems: 'center',
+    width:"30%",
+   
+  },
+  nextButton2: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    borderRadius: 25,
+    alignItems: 'center',
+    width:"30%",
+
   },
   nextButtonText: {
     color: 'white',
@@ -431,6 +716,18 @@ const styles = StyleSheet.create({
      borderWidth: 1,
     borderColor: "gray",
   },
+  arrangeBloodButton2: {
+    // backgroundColor: '#f0f0f0',
+    padding: 5,
+    borderRadius: 8,
+    flexDirection: 'row', // For icon and text alignment
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+    width:"100%",
+     borderWidth: 1,
+    borderColor: "gray",
+  },
   arrangedBloodButton: {
     backgroundColor: "#e8f1fe",
 
@@ -441,7 +738,7 @@ const styles = StyleSheet.create({
   arrangeBloodText: {
     color: '#000',
     fontSize: 16,
-    marginLeft: 5, // Add spacing between icon and text if icon is shown
+    marginLeft: 2, // Add spacing between icon and text if icon is shown
   },
   arrangeBloodIcon: {
     marginRight: 5,
@@ -577,7 +874,17 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Center text horizontally
     marginLeft: 10, // Space between buttons if in a row
   },
- 
+  botIcon :{
+    height:30,
+    width:30,
+  },
+  imgcontainer:{
+    flexDirection:'row',
+    justifyContent:'flex-end',
+    alignItems: 'center', 
+    width: '100%',
+    marginBottom:10,
+  }
 
 });
 

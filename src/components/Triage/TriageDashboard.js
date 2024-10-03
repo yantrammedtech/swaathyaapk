@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image,TouchableOpacity ,ScrollView,FlatList } from 'react-native'; // Added Image import
+import { View, Text, StyleSheet, Image,TouchableOpacity ,ScrollView,FlatList, TextInput } from 'react-native'; 
 import Header from '../Dashboard/Header';
 import Sidebar from '../Dashboard/Sidebar';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -8,13 +8,15 @@ import { useSelector } from 'react-redux';
 import Footer from './Footer';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { authFetch } from '../../axios/authFetch';
-import { patientStatus } from '../../utility/role';
+import { patientStatus, Role_NAME } from '../../utility/role';
 
 const TriageDashboard = ({ onNotificationPress }) => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
   const [recentPatient, setRecentPatient] = useState([])
+  const [allList, setAllList] = React.useState([]);
+  const [search, setSearch] = React.useState("");
   
   const user = useSelector((state) => {
     return state.currentUserData
@@ -100,13 +102,55 @@ const getRandomColor = () => {
   };
   
 
+
+  async function getAllPatient() {
+    setAllList([]);
+    const opdListResponse = await authFetch(
+      `patient/${user.hospitalID}/patients/${
+        String(patientStatus.outpatient) +
+        '$' +
+        String(patientStatus.discharged) +
+        '$' +
+        String(patientStatus.inpatient) +
+        '$' +
+        String(patientStatus.emergency)
+      }?role=${Role_NAME.nurse}&userID=${user.id}`,
+      user.token
+    );
+    if (opdListResponse.message == 'success') {
+      setAllList(() => {
+        return [...opdListResponse.patients];
+      });
+    }
+  }
+  React.useEffect(() => {
+    if (user.token) getAllPatient();
+  }, [user]);
+
+ 
+
+
+
+const data = allList.filter((el) => String(el.phoneNumber).includes(search))
+
   return (
     <View style={styles.container}>
       <Header toggleSidebar={toggleSidebar} onNotificationPress={onNotificationPress} />
       <Sidebar isVisible={sidebarVisible} onClose={toggleSidebar} />
+
+      {/* <View style={styles.searchInputContainer}>
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search patient data..."
+                        value={search} 
+                        onChangeText={text => setSearch(text)} 
+                    />
+                    <Icon name="search" size={20} color="#999" style={styles.searchIcon} />
+                </View> */}
       
-      {/* Adjusted to center the image and added a welcome message */}
-      <ScrollView contentContainerStyle={styles.content}>
+{!search ? (
+  <>
+ <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.imgcontent}>
 
         <Image source={require('../../assets/imge.png')} style={styles.image} />
@@ -140,6 +184,19 @@ const getRandomColor = () => {
     />
 
       </ScrollView>
+  </>
+):(
+  <>
+  <FlatList
+      data={data}
+      renderItem={renderPatient}
+      keyExtractor={(item) => item.id.toString()}
+    />
+  </>
+)}
+
+      {/* Adjusted to center the image and added a welcome message */}
+     
     <Footer activeRoute="home" navigation={navigation} />
     </View>
   );
@@ -162,7 +219,8 @@ const styles = StyleSheet.create({
     width: 350, //350 
     height: 150,//150
     marginBottom: 8,
-    marginTop:5,
+    marginTop:10,
+
   },
  
   cardContainer: {
@@ -350,6 +408,26 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
   },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    height: 40,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff',
+    margin: 10,
+    marginTop:30,
+},
+searchInput: {
+    flex: 1,
+    height: '100%',
+    paddingLeft: 10,
+},
+searchIcon: {
+    paddingLeft: 10,
+},
 });
 
 export default TriageDashboard;

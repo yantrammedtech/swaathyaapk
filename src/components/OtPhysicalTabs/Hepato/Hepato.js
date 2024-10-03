@@ -1,28 +1,86 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { CheckBox } from 'react-native-elements';
+import { useDispatch, useSelector } from "react-redux";
 
 const Hepato = () => {
+  const hepato =   useSelector((state) => state.otPhysicalExamination.hepato);
+  const currentPatient = useSelector((state) => state.currentPatientData);
+
+  const dispatch = useDispatch()
+  
+  const handleCheckboxChange = (field, value) => {
+   
+    dispatch({
+      type: 'updateOtPhysicalExamination',
+      payload: {
+        hepato: {
+          ...hepato,
+          [field]: value,
+        },
+      },
+    });
+  };
+  
+  console.log("hepato=======",hepato)
+
   return (
-    <View style={styles.container}>
-      <View style={styles.tagContainer}>
-        <View style={styles.tag}>
-          <Icon name="check" size={24} color="#007AFF" />
-          <Text style={styles.tagText}>Vomiting</Text>
-        </View>
-
-        <View style={styles.tag}>
-          <Icon name="check" size={24} color="#007AFF" />
-
-          <Text style={styles.tagText}>GERD</Text>
-        </View>
-
-        <View style={styles.tag}>
-          <Icon name="check" size={24} color="#007AFF" />
-
-          <Text style={styles.tagText}>Diarrhoea</Text>
-        </View>
-      </View>
+    <View style={styles.checkboxGroup}>
+      <CheckBox
+        title="Vomiting"
+        checked={hepato.vomiting}
+        onPress={() => handleCheckboxChange('vomiting', !hepato.vomiting)}
+        disabled={currentPatient.status !== "pending"}
+        containerStyle={{
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
+      />
+      <CheckBox
+        title="GERD"
+        checked={hepato.gerd}
+        onPress={() => handleCheckboxChange('gerd', !hepato.gerd)}
+        disabled={currentPatient.status !== "pending"}
+        containerStyle={{
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
+      />
+      <CheckBox
+        title="Diarrhoea"
+        checked={hepato.diarrhoea}
+        onPress={() => handleCheckboxChange('diarrhoea', !hepato.diarrhoea)}
+        disabled={currentPatient.status !== "pending"}
+        containerStyle={{
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
+      />
+      <CheckBox
+        title="Gallbladder DS"
+        checked={hepato.galbladderDS}
+        onPress={() => handleCheckboxChange('galbladderDS', !hepato.galbladderDS)}
+        disabled={currentPatient.status !== "pending"}
+        containerStyle={{
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
+      />
+      <CheckBox
+        title="Jaundice"
+        checked={hepato.jaundice}
+        onPress={() => handleCheckboxChange('jaundice', !hepato.jaundice)}
+        disabled={currentPatient.status !== "pending"}
+        containerStyle={{
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
+      />
+      <CheckBox
+        title="Cirrhosis"
+        checked={hepato.cirrhosis}
+        onPress={() => handleCheckboxChange('cirrhosis', !hepato.cirrhosis)}
+        disabled={currentPatient.status !== "pending"}
+        containerStyle={{
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
+        }}
+      />
     </View>
   );
 };
@@ -33,39 +91,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: "#FFA500", // Orange line
-    paddingBottom: 5,
-  },
-  tagContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-  },
-  tag: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#e8f1fe",
-
-    borderWidth: 1,
-    borderColor: "#007AFF",
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    marginRight: 10,
-    marginBottom: 10,
-  },
-  tagText: {
-    color: "#007AFF",
-    fontSize: 14,
-    fontWeight: "500",
-    marginLeft: 5,
-  },
+  
 });
 
 export default Hepato;

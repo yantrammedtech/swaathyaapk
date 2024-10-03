@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,8 +15,14 @@ import { PieChart } from "react-native-chart-kit";
 import { LineChart } from "react-native-chart-kit";
 import Footer from "./Footer";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { authFetch } from "../../axios/authFetch";
+import dayjs from 'dayjs';
+import { patientStatus } from "../../utility/role";
 
 const OtDataVisualization = () => {
+  const user = useSelector((state) => state.currentUserData);
+
   const navigation = useNavigation();
   const screenWidth = Dimensions.get("window").width;
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -140,6 +146,35 @@ const OtDataVisualization = () => {
 
   // Calculate the x-position for the vertical line
   const verticalLinePosition = (currentMonthIndex / totalMonths) * chartWidth;
+
+
+  let selectedYear = dayjs().year();
+
+// Get the current month (0-indexed, so January is 0, February is 1, etc.)
+let selectedMonth = new Date().getMonth();
+
+const getLineChartData = async() => {
+  console.log("patientStatus============",patientStatus.operationTheatre)
+  const barGraphResponse = await authFetch(
+    `patient/${user.hospitalID}/patients/count/fullYear/${selectedYear}/${patientStatus.emergency}`,
+    user.token
+  );
+  // console.log("barGraphResponse=====ot============",barGraphResponse)
+  let filterMonth = 'year'
+  const filterValue = '2024'
+
+  const barGraphResponseot = await authFetch(
+    `patient/${user.hospitalID}/patients/count/fullYearFilter/${patientStatus.emergency}?filter=${filterMonth}&filterValue=${filterValue}&zone="" `,
+    user.token
+  );
+
+  // console.log("barGraphResponseot=====ot============",barGraphResponseot)
+
+}
+ 
+useEffect(() => {
+  getLineChartData()
+},[])
 
   return (
     <View style={{ flex: 1 }}>
