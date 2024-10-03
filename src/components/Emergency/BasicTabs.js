@@ -17,11 +17,14 @@ import PatientTimeline from '../Tabs/PatientTimeLine/PatientTimeLine';
 import Pocus from '../Tabs/Pocus/Pocus';
 import PhysicalExamination from '../Tabs/PhysicalExamination/PhysicalExamination';
 import MedicalHistoryForm from '../Tabs/MedicalHistory/MedicalHistoryForm';
+import { useSelector } from 'react-redux';
 
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function BasicTabs() {
+  const currentPatient = useSelector((state) => state.currentPatientData);
+  
   const [selectedCategory, setSelectedCategory] = React.useState('Symptoms');
 
   return (
@@ -69,7 +72,9 @@ export default function BasicTabs() {
           ]}
           onPress={() => setSelectedCategory("Treatment Plan")}
         >
-          <Text style={styles.categoryText}>Treatment Plan</Text>
+          <Text style={styles.categoryText}>
+    {currentPatient.ptype === 1 ? "Prescription" : "Treatment Plan"}
+  </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[

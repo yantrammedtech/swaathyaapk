@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet ,Image} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useSelector } from 'react-redux';
 // import Icon from 'react-native-vector-icons/FontAwesome'; 
 
 const Footer = ({ activeRoute, navigation }) => {
+  const  userType=useSelector((state)  => state.userType)  
+
   const getIconColor = (routeName) => activeRoute === routeName ? '#FFA500' : '#000';
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -14,6 +17,8 @@ const Footer = ({ activeRoute, navigation }) => {
   const handleOpenModal = () => {
     setModalVisible(true);
   };
+
+  const isSurgeon =  userType === "SURGEON"
 
   return (
     <View style={styles.footerContainer}>
@@ -32,10 +37,13 @@ const Footer = ({ activeRoute, navigation }) => {
         <Icon name="bar-chart" size={30} color={getIconColor('bar-chart')} />
 
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer}
-        onPress={() => navigation.navigate('Calendar')} >
-        <Icon name="calendar-today" size={28} color={getIconColor('Calendar')} />
-      </TouchableOpacity>
+      {isSurgeon && (
+ <TouchableOpacity style={styles.iconContainer}
+ onPress={() => navigation.navigate('Calendar')} >
+ <Icon name="calendar-today" size={28} color={getIconColor('Calendar')} />
+</TouchableOpacity>
+      )}
+     
     
     </View>
   );

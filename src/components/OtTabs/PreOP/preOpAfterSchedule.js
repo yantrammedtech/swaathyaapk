@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { Menu, Divider, Provider as PaperProvider } from 'react-native-paper';
 
-const PreOpRecordAfterSchedule =  () => {
+const PreOpRecordAfterSchedule =  ({ showOptions, setShowOptions }) => {
     const user = useSelector((state) => state.currentUserData);
     const currentPatient = useSelector((state) => state.currentPatientData);
     const patientTimeLineID = currentPatient?.patientTimeLineID;
@@ -15,7 +15,7 @@ const PreOpRecordAfterSchedule =  () => {
     const dispatch  =useDispatch()
     const navigation = useNavigation();
    
-
+    
     
 const getRandomColor = () => {
     const letters = '0123456789ABCDEF';
@@ -62,11 +62,31 @@ if (currentPatient?.gender === 1) {
 }
 
 
-
+const handleOptionSelect = (option) => {
+  setShowOptions(false);
+  // Handle navigation or any action based on the selected option
+  if (option === 'profile') {
+    navigation.navigate('PreOpRecord', {
+      patientId: currentPatient.id,
+    }) 
+  } else if (option === 'home') {
+    navigation.navigate('OtDashboard'); 
+  }
+};
 
 
   return (
     <PaperProvider>
+       {showOptions && (
+        <View style={styles.dropdown}>
+          <TouchableOpacity onPress={() => handleOptionSelect('profile')}>
+            <Text style={styles.optionText}>Profile View</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleOptionSelect('home')}>
+            <Text style={styles.optionText}>Home</Text>
+          </TouchableOpacity>
+        </View>
+      )}
  <ScrollView style={styles.container}   contentContainerStyle={styles.scrollViewContent}>
      
 
@@ -352,6 +372,21 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-around',
         padding: 5,
+      },
+      dropdown: {
+        position: 'absolute',
+        right: 15,
+        top: 0, // Adjust this value based on your header height
+        backgroundColor: 'white',
+        borderRadius: 5,
+        elevation: 5, // For shadow on Android
+        padding: 10,
+        zIndex: 1000,
+      },
+      optionText: {
+        fontSize: 16,
+        paddingVertical: 5,
+        textAlign: 'center',
       },
   });
 

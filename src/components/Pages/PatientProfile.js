@@ -146,25 +146,29 @@ const PatientProfile = ({ route }) => {
     </TouchableOpacity>
   </View>
 
-  <View style={styles.row}>
-    <TouchableOpacity
-     style={styles.option}
-    onPress={() => navigation.navigate('RequestSurgery')} 
 
-     >
-      <Image source={require("../../assets/transfer/Three request.png")} style={styles.optionIcon} />
-      <Text style={styles.optionText}>Request</Text>
-    </TouchableOpacity>
+{currentPatientData.ptype !== 1 && (
+ <View style={styles.row}>
+ <TouchableOpacity
+  style={styles.option}
+ onPress={() => navigation.navigate('RequestSurgery')} 
 
-    <TouchableOpacity 
-    style={styles.option}
-    onPress={() => navigation.navigate('DischargePatient')} 
+  >
+   <Image source={require("../../assets/transfer/Three request.png")} style={styles.optionIcon} />
+   <Text style={styles.optionText}>Request</Text>
+ </TouchableOpacity>
 
-    >
-      <Image source={require("../../assets/transfer/medical-icon_i-outpatient.png")} style={styles.optionIcon} />
-      <Text style={styles.optionText}>Discharge</Text>
-    </TouchableOpacity>
-  </View>
+ <TouchableOpacity 
+ style={styles.option}
+ onPress={() => navigation.navigate('DischargePatient')} 
+
+ >
+   <Image source={require("../../assets/transfer/medical-icon_i-outpatient.png")} style={styles.optionIcon} />
+   <Text style={styles.optionText}>Discharge</Text>
+ </TouchableOpacity>
+</View>
+)}
+ 
 </View>
 
           </View>

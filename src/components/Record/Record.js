@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useSelector } from 'react-redux';
@@ -8,6 +8,9 @@ import { patientStatus } from '../../utility/role';
 
 const Record = ({ navigation }) => {
   const [allPatient, setAllPatients] = React.useState([]);
+  const [allInPatient, setAllInPatients] = React.useState([]);
+  const [activeTab, setActiveTab] = useState('InPatient');
+
 
 const currentZone = useSelector((state) =>state.currentZone)
 const user = useSelector((state) => state.currentUserData)
@@ -20,16 +23,17 @@ const getRandomColor = () => {
   }
   return color;
 };
+
 const renderPatient = ({ item }) => {
   const backgroundColor = getRandomColor();
   return (
     <TouchableOpacity
       style={styles.recentPatientContainer}
-    //   onPress={() =>
-    //     navigation.navigate('CommonPatientProfile', {
-    //       patientId: item.id,
-    //     })
-    //   }
+      onPress={() =>
+        navigation.navigate('CommonPatientProfile', {
+          patientId: item.id,
+        })
+      }
     >
       <View style={styles.recentPatientRow}>
         {item.imageURL ? (
@@ -52,6 +56,7 @@ const renderPatient = ({ item }) => {
               {new Date(item.endTime).toDateString()} 
             </Text>
           </View>
+          
         </View>
       </View>
       <View style={styles.recentPatientRow}>
@@ -80,6 +85,7 @@ const renderPatient = ({ item }) => {
         `patient/${user.hospitalID}/patients/${patientStatus.discharged}?patientStartStatus=${patientStatus.emergency}`,
         user.token
       );
+       console.log("discharge patient response============", response);
     if (response.message == 'success') {
       setAllPatients(response.patients);
     }
@@ -87,18 +93,66 @@ const renderPatient = ({ item }) => {
     
   }
 
+
+
   useEffect(() => {
-    getAllPatient()
-  },[])
+    if (activeTab == "InPatient") {
+      getAllInPatient()
+    } else {
+      getAllPatient()
+    }
+}, [activeTab])
+
+
+  async function getAllInPatient() {
+  
+    const response = await authFetch(
+      `patient/${user.hospitalID}/patients/${patientStatus.discharged}?userID=${user.id}&role=${user.role}`,
+      user.token
+    );
+    console.log("discharge inpatient response", response);
+    if (response.message == "success") {
+      setAllPatients(response.patients);
+     
+    }
+   
+  }
 
   return (
     <View style={styles.mainContainer}>
-        <Text>In Patient</Text>
-      <FlatList
+
+<View style={styles.tabButtonContainer}>
+                {/* Latest Patient List Tab */}
+                <TouchableOpacity
+                    style={[
+                        styles.tabButton,
+                        activeTab === 'InPatient' && styles.tabActiveButton
+                    ]}
+                    onPress={() => setActiveTab('InPatient')}
+                >
+                    <Text style={styles.tabText}>In Patient List</Text>
+                </TouchableOpacity>
+
+                {/* Active Patients List Tab */}
+                <TouchableOpacity
+                    style={[
+                        styles.tabButton,
+                        activeTab === 'EmergencyPatients' && styles.tabActiveButton
+                    ]}
+                    onPress={() => setActiveTab('EmergencyPatients')}
+                >
+                    <Text style={styles.tabText}>Emergency Patients  List</Text>
+                </TouchableOpacity>
+            </View>
+
+             <FlatList
         data={allPatient}
         renderItem={renderPatient}
         keyExtractor={(item) => item.id}
       />
+
+       
+       
     </View>
   );
 };
@@ -234,6 +288,33 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
   },
+  text:{
+    padding: 10,
+     fontWeight: 'bold',
+     fontSize:20,
+    
+  },
+  tabButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    marginTop:10,
+},
+tabButton: {
+    flex: 1,
+    paddingVertical: 10,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    marginHorizontal: 5,
+    borderRadius: 5,
+},
+tabActiveButton: {
+    backgroundColor: '#1977f3', // Blue background for active tab
+},
+tabText: {
+    color: 'black',
+    fontSize: 16,
+},
 });
 
 export default Record;
