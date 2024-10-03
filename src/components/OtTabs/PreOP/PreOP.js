@@ -300,8 +300,6 @@ const isAnesthesiaFormVisible = () => {
 
   },[patientStage, userType, user, currentPatient])
 
-console.log("isAnesthesiaFormVisible=========",isAnesthesiaFormVisible())
-console.log("medications==================",medications)
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -689,6 +687,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     alignItems: 'center',
+    justifyContent:'center',
     width:"30%",
    
   },

@@ -70,7 +70,7 @@ const Stack = createNativeStackNavigator();
 
 const Routing = () => {
 
- 
+  const [showOptions, setShowOptions] = useState(false);
 
   return (
     <NavigationContainer>
@@ -819,7 +819,42 @@ const Routing = () => {
           })}
         />
 
-    
+<Stack.Screen
+        name="PreOpRecordAfterSchedule"
+        options={({ navigation }) => ({
+          headerStyle: {
+            backgroundColor: '#1977f3',
+          },
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            color: '#fff',
+          },
+          headerTitle: 'Pre OP-Record',
+          headerLeft: () => (
+            <Icon
+              name="chevron-left"
+              size={24}
+              color="#fff"
+              style={{ marginLeft: 15 }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+          headerRight: () => (
+            <Icon
+              name="more-vert"
+              size={24}
+              color="#fff"
+              style={{ marginRight: 15 }}
+              onPress={() => setShowOptions((prev) => !prev)} // Toggle options
+            />
+          ),
+        })}
+      >
+        {props => (
+          <PreOpRecordAfterSchedule {...props} showOptions={showOptions} setShowOptions={setShowOptions} />
+        )}
+      </Stack.Screen>
+{/*     
 <Stack.Screen
           name="PreOpRecordAfterSchedule"
           component={PreOpRecordAfterSchedule}
@@ -848,15 +883,16 @@ const Routing = () => {
                 size={24}
                 color="#fff"
                 style={{ marginRight: 15 }}
-                onPress={() => {
-                  // Handle press event here
-                }}
+                // onPress={() => {
+                //   // Handle press event here
+                // }}
+                onPress={() => setShowOptions((prev) => !prev)}
               />
             ),
            
            
           })}
-        />
+        /> */}
 
   {/* ===================Ot End====PreOpRecordAfterSchedule============= */}
 
