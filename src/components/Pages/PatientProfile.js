@@ -58,6 +58,7 @@ const PatientProfile = ({ route }) => {
         return color;
     };
     const backgroundColor = getRandomColor();
+
     return (
         <View style={styles.container}>
 
@@ -147,7 +148,7 @@ const PatientProfile = ({ route }) => {
   </View>
 
 
-{currentPatientData.ptype !== 1 && (
+{currentPatientData?.ptype !== 1 && (
  <View style={styles.row}>
  <TouchableOpacity
   style={styles.option}
