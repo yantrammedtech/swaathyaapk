@@ -169,8 +169,7 @@ const backgroundColor = getRandomColor();
       </Modal> */}
 
       
-<Modal
-        animationType="slide"
+<Modal        animationType="slide"
         transparent={true}
         visible={usermodalVisible}
         onRequestClose={() => setUserModalVisible(false)}

@@ -18,6 +18,8 @@ import Pocus from '../Tabs/Pocus/Pocus';
 import PhysicalExamination from '../Tabs/PhysicalExamination/PhysicalExamination';
 import MedicalHistoryForm from '../Tabs/MedicalHistory/MedicalHistoryForm';
 import { useSelector } from 'react-redux';
+import Prescription from '../OutPatient/Prescription';
+import TreatingDoctor from '../Tabs/TreatingDoctors/TreatingDoctor';
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -63,7 +65,28 @@ export default function BasicTabs() {
         >
           <Text style={styles.categoryText}>Vitals</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+
+
+        {currentPatient?.ptype === 1 ? (
+          <>
+            <TouchableOpacity
+          style={[
+            styles.categoryButton,
+            selectedCategory === "Prescription"
+              ? styles.activeButton
+              : styles.inactiveButton,
+          ]}
+          onPress={() => setSelectedCategory("Prescription")}
+        >
+          <Text style={styles.categoryText}> Prescription
+   
+  </Text>
+        </TouchableOpacity>
+
+          </>
+        ) : (
+          <>
+          <TouchableOpacity
           style={[
             styles.categoryButton,
             selectedCategory === "Treatment Plan"
@@ -72,10 +95,17 @@ export default function BasicTabs() {
           ]}
           onPress={() => setSelectedCategory("Treatment Plan")}
         >
-          <Text style={styles.categoryText}>
-    {currentPatient.ptype === 1 ? "Prescription" : "Treatment Plan"}
+          <Text style={styles.categoryText}> Treatment Plan
+   
   </Text>
         </TouchableOpacity>
+
+          </>
+        )}
+
+
+      
+
         <TouchableOpacity
           style={[
             styles.categoryButton,
@@ -87,6 +117,7 @@ export default function BasicTabs() {
         >
           <Text style={styles.categoryText}>Medical History</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={[
             styles.categoryButton,
@@ -98,6 +129,8 @@ export default function BasicTabs() {
         >
           <Text style={styles.categoryText}>Reports</Text>
         </TouchableOpacity>
+
+
         <TouchableOpacity
           style={[
             styles.categoryButton,
@@ -109,7 +142,26 @@ export default function BasicTabs() {
         >
           <Text style={styles.categoryText}>Patient Timeline</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+
+        {currentPatient?.ptype !== 3  && (
+ <TouchableOpacity
+ style={[
+   styles.categoryButton,
+   selectedCategory === "Treating Doctor"
+     ? styles.activeButton
+     : styles.inactiveButton,
+ ]}
+ onPress={() => setSelectedCategory("Treating Doctor")}
+>
+ <Text style={styles.categoryText}>Treating Doctor</Text>
+</TouchableOpacity>
+        )}
+
+       
+
+{currentPatient?.ptype === 3  && (
+  <>
+   <TouchableOpacity
           style={[
             styles.categoryButton,
             selectedCategory === "POCUS"
@@ -131,6 +183,10 @@ export default function BasicTabs() {
         >
           <Text style={styles.categoryText}>Physical Examination</Text>
         </TouchableOpacity>
+  </>
+)}
+
+       
       </ScrollView>
       <View style={styles.tabContent}>
         {selectedCategory === 'Symptoms' && <SymptomsTab />}
@@ -142,6 +198,9 @@ export default function BasicTabs() {
         {selectedCategory === 'Patient Timeline' && <PatientTimeline />}
         {selectedCategory === 'POCUS' && <Pocus />}
         {selectedCategory === 'Physical Examination' && <PhysicalExamination />}
+        {selectedCategory === 'Prescription' && <Prescription />}
+        {selectedCategory === 'Treating Doctor' && <TreatingDoctor />}
+
 
 
        
