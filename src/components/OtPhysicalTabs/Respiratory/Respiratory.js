@@ -52,9 +52,9 @@ return (
           title="Dry Cough"
           checked={respiratory.dryCough}
           onPress={() => handleCheckboxChange('dryCough', !respiratory.dryCough)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -64,9 +64,9 @@ return (
           title="Productive Cough"
           checked={respiratory.productiveCough}
           onPress={() => handleCheckboxChange('productiveCough', !respiratory.productiveCough)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -76,9 +76,9 @@ return (
           title="Asthma"
           checked={respiratory.asthma}
           onPress={() => handleCheckboxChange('asthma', !respiratory.asthma)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -88,9 +88,9 @@ return (
           title="Recent URI/LRTI"
           checked={respiratory.recentURILRTI}
           onPress={() => handleCheckboxChange('recentURILRTI', !respiratory.recentURILRTI)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -100,9 +100,9 @@ return (
           title="TB"
           checked={respiratory.tb}
           onPress={() => handleCheckboxChange('tb', !respiratory.tb)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -112,9 +112,9 @@ return (
           title="Pneumonia"
           checked={respiratory.pneumonia}
           onPress={() => handleCheckboxChange('pneumonia', !respiratory.pneumonia)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -124,9 +124,9 @@ return (
           title="COPD"
           checked={respiratory.copd}
           onPress={() => handleCheckboxChange('copd', !respiratory.copd)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -136,9 +136,9 @@ return (
           title="OSA"
           checked={respiratory.osa}
           onPress={() => handleCheckboxChange('osa', !respiratory.osa)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -148,9 +148,9 @@ return (
           title="Recurrent Tonsils"
           checked={respiratory.recurrentTonsils}
           onPress={() => handleCheckboxChange('recurrentTonsils', !respiratory.recurrentTonsils)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -160,9 +160,9 @@ return (
           title="Breathlessness"
           checked={respiratory.breathlessness}
           onPress={() => handleCheckboxChange('breathlessness', !respiratory.breathlessness)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -172,9 +172,9 @@ return (
           title="Dyspnea"
           checked={respiratory.dyspnea}
           onPress={() => handleCheckboxChange('dyspnea', !respiratory.dyspnea)}
-          disabled={currentPatient.status === "approved"}
+          disabled={currentPatient.status !== "pending"}
           containerStyle={{
-            opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+            opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
           }}
         />
       </View>
@@ -185,70 +185,70 @@ return (
     <TouchableOpacity
       style={[
         styles.button,
-        currentPatient.status === 'approved' && styles.disabledButton,
+        currentPatient.status !== "pending" && styles.disabledButton,
         mallampatiGrade.class === 1 ? styles.selected : styles.unselected,
       ]}
       onPress={() => handleButtonClick(1)}
-      disabled={currentPatient.status === 'approved'}
+      disabled={currentPatient.status !== "pending"}
       // disabled={physicalExaminationReadOnly}
     >
       <Text style={[
       styles.buttonText,
       mallampatiGrade.class === 1 ? styles.selectedText : styles.unselectedText,
-      currentPatient.status === 'approved' ? styles.disabledText : null,
+      currentPatient.status !== "pending" ? styles.disabledText : null,
     ]}>Class-I</Text>
     </TouchableOpacity>
     <TouchableOpacity
       style={[
         styles.button,
-        currentPatient.status === 'approved' && styles.disabledButton,
+        currentPatient.status !== "pending" && styles.disabledButton,
         mallampatiGrade.class === 2 ? styles.selected : styles.unselected,
       ]}
       onPress={() => handleButtonClick(2)}
-      disabled={currentPatient.status === 'approved'}
+      disabled={currentPatient.status !== "pending"}
       // disabled={physicalExaminationReadOnly}
     >
       <Text style={[
       styles.buttonText,
       mallampatiGrade.class === 2 ? styles.selectedText : styles.unselectedText,
-      currentPatient.status === 'approved' ? styles.disabledText : null,
+      currentPatient.status !== "pending" ? styles.disabledText : null,
     ]}
       >Class-II</Text>
     </TouchableOpacity>
     <TouchableOpacity
       style={[
         styles.button,
-        currentPatient.status === 'approved' && styles.disabledButton,
+        currentPatient.status !== "pending" && styles.disabledButton,
         mallampatiGrade.class === 3 ? styles.selected : styles.unselected,
 
       ]}
       onPress={() => handleButtonClick(3)}
-      disabled={currentPatient.status === 'approved'}
+      disabled={currentPatient.status !== "pending"}
 
       // disabled={physicalExaminationReadOnly}
     >
       <Text style={[
       styles.buttonText,
       mallampatiGrade.class === 3 ? styles.selectedText : styles.unselectedText,
-      currentPatient.status === 'approved' ? styles.disabledText : null
+      currentPatient.status !== "pending" ? styles.disabledText : null
     ]}
       >Class-III</Text>
     </TouchableOpacity>
     <TouchableOpacity
       style={[
         styles.button,
-        currentPatient.status === 'approved' && styles.disabledButton,
+        currentPatient.status !== "pending" && styles.disabledButton,
 
         mallampatiGrade.class === 4 ? styles.selected : styles.unselected,
       ]}
       onPress={() => handleButtonClick(4)}
-      disabled={currentPatient.status === 'approved'}
+      disabled={currentPatient.status !== "pending"}
       // disabled={physicalExaminationReadOnly}
     >
       <Text style={[
       styles.buttonText,
       mallampatiGrade.class === 4 ? styles.selectedText : styles.unselectedText,
-      currentPatient.status === 'approved' ? styles.disabledText : null
+      currentPatient.status !== "pending" ? styles.disabledText : null
 
     ]}
       >Class-IV</Text>

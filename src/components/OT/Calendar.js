@@ -1,221 +1,279 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState  } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  FlatList,
-  TouchableOpacity,
+    Modal
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import dayjs from "dayjs";
 import Footer from "./Footer";
-import moment from "moment";
-// import { Calendar } from 'react-native-calendars';
+import { Calendar  } from 'react-native-calendars';
+import { useSelector } from "react-redux";
+import { authFetch } from "../../axios/authFetch";
 
-const Calendar = () => {
+const CalendarComponent = () => {
+
+  const user = useSelector((state) => state.currentUserData);
+  const currentPatient = useSelector((state) => state.currentPatientData);
+  const patientTimeLineID = currentPatient?.patientTimeLineID;
+  const [selectedDate, setSelectedDate] = useState('');
   const navigation = useNavigation();
-  const [dates, setDates] = useState([]);
 
-  const [currentDate, setCurrentDate] = useState(moment().format("YYYY-MM-DD")); // Get today's date
-  const [filteredSchedules, setFilteredSchedules] = useState([]);
 
-  // Filter schedules based on the current date and beyond
-  useEffect(() => {
-    const upcomingSchedules = schedules.filter((schedule) =>
-      moment(schedule.date).isSameOrAfter(currentDate)
-    );
-    setFilteredSchedules(upcomingSchedules);
-  }, [currentDate]);
+  const [events, setEvents] = useState([]);
 
-  // Function to generate dates from the selected date
-  const generateDates = (startIndex) => {
-    const today = new Date();
-    const daysArray = [];
-
-    for (let i = startIndex; i < startIndex + 8; i++) {
-      // Display next 8 days starting from selected day
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      const dayOfWeek = dayjs(date).format("ddd"); // Get day of the week, e.g., "Thu"
-      const day = dayjs(date).format("DD"); // Get day, e.g., "26"
-      daysArray.push({ dayOfWeek, day });
+  const getAllEvents = async () => {
+    try {
+      const response = await authFetch(
+        `schedule/${user.hospitalID}/${user.id}/viewSchedule`,
+        user.token
+      );
+      if (response.status == 200) {
+        const arr = response.data.map((eventData) => {
+          const newEvent = {
+            id: eventData.pID,
+            title:
+              `PatientName: ${eventData.pName}\n` +
+              `PatientId: ${eventData.pID}\n` +
+              `Attendees: ${eventData.attendees}\n` +
+              `Room Number: ${eventData.roomID}\n` +
+              `Surgery Type: ${eventData.surgeryType}`,
+            start: eventData.startTime,
+            end: eventData.endTime,
+            extendedProps: {
+              patientId: eventData.pID,
+              patientName: eventData.pName,
+              attendees: eventData.attendees,
+              surgeryType: eventData.surgeryType,
+              roomNumber: eventData.roomNumber,
+            },
+          };
+          return newEvent;
+        });
+        setEvents(arr);
+      }
+    } catch (error) {
+      // console.log(error);
     }
-
-    setDates(daysArray);
   };
 
   useEffect(() => {
-    generateDates(0); // Start from today
-  }, []);
+    getAllEvents()
+  },[user])
 
-  const formatDate = () => {
-    const date = new Date();
+ 
 
-    const options = { month: "long", day: "numeric", year: "numeric" };
-    const formattedDate = date.toLocaleDateString("en-US", options);
 
-    // Extract day to add ordinal suffix (st, nd, rd, th)
-    const day = date.getDate();
-    let suffix = "th";
+  const [modalVisible, setModalVisible] = useState(false);
+  const [eventDetails, setEventDetails] = useState('');
 
-    if (day === 1 || day === 21 || day === 31) {
-      suffix = "st";
-    } else if (day === 2 || day === 22) {
-      suffix = "nd";
-    } else if (day === 3 || day === 23) {
-      suffix = "rd";
+  const markedDates = events.reduce((acc, event) => {
+    const eventDate = event.start.split('T')[0]; // Get the date part
+    acc[eventDate] = {
+      selected: true,
+      marked: true,
+      dotColor: 'orange',
+      color: 'orange', // Sets the background color
+    };
+    return acc;
+  }, {})
+
+  const handleDayPress = (day) => {
+    const date = day.dateString;
+    setSelectedDate(date);
+
+    // Check if there are events for the selected date
+    const eventsForDay = events.filter(event => {
+      const eventDate = event.start.split('T')[0];
+    
+      return eventDate === date;
+    });
+
+    if (eventsForDay.length > 0) {
+      setEventDetails(eventsForDay.map(event => event.title).join('\n\n'));
+      setModalVisible(true);
     }
-
-    return formattedDate.replace(/\d+/, `${day}${suffix}`);
   };
 
-  const renderDateItem = ({ item, index }) => (
-    <TouchableOpacity
-      style={[
-        styles.dateItem,
-        // Apply blue background if selected
-      ]}
-      onPress={() => onDateSelect(index)} // Select the date
-    >
-      <Text style={[styles.dateText]}>{item.day}</Text>
-      <Text style={[styles.dayText]}>{item.dayOfWeek}</Text>
-    </TouchableOpacity>
-  );
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
-  const schedules = [
-    {
-      date: "2024-9-26",
-      time: "8 AM",
-      details: "Ravi - Surgery Room 10",
-      bgColor: "#FFA500",
-    },
-    {
-      date: "2024-10-27",
-      time: "11 AM",
-      details: "Vilas - MRI Room 5",
-      bgColor: "#6495ED",
-    },
-    {
-      date: "2024-9-25",
-      time: "9 AM",
-      details: "John - Consultation Room 2",
-      bgColor: "#FF6347",
-    },
-    {
-      date: "2024-9-26",
-      time: "10 AM",
-      details: "Maya - X-Ray Room 8",
-      bgColor: "#32CD32",
-    },
-  ];
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>{formatDate()}</Text>
-        </View>
+    
+    <View style={styles.container}>
+      <Text style={styles.header}>Select a Date</Text>
+     
+      <View style={styles.circlecontainer}>
+  <View style={styles.circle} />
+  <Text style={styles.labelText}>Locked for Surgery</Text>
+</View>
 
-        <View style={styles.calendar}>
-          <FlatList
-            horizontal
-            data={dates}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderDateItem}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
+  <Calendar
+        markingType={'multi-dot'}
+        markedDates={markedDates}
+        onDayPress={handleDayPress}
+        theme={{
+          selectedDayBackgroundColor: '#2196F3',
+          todayTextColor: '#2196F3',
+          arrowColor: '#2196F3',
+        }}
+      />
 
-        <ScrollView style={styles.scheduleContainer}>
-          <Text style={styles.scheduleHeading}>Patient Schedules</Text>
-          {filteredSchedules.length > 0 ? (
-            filteredSchedules.map((schedule, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.scheduleItem,
-                  { backgroundColor: schedule.bgColor },
-                ]}
-              >
-                <Text style={styles.scheduleDate}>
-                  {moment(schedule.date).format("dddd, MMMM Do")}
-                </Text>
-                <Text style={styles.scheduleTime}>{schedule.time}</Text>
-                <Text style={styles.scheduleDetails}>{schedule.details}</Text>
-              </View>
-            ))
-          ) : (
-            <Text style={styles.noSchedulesText}>No schedules available.</Text>
-          )}
-        </ScrollView>
-      </ScrollView>
-      <Footer activeRoute="Calendar" navigation={navigation} />
+    
+    
+
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={modalVisible}
+  onRequestClose={closeModal}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalView}>
+      <Text style={styles.modalText}>Events on {selectedDate}:</Text>
+      <Text style={styles.eventText}>
+        {eventDetails.split('\n').map((line, index) => {
+          const [label, value] = line.split(': '); // Split label and value
+          return (
+            <Text key={index}>
+              <Text style={styles.boldText}>{label}: </Text>
+              {value}
+              {'\n'}
+            </Text>
+          );
+        })}
+      </Text>
+      <Text style={styles.closeButton} onPress={closeModal}>Close</Text>
+    </View>
+  </View>
+</Modal>
+
+{/* <Footer activeRoute="Calendar" navigation={navigation} /> */}
+
     </View>
   );
 };
 
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
+    padding: 20,
   },
   header: {
-    alignItems: "center",
-    borderRadius: 8,
-    marginBottom: 16,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center'
   },
-  headerText: {
-    color: "#000",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  calendar: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  dateItem: {
-    alignItems: "center",
-    marginHorizontal: 10,
-    padding: 10,
-    borderRadius: 8,
-  },
-
   dateText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#000", // Default text color for unselected
-  },
-  dayText: {
-    fontSize: 14,
-    color: "#666", // Default text color for unselected
-  },
-  scheduleContainer: {
-    padding: 16,
-  },
-  scheduleHeading: {
     fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
+    marginTop: 20,
+    textAlign: 'center'
   },
-  scheduleItem: {
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  scheduleTime: {
+  eventContainer: {
+    backgroundColor: '#2196F3',
+    color: '#ffffff',
+    borderRadius: 5,
+    padding: 5,
+    marginTop: 5,
+    width: '100%',
+},
+eventText: {
+    color: '#ffffff',
+    whiteSpace: 'pre-wrap', // This will ensure the text wraps properly
+
+},
+dayContainer: {
+    alignItems: 'center',
+    padding: 5,
+},
+dayText: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#FFF",
+    fontWeight: 'bold',
+},
+
+modalText: {
+  marginBottom: 15,
+  textAlign: 'center',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+eventText: {
+  marginBottom: 15,
+  textAlign: 'center',
+  fontSize: 14,
+  lineHeight: 22, // Adjust line spacing for better readability
+  textAlign: 'left', // Align text to the left
+  paddingHorizontal: 10,
+  paddingVertical: 8, 
+},
+closeButton: {
+  color: '#2196F3',
+  fontWeight: 'bold',
+},
+
+circlecontainer: {
+  flexDirection: 'row',
+  alignItems: 'center', // Align items vertically center
+},
+circle: {
+  width: 12, // Circle width
+  height: 12, // Circle height
+  borderRadius: 6, // Half of width/height for a circle
+  backgroundColor: '#2196F3', // Circle color
+  marginRight: 5, // Space between circle and text
+},
+labelText: {
+  fontSize: 16, // Adjust the font size as needed
+  color: '#000', // Text color
+  fontWeight:'bold',
+},
+boldText: {
+  fontWeight: 'bold',
+  color: '#000',
+},
+
+modalContent: {
+  width: '80%', // Adjust width as necessary
+  backgroundColor: 'white', // Modal background color
+  borderRadius: 20, // Rounded corners
+  padding: 20, // Padding inside the modal
+  elevation: 5, // Android shadow
+  shadowColor: '#000', // iOS shadow color
+  shadowOffset: { width: 0, height: 2 }, // iOS shadow offset
+  shadowOpacity: 0.25, // iOS shadow opacity
+  shadowRadius: 4, // iOS shadow radius
+},
+modalView: {
+  margin: 0, // No margin to take full width
+  backgroundColor: 'white',
+  borderTopLeftRadius: 20, // Rounded top corners
+  borderTopRightRadius: 20,
+  padding: 35,
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: -2, // Change to negative to enhance shadow at the bottom
   },
-  scheduleDetails: {
-    fontSize: 14,
-    color: "#FFF",
-  },
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5,
+},
+modalContainer: {
+  flex: 1,
+  justifyContent: 'flex-end', 
+  backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+},
+
 });
 
-export default Calendar;
+export default CalendarComponent;
+
+

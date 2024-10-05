@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -24,6 +24,15 @@ const styles = StyleSheet.create({
 
 const Home = () => {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.navigate('Login');
+    }, 2000); // 2000 milliseconds = 2 seconds
+
+    // Clean up the timer when the component unmounts
+    return () => clearTimeout(timer);
+  }, [navigation]);
 
   const handleLogin = () => {
     navigation.navigate("Login");

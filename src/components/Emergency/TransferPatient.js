@@ -576,13 +576,15 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor:"#fff",
-    height:"100%"
-
+    height:"100%",
+top:20,
   },
   title: {
     fontSize: 20,
     marginBottom: 20,
     textAlign: 'center',
+    color: '#007AFF',
+    fontWeight:'bold',
   },
   radioGroup: {
     flexDirection: 'row',

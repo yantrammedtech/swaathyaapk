@@ -31,54 +31,54 @@ const Hepato = () => {
         title="Vomiting"
         checked={hepato.vomiting}
         onPress={() => handleCheckboxChange('vomiting', !hepato.vomiting)}
-        disabled={currentPatient.status === "approved"}
+        disabled={currentPatient.status !== "pending"}
         containerStyle={{
-          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
         }}
       />
       <CheckBox
         title="GERD"
         checked={hepato.gerd}
         onPress={() => handleCheckboxChange('gerd', !hepato.gerd)}
-        disabled={currentPatient.status === "approved"}
+        disabled={currentPatient.status !== "pending"}
         containerStyle={{
-          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
         }}
       />
       <CheckBox
         title="Diarrhoea"
         checked={hepato.diarrhoea}
         onPress={() => handleCheckboxChange('diarrhoea', !hepato.diarrhoea)}
-        disabled={currentPatient.status === "approved"}
+        disabled={currentPatient.status !== "pending"}
         containerStyle={{
-          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
         }}
       />
       <CheckBox
         title="Gallbladder DS"
         checked={hepato.galbladderDS}
         onPress={() => handleCheckboxChange('galbladderDS', !hepato.galbladderDS)}
-        disabled={currentPatient.status === "approved"}
+        disabled={currentPatient.status !== "pending"}
         containerStyle={{
-          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
         }}
       />
       <CheckBox
         title="Jaundice"
         checked={hepato.jaundice}
         onPress={() => handleCheckboxChange('jaundice', !hepato.jaundice)}
-        disabled={currentPatient.status === "approved"}
+        disabled={currentPatient.status !== "pending"}
         containerStyle={{
-          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
         }}
       />
       <CheckBox
         title="Cirrhosis"
         checked={hepato.cirrhosis}
         onPress={() => handleCheckboxChange('cirrhosis', !hepato.cirrhosis)}
-        disabled={currentPatient.status === "approved"}
+        disabled={currentPatient.status !== "pending"}
         containerStyle={{
-          opacity: currentPatient.status === "approved" ? 0.5 : 1, // Apply opacity to indicate disabled state
+          opacity: currentPatient.status !== "pending" ? 0.5 : 1, // Apply opacity to indicate disabled state
         }}
       />
     </View>

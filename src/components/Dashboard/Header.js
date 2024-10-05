@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#fff', // Change to your preferred background color
+    top:20,
+    marginBottom:10,
   },
   iconContainer: {
     padding: 10,

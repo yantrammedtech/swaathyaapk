@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,77 +8,56 @@ import {
   Dimensions,
   Pressable,
 } from "react-native";
-import IconFont from "react-native-vector-icons/FontAwesome";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { PieChart } from "react-native-chart-kit";
 import { LineChart } from "react-native-chart-kit";
 import Footer from "./Footer";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { authFetch } from "../../axios/authFetch";
+import dayjs from 'dayjs';
+import { patientStatus } from "../../utility/role";
 
 const OtDataVisualization = () => {
+  const user = useSelector((state) => state.currentUserData);
+
   const navigation = useNavigation();
   const screenWidth = Dimensions.get("window").width;
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipData, setTooltipData] = useState({ active: 0, discharge: 0 });
+  const [tooltipData, setTooltipData] = useState({ emergency: 0, elective: 0 });
+  const [emergencyData, setEmergencyData] = useState([])
+  const [electiveData, setElectiveData] = useState([])
 
-  const handleLinePress = (monthIndex) => {
-    // Get data for the particular month
-    const activePatients = lineChartData.datasets[0].data[monthIndex]; // Active Patient Data
-    const dischargePatients = lineChartData.datasets[1].data[monthIndex]; // Discharge Patient Data
+  const [electiveCount, setElectiveCount] = React.useState(0);
+  const [emergencyCount, setEmergencyCount] = React.useState(0);
 
-    // Update tooltip data and show it
-    setTooltipData({
-      active: activePatients,
-      discharge: dischargePatients,
-    });
-    setShowTooltip(true);
-  };
+  
 
-  // Sample data for line charts (Active Patients and Discharge Patients)
-  const activePatientsData = [
-    { x: "Jan", y: 150 },
-    { x: "Feb", y: 200 },
-    { x: "Mar", y: 250 },
-    { x: "Apr", y: 180 },
-    { x: "May", y: 300 },
-    { x: "Jun", y: 220 },
-    { x: "Jul", y: 150 },
-  ];
-
-  const dischargePatientsData = [
-    { x: "Jan", y: 100 },
-    { x: "Feb", y: 180 },
-    { x: "Mar", y: 100 },
-    { x: "Apr", y: 150 },
-    { x: "May", y: 220 },
-    { x: "Jun", y: 190 },
-    { x: "Jul", y: 130 },
-  ];
+ 
   const pieChartData = [
     {
-      name: "Yellow",
-      population: 2230,
-      color: "#FDD835",
+      name: "Elective",
+      population: parseFloat(electiveCount),
+      color: "#3ce7b3",
       legendFontColor: "#7F7F7F",
       legendFontSize: 15,
     },
     {
-      name: "Red",
-      population: 5801,
-      color: "#D32F2F",
+      name: "Emergency",
+      population: parseFloat(emergencyCount),
+      color: "#a357f4",
       legendFontColor: "#7F7F7F",
       legendFontSize: 15,
     },
-    {
-      name: "Green",
-      population: 10301,
-      color: "#388E3C",
-      legendFontColor: "#7F7F7F",
-      legendFontSize: 15,
-    },
+   
   ];
+
+ 
+  const emergencyCounts = emergencyData.length > 0 ? emergencyData.map((item) => item.count) : Array(12).fill(0);
+const electiveCounts = electiveData.length > 0 ? electiveData.map((item) => item.count) : Array(12).fill(0);
+
 
   const lineChartData = {
     labels: [
@@ -97,17 +76,20 @@ const OtDataVisualization = () => {
     ],
     datasets: [
       {
-        data: [150, 200, 250, 180, 300, 220, 150, 180, 230, 210, 190, 170], // Active Patients Data extended
+        // data:[1,2,3,4,5,6,7,8,9,10,11,12],
+       data: emergencyCounts, 
         color: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`, // Purple for Active Patients
         strokeWidth: 2,
-        label: "Active Patient",
+        label: "Emergency Patient",
         fill: false,
       },
       {
-        data: [100, 180, 100, 150, 220, 190, 130, 160, 140, 170, 120, 110], // Discharge Patients Data extended
+        // data:[1,2,3,4,5,6,7,8,9,10,11,12],
+
+        data: electiveCounts, 
         color: (opacity = 1) => `rgba(0, 128, 0, ${opacity})`, // Green for Discharge Patients
         strokeWidth: 2,
-        label: "Discharge Patient",
+        label: "Elective Patient",
         fill: false,
       },
     ],
@@ -133,13 +115,75 @@ const OtDataVisualization = () => {
     const options = { year: "numeric", month: "long" };
     return new Intl.DateTimeFormat("en-US", options).format(currentMonth);
   };
-  const currentMonthIndex = currentMonth.getMonth();
+  const MonthIndex = currentMonth.getMonth() ;
+  const currentMonthIndex = MonthIndex + 1
 
   const chartWidth = screenWidth - 30; // Width of the chart
   const totalMonths = 12; // Total months on the x-axis
 
   // Calculate the x-position for the vertical line
   const verticalLinePosition = (currentMonthIndex / totalMonths) * chartWidth;
+
+
+  let selectedYear = dayjs().year();
+  let patientType =''
+
+const getLineChartData = async() => {
+  try{
+    patientType = 'emergency'
+    const barGraphResponse = await authFetch(
+      `patient/${user.hospitalID}/patients/count/fullYear/${patientType}/${selectedYear}/${patientStatus.operationTheatre}`,
+      user.token
+    );
+    setEmergencyData(barGraphResponse.counts)
+     patientType = 'elective'
+    const barGraphResponse2 = await authFetch(
+      `patient/${user.hospitalID}/patients/count/fullYear/${patientType}/${selectedYear}/${patientStatus.operationTheatre}`,
+      user.token
+    );
+    setElectiveData(barGraphResponse2.counts)
+    
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+  
+}
+ 
+useEffect(() => {
+  getLineChartData()
+},[])
+
+React.useEffect(() => {
+  if (user.token) {
+    const getOTPatientTypeCount = async () => {
+      const result = await authFetch(
+        `ot/${user.hospitalID}/getOTPatientTypeCount`,
+        user.token
+      );
+      if (result.status == 200) {
+        setElectiveCount(result.data.elective);
+        setEmergencyCount(result.data.emergency);
+      }
+    };
+    getOTPatientTypeCount();
+  }
+}, [user.hospitalID, user.token]);
+
+
+const handleLinePress = (monthIndex) => {
+  const emergencyCountForMonth = emergencyCounts[monthIndex] || 0;
+  const electiveCountForMonth = electiveCounts[monthIndex] || 0;
+
+  // Update tooltip data and show it
+  setTooltipData({
+    emergency: emergencyCountForMonth,
+    elective: electiveCountForMonth,
+  });
+  setShowTooltip(true);
+};
+
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -202,6 +246,7 @@ const OtDataVisualization = () => {
               marginLeft: -10, // Move the chart slightly to the left
             }}
           />
+
           <View
             style={[
               styles.verticalLine,
@@ -209,8 +254,11 @@ const OtDataVisualization = () => {
             ]}
           >
             <Pressable
-              onPressIn={() => handleLinePress(currentMonthIndex)} // Trigger on press
-              onPressOut={() => setShowTooltip(false)} // Hide on release
+              onPressIn={() => {
+                handleLinePress(currentMonthIndex); // Trigger on press
+                setShowTooltip(true); // Ensure tooltip is shown when the line is pressed
+              }}
+              onPressOut={() => setShowTooltip(false)} 
             >
               <View
                 style={[
@@ -223,16 +271,18 @@ const OtDataVisualization = () => {
             {showTooltip && (
               <View style={[styles.tooltip, { left: verticalLinePosition }]}>
                 <Text style={styles.tooltipText}>
-                  {`Active: ${tooltipData.active}, Discharge: ${tooltipData.discharge}`}
+                {`Emergency: ${tooltipData.emergency}, Elective: ${tooltipData.elective}`}
                 </Text>
               </View>
             )}
           </View>
+
+         
         </View>
 
         {/* Pie Chart */}
         <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>Patients visited by zone</Text>
+          <Text style={styles.chartTitle}>Patients Percentage</Text>
           <PieChart
             data={pieChartData}
             width={screenWidth}

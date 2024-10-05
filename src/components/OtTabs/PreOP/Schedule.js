@@ -72,7 +72,7 @@ export default function ScheduleScreen() {
   const [patientID, setPatientID] = useState('01678');
   const [gender, setGender] = useState('Female');
   const [age, setAge] = useState(24);
-  const [room, setRoom] = useState('02');
+  const [room, setRoom] = useState('');
   const [surgeryType, setSurgeryType] = useState('Neuro surgery');
   const [bloodRequirement, setBloodRequirement] = useState(true);
   const [attendant, setAttendant] = useState('Dr. Rajkumar');
@@ -92,7 +92,7 @@ export default function ScheduleScreen() {
   const [addAttendeesModalVisible, setAddAttendeesModalVisible] = useState(false);
 
   const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(false); // Ensure the date picker closes after selection
+    setShowDatePicker(false); 
     if (selectedDate) {
       const dateString = selectedDate.toISOString().split('T')[0]; // Format date as 'YYYY-MM-DD'
       setselectDate(dateString)
@@ -136,7 +136,7 @@ export default function ScheduleScreen() {
   // Initially generate dates starting from today
   useEffect(() => {
 
-    //fill currentPatientData 
+   
     // console.log("currentPatientData=========schedule============",currentPatientData)
     generateDates(0);  // Start from today
   }, []);
@@ -294,11 +294,6 @@ export default function ScheduleScreen() {
 
 
 
-
-
-
-
-
   // ==================before schedule get data===================
   useEffect(() => {
     const getAllAttendees = async () => {
@@ -372,6 +367,53 @@ export default function ScheduleScreen() {
     }
   };
 
+  let genderText = '';
+
+  if (currentPatientData?.gender === 1) {
+    genderText = "Male";
+  } else if (currentPatientData?.gender === 2) {
+    genderText = "Female";
+  } else {
+    genderText = "Other"; 
+  }
+
+  function calculateAge(dob) {
+    const birthDate = new Date(dob);
+  
+    // Check if the date is valid
+    if (isNaN(birthDate)) {
+      return 'Invalid date'; // Handle invalid date
+    }
+  
+    const today = new Date();
+  
+    // Calculate the total difference in years, months, and days
+    let ageInYears = today.getFullYear() - birthDate.getFullYear();
+    let ageInMonths = today.getMonth() - birthDate.getMonth();
+    let ageInDays = today.getDate() - birthDate.getDate();
+  
+    // Adjust for negative months and days
+    if (ageInDays < 0) {
+      ageInDays += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); // Get the last day of the previous month
+      ageInMonths--;
+    }
+  
+    if (ageInMonths < 0) {
+      ageInMonths += 12;
+      ageInYears--;
+    }
+  
+    // Return the appropriate age format
+    if (ageInYears > 0) {
+      return `${ageInYears} year${ageInYears > 1 ? 's' : ''}`; // Return years if age is 1 or more
+    } else if (ageInMonths > 0) {
+      return `${ageInMonths} month${ageInMonths > 1 ? 's' : ''}`; // Return months if age is less than 1 year
+    } else {
+      return `${ageInDays} day${ageInDays > 1 ? 's' : ''}`; // Return days if age is less than 1 month
+    }
+  }
+  
+  console.log("currentPatientData=============",currentPatientData)
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.header} onPress={() => { setShowDatePicker(true); }}>
@@ -427,14 +469,14 @@ export default function ScheduleScreen() {
         <Text style={styles.label}>Patient Name</Text>
         <TextInput
           style={styles.input}
-          value={patientName}
+          value={currentPatientData.pName}
           onChangeText={setPatientName}
         />
 
         <Text style={styles.label}>Patient ID</Text>
         <TextInput
           style={styles.input}
-          value={patientID}
+          value={currentPatientData.pID}
           onChangeText={setPatientID}
         />
 
@@ -443,7 +485,7 @@ export default function ScheduleScreen() {
             <Text style={styles.label}>Gender</Text>
             <TextInput
               style={styles.input}
-              value={gender}
+              value={genderText}
               onChangeText={setGender}
             />
           </View>
@@ -452,28 +494,31 @@ export default function ScheduleScreen() {
             <Text style={styles.label}>Age</Text>
             <TextInput
               style={styles.input}
-              value={age.toString()}
-              keyboardType="numeric"
-              onChangeText={(value) => setAge(parseInt(value))}
+              value={currentPatientData?.dob ? calculateAge(currentPatientData.dob).toString() : 'N/A'}
+  editable={false} 
             />
           </View>
 
-          <View style={styles.column}>
-            <Text style={styles.label}>Room</Text>
-            <TextInput
-              style={styles.input}
-              value={room}
-              onChangeText={setRoom}
-            />
-          </View>
+        
         </View>
 
-        <Text style={styles.label}>Surgery Type</Text>
+        <Text style={styles.label}>Room</Text>
+            <Picker
+        selectedValue={room}
+        style={styles.input}
+        onValueChange={(itemValue) => setRoom(itemValue)}
+      >
+        <Picker.Item label="Select Room" value="" />
+        <Picker.Item label="101" value="101" />
+        <Picker.Item label="102" value="102" />
+        <Picker.Item label="103" value="103" />
+      </Picker>
+        {/* <Text style={styles.label}>Surgery Type</Text>
         <TextInput
           style={styles.input}
           value={surgeryType}
           onChangeText={setSurgeryType}
-        />
+        /> */}
 
         <Text style={styles.label}>Blood Requirement</Text>
         <Picker

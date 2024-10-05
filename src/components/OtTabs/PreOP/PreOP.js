@@ -6,6 +6,7 @@ import { authFetch } from '../../../axios/authFetch';
 import { useSelector } from 'react-redux';
 import { authPost } from '../../../axios/authPost';
 import Toast from 'react-native-toast-message';
+import PostOpMedication from './PostOpMedication';
 
 
 
@@ -20,6 +21,7 @@ const PreOp = () => {
   const patientTimeLineID = currentPatient?.patientTimeLineID;
   const  userType=useSelector((state)  => state.userType)
 
+  const navigation = useNavigation()
 
     const [arrangeBlood, setArrangeBlood] = useState(false);
     const [riskConsent, setRiskConsent] = useState(false)
@@ -29,8 +31,68 @@ const [visible, setVisible] = useState(false);
 const [notes, setNotes] = useState('');
 const [patientStage, setPatientStage]=useState(0)
 
+const [modalVisible, setModalVisible] = useState(false);
+const  [medicineList, setMedicineList] = useState([])
 
-const navigation = useNavigation()
+const [medications, setMedications] = useState({
+    capsules: [],
+    syrups: [],
+    tablets: [],
+    injections: [],
+    ivLine: [],
+    tubing: [],
+    topical: [],
+    drop: [],
+    spray: [],
+  });
+
+
+
+
+ // Function to categorize the received medication data
+ const categorizeMedication = (medData) => {
+  const updatedMedications = { ...medications };
+  medData.forEach((item) => {
+    // Find the correct category based on the medicineType
+    const category = Object.keys(medicineCategory).find(
+      (key) => medicineCategory[key] === item.medicineType
+    );
+
+    if (category && medications[category]) {
+      // Push the medication data into the corresponding category array
+      updatedMedications[category].push(item);
+    }
+  });
+  setMedications(updatedMedications); 
+};
+
+const handleCloseModal = () => {
+  setModalVisible(false);
+};
+
+const handleSaveMed = () => {
+  setModalVisible(false);
+};
+
+
+const handleMedData  = (data) => {
+  const receivedMedData = data
+categorizeMedication(receivedMedData);
+setMedicineList(receivedMedData)
+
+}
+
+const medicineCategory = {
+  capsules: 1,
+  syrups: 2,
+  tablets: 3,
+  injections: 4,
+  ivLine: 5,
+  Tubing: 6,
+  Topical: 7,
+  Drops: 8,
+  Spray: 9,
+};
 
     // Toggle function for button click
     const handleArrangeBloodClick = () => {
@@ -122,13 +184,7 @@ useEffect(() => {
         const preopRecordData = {
           notes,  
           tests: [],  
-          medications: {         
-            capsules: [],
-            syrups: [],
-            tablets: [],
-            injections: [],
-            ivLine: []
-          },
+          medications:medications,
           arrangeBlood,
           riskConsent,
         };
@@ -244,7 +300,6 @@ const isAnesthesiaFormVisible = () => {
 
   },[patientStage, userType, user, currentPatient])
 
-console.log("isAnesthesiaFormVisible=========",isAnesthesiaFormVisible())
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -358,6 +413,23 @@ console.log("isAnesthesiaFormVisible=========",isAnesthesiaFormVisible())
         contentContainerStyle={styles.scrollContentContainer}
       >
        
+
+        
+       <View style={styles.imgcontainer}>
+  <TouchableOpacity onPress={() => setModalVisible(true)}>
+    <Image
+      source={require('../../../assets/Frame 3473.png')} // Make sure this path is correct
+      style={styles.botIcon}
+    />
+  </TouchableOpacity>
+</View>
+
+  <PostOpMedication
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        onSave={handleSaveMed}
+        medData={handleMedData}
+      />
   
         {/* Treatment Card */}
   
@@ -615,6 +687,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     alignItems: 'center',
+    justifyContent:'center',
     width:"30%",
    
   },
@@ -800,7 +873,17 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Center text horizontally
     marginLeft: 10, // Space between buttons if in a row
   },
- 
+  botIcon :{
+    height:30,
+    width:30,
+  },
+  imgcontainer:{
+    flexDirection:'row',
+    justifyContent:'flex-end',
+    alignItems: 'center', 
+    width: '100%',
+    marginBottom:10,
+  }
 
 });
 
