@@ -1,7 +1,15 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView ,TextInput, Modal} from 'react-native';
 import { useSelector } from 'react-redux';
 import { authFetch } from '../../../axios/authFetch';
+import Toast from 'react-native-toast-message';
+
+// import { Dropdown } from 'react-native-paper-dropdown';
+import { Picker } from '@react-native-picker/picker';
+
+import { Button } from 'react-native-paper';
+import { Role_NAME } from '../../../utility/role';
+import { authPost } from '../../../axios/authPost';
 
 const TreatingDoctor = () => {
     const user = useSelector((state) => state.currentUserData);
@@ -9,6 +17,23 @@ const TreatingDoctor = () => {
     const patientTimeLineID = currentPatient?.patientTimeLineID;
 
   const [selectedList, setSelectedList] = React.useState([]);
+  const [doctor, setDoctor] = useState('');
+  const [category, setCategory] = useState('');
+  const [reason, setReason] = useState('');
+  const [doctorModel, setDoctorModel] = useState(false);
+  const [doctorList, setDoctorList] = React.useState([]);
+  const [doctorID, setDoctorID] = React.useState(null);
+
+
+
+
+
+  const categories = [
+    { label: 'Primary', value: 'primary' },
+    { label: 'Secondary', value: 'secondary' },
+  ];
+
+  
 
 
   const getAllDoctors = useCallback(async () => {
@@ -33,10 +58,68 @@ function compareDates(a, b) {
       new Date(b.addedOn || "").valueOf() - new Date(a.addedOn || "").valueOf()
     );
   }
-  console.log("selectedList==",selectedList)
+
+  const handleAddDoctor = () => {
+    console.log('Doctor Added:', doctor, category, reason);
+    onClose();
+  };
+
+  const onClose = () => {
+    setDoctorModel(false)
+  }
+
+  const getAllList = async () => {
+    const doctorResponse = await authFetch(
+      `user/${user.hospitalID}/list/${Role_NAME.doctor}`,
+      user.token
+    );
+    if (doctorResponse.message == "success") {
+      setDoctorList(doctorResponse.users);
+    }
+  };
+  React.useEffect(() => {
+  
+      getAllList();
+    
+  }, [user, patientTimeLineID]);
+
+  const handleSave = async () => {
+    const body = {
+      patientTimeLineId: patientTimeLineID,
+      doctorId: doctorID,
+      category: category,
+      purpose:reason,
+      scope: "doctor",
+    };
+    const response = await authPost(
+      `doctor/${user.hospitalID}`,
+      body,
+      user.token
+    );
+    if (response.message == "success") {
+      setSelectedList((prevList) => {
+        return [...prevList, ...response.doctor];
+      });
+    }else{
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: response.message,
+        visibilityTime: 3000,
+        autoHide: true,
+        bottomOffset: 40,
+      });
+
+    }
+    onClose();
+   
+  };
+
+
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
     
       {/* Doctor Card */}
       {selectedList.sort(compareDates).map((each) => (
@@ -83,9 +166,76 @@ function compareDates(a, b) {
      
 
       
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity style={styles.addButton} onPress={()=> setDoctorModel(true)}>
         <Text style={styles.addButtonText}>+ Add Doctor</Text>
       </TouchableOpacity>
+
+      <Modal
+      animationType="slide"
+      transparent={true}
+      visible={doctorModel}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalBackground}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.title}>Add Doctor</Text>
+          <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={doctor}
+            onValueChange={(itemValue) => setDoctorID(Number(itemValue))}  
+            style={styles.picker}
+          >
+            {doctorList.map((doc, index) => {
+      return (
+        <Picker.Item
+          key={index}
+          label={
+            (doc.firstName ? doc.firstName : "") +
+            (doc.lastName ? " " + doc.lastName : "")
+          }
+          value={doc.id}
+        />
+      );
+    })}
+          </Picker>
+
+          </View>
+         
+
+          <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={category}
+            onValueChange={(itemValue) => setCategory(itemValue)}
+            style={styles.picker}
+          >
+            {categories.map((category, index) => (
+              <Picker.Item label={category.label} value={category.value} key={index} />
+            ))}
+          </Picker>
+</View>
+        
+
+          <TextInput
+            style={styles.input}
+            multiline
+            placeholder="Enter Reason"
+            value={reason}
+            onChangeText={setReason}
+          />
+
+          <View style={styles.buttonContainer}>
+            <Button mode="text" onPress={onClose}>
+              Cancel
+            </Button>
+            <Button mode="contained" onPress={handleSave} style={styles.modelAddButton}>
+              Submit
+            </Button>
+          </View>
+        </View>
+      </View>
+    </Modal>
+     
+
     </ScrollView>
   );
 };
@@ -96,24 +246,11 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
-  tabs: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 20,
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 24, // Adjust if content is clipped
   },
-  tab: {
-    padding: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-    marginHorizontal: 20,
-  },
-  activeTab: {
-    borderBottomColor: '#007bff',
-  },
-  tabText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+
   doctorCard: {
     backgroundColor: '#f9f9f9',
     borderRadius: 8,
@@ -130,12 +267,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 16,
-  },
+ 
   doctorDetails: {
     flexDirection: 'column',
   },
@@ -151,7 +283,7 @@ const styles = StyleSheet.create({
 
   },
   doctorMeta: {
-    marginTop: 10,
+    marginTop: 0,
   },
   metaRow: {
     flexDirection: 'row',
@@ -159,9 +291,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   metaText: {
-    fontSize: 14,
+    fontSize: 12,
     marginLeft: 5,
     color: 'gray',
+    fontWeight:'bold'
   },
   statusContainer: {
     flexDirection: 'row',
@@ -180,11 +313,75 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
+    marginBottom:100,
+    
   },
   addButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+ 
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  dropdown: {
+    marginBottom: 20,
+  },
+  
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Modal background with transparency
+  },
+  modalContainer: {
+    width: '90%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  picker: {
+    height: 30,
+    width: '100%',
+    marginBottom: 20,
+  },
+  input: {
+    height: 100,
+    borderColor: 'gray',
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 5,
+    textAlignVertical: 'top',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modelAddButton: {
+    backgroundColor: '#6200EE',
+  },
+  pickerContainer: {
+    width: '100%',
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
   },
 });
 

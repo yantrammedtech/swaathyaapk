@@ -143,17 +143,21 @@ export default function BasicTabs() {
           <Text style={styles.categoryText}>Patient Timeline</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.categoryButton,
-            selectedCategory === "Treating Doctor"
-              ? styles.activeButton
-              : styles.inactiveButton,
-          ]}
-          onPress={() => setSelectedCategory("Treating Doctor")}
-        >
-          <Text style={styles.categoryText}>Treating Doctor</Text>
-        </TouchableOpacity>
+        {currentPatient?.ptype !== 3  && (
+ <TouchableOpacity
+ style={[
+   styles.categoryButton,
+   selectedCategory === "Treating Doctor"
+     ? styles.activeButton
+     : styles.inactiveButton,
+ ]}
+ onPress={() => setSelectedCategory("Treating Doctor")}
+>
+ <Text style={styles.categoryText}>Treating Doctor</Text>
+</TouchableOpacity>
+        )}
+
+       
 
 {currentPatient?.ptype === 3  && (
   <>
