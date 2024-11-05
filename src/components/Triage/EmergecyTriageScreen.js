@@ -33,22 +33,30 @@ const validateForm = ({
   }
 
   if (data.bpH || isSubmission) {
-    if (data.bpL && data.bpH < data.bpL)
-      errors.bpH = "High value should be greater than low value";
-    else if (data.bpH > 400) errors.bpH = "High value should be <= 400";
-    else if (data.bpH < 50) errors.bpH = "High value should be >= 50";
+    if (data.bpL && data.bpH <= data.bpL) {
+      errors.bpH = "High BP value should be greater than the low BP value";
+    } else if (data.bpH > 200) {
+      errors.bpH = "High BP value should be <= 200";
+    } else if (data.bpH < 50) {
+      errors.bpH = "High BP value should be >= 50";
+    }
   }
+  
 
   if (data.bpL || isSubmission) {
-    if (data.bpH && data.bpH < data.bpL)
-      errors.bpL = "Low value should be less than high value";
-    else if (data.bpL > 300) errors.bpL = "Low value should be <= 300";
-    else if (data.bpL < 30) errors.bpL = "Low value should be >= 30";
+    if (data.bpH && data.bpL >= data.bpH) {
+      errors.bpL = "Low BP value should be less than the high BP value";
+    } else if (data.bpL > 200) {
+      errors.bpL = "Low BP value should be <= 200";
+    } else if (data.bpL < 30) {
+      errors.bpL = "Low BP value should be >= 30";
+    }
   }
+  
 
   if (data.pulse || isSubmission) {
     if (data.pulse < 30) errors.pulse = "Pulse value should be >= 30";
-    else if (data.pulse > 300) errors.pulse = "Pulse value should be <= 300";
+    else if (data.pulse > 200) errors.pulse = "Pulse value should be <= 200";
   }
 
   if (data.temperature || isSubmission) {
@@ -61,8 +69,8 @@ const validateForm = ({
   if (data.respiratoryRate || isSubmission) {
     if (data.respiratoryRate < 1)
       errors.respiratoryRate = "Respiratory Rate value should be >= 1";
-    else if (data.respiratoryRate > 50)
-      errors.respiratoryRate = "Respiratory Rate value should be <= 50";
+    else if (data.respiratoryRate > 40)
+      errors.respiratoryRate = "Respiratory Rate value should be <= 40";
   }
 
   const hasErrors = Object.entries(errors).some(([, value]) => !!value);

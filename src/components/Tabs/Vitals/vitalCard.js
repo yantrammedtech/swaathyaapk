@@ -68,9 +68,11 @@ const VitalCard =({ visible, onClose, onSave }) => {
       errors: newErrors,
     }));
   } else if (field === "bpH") {
-    if (updatedValue > 200 || updatedValue < vitals.bpL || updatedValue < 50) {
+    if (updatedValue > 200  || updatedValue < 50) {
       newErrors.bpH = `BP High should be between ${vitals.bpL || 50} and 200 mm Hg.`;
-    } else {
+    }else if (updatedValue < vitals.bpL) {
+      newErrors.bpH = 'Blood Pressure High cannot be less than Blood Pressure Low.';
+    }  else {
       delete newErrors.bpH;
     }
    
@@ -81,8 +83,10 @@ const VitalCard =({ visible, onClose, onSave }) => {
       errors: newErrors,
     }));
   } else if (field === "bpL") {
-    if (updatedValue < 30 || updatedValue > vitals.bpH) {
+    if (updatedValue < 30 || updatedValue > 200) {
       newErrors.bpL = 'BP Low should be between 30 and 200 mm Hg.';
+    } else if (updatedValue > vitals.bpH) {
+      newErrors.bpL = 'Blood Pressure Low cannot be greater than Blood Pressure High.';
     } else {
       delete newErrors.bpL;
     }
@@ -190,6 +194,26 @@ const convertTimeToISO = (time) => {
   }
     
       const handleSavePress = async() => {
+        const newErrors = {};
+  
+  // Check required fields
+  if (!vitals.oxygen) newErrors.oxygen = "Oxygen is required.";
+  if (!vitals.bpH) newErrors.bpH = "BP High is required.";
+  if (!vitals.bpL) newErrors.bpL = "BP Low is required.";
+  if (!vitals.temperature) newErrors.temperature = "Temperature is required.";
+  if (!vitals.pulse) newErrors.pulse = "Pulse is required.";
+  if (!vitals.respiratoryRate) newErrors.respiratoryRate = "Respiratory Rate is required.";
+  if (!vitals.time) newErrors.time = "Time of observation is required.";
+
+  // Update errors if any
+  if (Object.keys(newErrors).length > 0) {
+    setVitals((prevVitals) => ({
+      ...prevVitals,
+      errors: newErrors,
+    }));
+    Alert.alert("Validation Error", "Please fill in all required fields.");
+    return;
+  }
         const wardName = currentPatient?.wardID ? wardList.find((ward) => ward.id == currentPatient.wardID)?.name : ''
       const patientAge = calculateAge(user.dob)
       // console.log("oxytime===",vitals.time, vitals.temperatureTime)
