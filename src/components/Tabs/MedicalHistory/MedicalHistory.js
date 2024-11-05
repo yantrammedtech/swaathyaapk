@@ -1000,6 +1000,7 @@ const [selectedBloodType, setSelectedBloodType] = useState(medicalHistoryData?.b
 
 
   const handleBloodGrp = (value) => {
+    console.log("object=========================================================",value)
     setBloodGrp(value);
   };
 
@@ -1074,6 +1075,7 @@ const [selectedBloodType, setSelectedBloodType] = useState(medicalHistoryData?.b
     medicalHistoryData.bloodPressure,
   ]);
 
+  console.log("blood",bloodGrp,formDisabled)
   return (
     <ScrollView style={styles.container}>
       <View style={styles.column}>
@@ -1082,7 +1084,7 @@ const [selectedBloodType, setSelectedBloodType] = useState(medicalHistoryData?.b
         {/* ======================History  given by==================== */}
 
         <View style={styles.subcontainer}>
-          <Text style={styles.label}>History given byll</Text>
+          <Text style={styles.label}>History given by</Text>
           <TextInput
             value={medicalHistoryData.givenName}
             onChangeText={handleChange}
@@ -1141,8 +1143,8 @@ const [selectedBloodType, setSelectedBloodType] = useState(medicalHistoryData?.b
                     bloodGrp  === option && styles.selectedOption,
                     formDisabled && styles.disabled,
                   ]}
-                  onPress={() => handleBloodGrp(option)}
-                  disabled={formDisabled}
+                  onPress={() =>  handleBloodGrp(option)}
+                  // disabled={formDisabled}
                 >
                   <Text style={styles.optionText}>{option}</Text>
                 </TouchableOpacity>

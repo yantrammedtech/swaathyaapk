@@ -241,6 +241,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         alignSelf: 'center',
         marginBottom:80,
+        bottom:30,
     },
     buttonText: {
         color: '#fff',
