@@ -66,7 +66,7 @@ const Dashboard = ({ onNotificationPress }) => {
 
   console.log("hasInpatient", hasInpatient)
 
-const [isQROpen,setIsQROpen] = useState(true)
+const [isQROpen,setIsQROpen] = useState(false)
 const handleScanComplete = (data) => {
   // Set `isQROpen` to false to close the scanner
   setIsQROpen(false);

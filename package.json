@@ -26,6 +26,7 @@
     "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.6",
     "expo": "~51.0.28",
+    "expo-barcode-scanner": "~13.0.1",
     "expo-document-picker": "^12.0.2",
     "expo-image-picker": "^15.0.7",
     "expo-status-bar": "~1.12.1",
@@ -45,6 +46,7 @@
     "react-native-modal": "^13.0.1",
     "react-native-paper": "^5.12.5",
     "react-native-pdf": "^6.7.5",
+    "react-native-picker-select": "^9.3.1",
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0",
     "react-native-svg-transformer": "^1.5.0",
@@ -59,8 +61,7 @@
     "sonner": "^1.5.0",
     "typescript": "~5.3.3",
     "victory-native": "^41.4.0",
-    "zustand": "^4.5.5",
-    "expo-barcode-scanner": "~13.0.1"
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
