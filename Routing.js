@@ -83,7 +83,9 @@ const Routing = () => {
         <Stack.Screen name="Hub" component={HubScreen}  options={{
     headerStyle: {
       backgroundColor: '#1977f3',
+      color:'#fff'
     },
+    headerTintColor: '#FFFFFF',
   }}  />
         {/* ============Help =============== */}
 
