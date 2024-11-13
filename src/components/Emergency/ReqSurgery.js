@@ -93,7 +93,7 @@ const RequestSurgeryForm = () => {
       {/* <Text style={styles.para}>Surgery urgency</Text> */}
       <View style={styles.pickerContainer}>
         <Picker
-          selectedValue={surgeryType}
+          selectedValue={patientType}
           onValueChange={(itemValue) => setPatientType(itemValue)}
           style={styles.picker}
         >

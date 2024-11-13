@@ -68,9 +68,13 @@ const VitalCard =({ visible, onClose, onSave }) => {
       errors: newErrors,
     }));
   } else if (field === "bpH") {
-    if (updatedValue > 200 || updatedValue < vitals.bpL || updatedValue < 50) {
+    if (updatedValue > 200  || updatedValue < 50) {
       newErrors.bpH = `BP High should be between ${vitals.bpL || 50} and 200 mm Hg.`;
-    } else {
+    } 
+    else if (vitals.bpL && updatedValue <= vitals.bpL) {
+      newErrors.bpH = "High BP value should be greater than the low BP value.";
+    } 
+    else {
       delete newErrors.bpH;
     }
    
@@ -81,8 +85,11 @@ const VitalCard =({ visible, onClose, onSave }) => {
       errors: newErrors,
     }));
   } else if (field === "bpL") {
-    if (updatedValue < 30 || updatedValue > vitals.bpH) {
+    if (updatedValue < 30 || updatedValue > 200) {
       newErrors.bpL = 'BP Low should be between 30 and 200 mm Hg.';
+    } 
+    else if (vitals.bpH && updatedValue >= vitals.bpH) {
+      newErrors.bpL = "Low BP value should be less than the high BP value.";
     } else {
       delete newErrors.bpL;
     }
@@ -190,6 +197,17 @@ const convertTimeToISO = (time) => {
   }
     
       const handleSavePress = async() => {
+
+        if (!vitals.time) {
+          setVitals((prev) => ({
+            ...prev,
+            errors: {
+              ...prev.errors,
+              time: "Please set the time of observation.",
+            },
+          }));
+          return;
+        }
         const wardName = currentPatient?.wardID ? wardList.find((ward) => ward.id == currentPatient.wardID)?.name : ''
       const patientAge = calculateAge(user.dob)
       // console.log("oxytime===",vitals.time, vitals.temperatureTime)

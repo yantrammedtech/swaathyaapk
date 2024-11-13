@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal,Image ,FlatList} from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal,Image ,FlatList,Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Picker } from '@react-native-picker/picker';
 import { authPost } from '../../../axios/authPost';
@@ -85,6 +85,7 @@ const MedicineForm = ({ visible, onClose }) => {
                 text2: 'Please select MedicineType',
                 position: 'top', // 'top', 'bottom', 'center'
               });
+              Alert.alert("Error", "Please select MedicineType");
             return;
           }
           if (finalData[0]?.medicineName === "") {
@@ -94,6 +95,8 @@ const MedicineForm = ({ visible, onClose }) => {
                 text2: 'Please select medicineName',
                 position: 'top', // 'top', 'bottom', 'center'
               });
+              Alert.alert("Error", "Please select medicineName");
+
             return;
           }
           // Check if doseCount is less than 1
@@ -104,6 +107,7 @@ const MedicineForm = ({ visible, onClose }) => {
       text2: 'Dose count must be at least 1',
       position: 'top',
     });
+    Alert.alert("Error", "Dose count must be at least 1");
     return;
   }
   if (finalData[0]?.daysCount < 1) {
@@ -113,6 +117,7 @@ const MedicineForm = ({ visible, onClose }) => {
       text2: 'Please select Days count',
       position: 'top',
     });
+    Alert.alert("Error", "'Please select Days count");
     return;
   }
           if (
@@ -126,6 +131,8 @@ const MedicineForm = ({ visible, onClose }) => {
                 text2: 'Please select Time of Medication',
                 position: 'top', // 'top', 'bottom', 'center'
               });
+    Alert.alert("Error", "Please selectTime of Medication");
+
             return;
           }
       
@@ -138,6 +145,8 @@ const MedicineForm = ({ visible, onClose }) => {
                 position: 'top',
                 visibilityTime: 4000,
               });
+    Alert.alert("Error", `Please Select ${finalData[0].medicineFrequency} Time of Medication`);
+
               return;
             }
           }
@@ -161,6 +170,8 @@ const MedicineForm = ({ visible, onClose }) => {
           } else {
             
             showErrorToast(response.message); // Show toast for error
+            Alert.alert("Error",response.message);
+
           }
         // onClose()
     }
@@ -190,7 +201,12 @@ const MedicineForm = ({ visible, onClose }) => {
 
     const fetchMedicineList = async (text, index) => {
         if (text.length >= 1) {
-          const response = await authPost("data/medicines", { text }, user.token);
+          // const response = await authPost("data/medicines", { text }, user.token);
+          const response = await authPost(
+            `medicine/${user.hospitalID}/getMedicines`,
+            { text },
+            user.token
+          );
           if (response.message === "success") {
             setMedicineData((prev) => {
               const newData = [...prev];
@@ -398,6 +414,7 @@ const MedicineForm = ({ visible, onClose }) => {
       
                 {/* Select Days */}
                 <View style={styles.inputContainer}>
+                <Text style={styles.dayslabel}>Days Count</Text>
   <TextInput
     value={medicineData[index]?.daysCount?.toString() || ''}  // Fetch value from state
     onChangeText={(text) => {
@@ -835,6 +852,12 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 12,
         marginTop: 10,
+      },
+      dayslabel: {
+        fontSize: 15,           // Font size for the label
+        fontWeight: '500',     // Bold text for emphasis
+        color: '#333',          // Dark color for the text (adjust to fit your theme)
+        marginBottom: 5,        // Adds space between label and input field
       },
     
 });

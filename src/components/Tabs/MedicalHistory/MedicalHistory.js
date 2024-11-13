@@ -1082,7 +1082,7 @@ const [selectedBloodType, setSelectedBloodType] = useState(medicalHistoryData?.b
         {/* ======================History  given by==================== */}
 
         <View style={styles.subcontainer}>
-          <Text style={styles.label}>History given byll</Text>
+          <Text style={styles.label}>History given by</Text>
           <TextInput
             value={medicalHistoryData.givenName}
             onChangeText={handleChange}

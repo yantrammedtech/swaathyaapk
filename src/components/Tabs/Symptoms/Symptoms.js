@@ -89,7 +89,7 @@ const SymptomsTab = () => {
     if (currentUserData?.token && currentPatientData?.patientTimeLineID) {
       getAllSymptomps()
     }
-  }, [currentUserData,currentPatientData])
+  }, [currentUserData,currentPatientData,modalVisible])
 
 
   const handleChangeText = (text) => {
@@ -363,6 +363,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     width: '48%',
+    marginBottom:10,
   },
   buttonText: {
     color: '#fff',
