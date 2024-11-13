@@ -61,6 +61,8 @@ const PatientProfile = ({ route }) => {
     };
     const backgroundColor = getRandomColor();
 
+
+    console.log("currentPatientData=====================================",currentPatientData)
     return (
         <View style={styles.container}>
 

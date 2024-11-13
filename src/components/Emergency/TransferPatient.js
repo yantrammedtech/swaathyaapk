@@ -207,14 +207,116 @@ const TransferPatientForm = () => {
         ...prevData,
         [name]: {
           ...prevData[name],
-          valid: value !== "",
-          message: value !== "" ? "" : "This field is required",
-          value,
-          showError: value === "",
+          value: value,
         },
       };
     });
-  };
+    
+    // Validate inputs immediately after changing the value
+    validateInputs(name, value);
+};
+
+const validateInputs = (changedField, newValue) => {
+    const newErrors = {};
+
+    // Parse values as integers
+    const oxygenValue = parseInt(newValue || formData.oxygen.value, 10);
+    const bpHighValue = parseInt(formData.bpH.value, 10);
+    const bpLowValue = parseInt(formData.bpL.value, 10);
+    const temperatureValue = parseInt(formData.temp.value, 10);
+    const pulseValue = parseInt(formData.pulse.value, 10);
+    const respiratoryRateValue = parseInt(formData.respiratoryRate.value, 10);
+
+    // Oxygen validation
+    if (changedField === 'oxygen' && (oxygenValue < 50 || oxygenValue > 100)) {
+        newErrors.oxygen = "Oxygen should be between 50 and 100.";
+    }
+
+    // Temperature validation
+    if (changedField === 'temp' && (temperatureValue < 20 || temperatureValue > 45)) {
+        newErrors.temp = "Temperature should be between 20°C and 45°C.";
+    }
+
+    // Blood Pressure High validation
+    if (changedField === 'bpH' && bpHighValue) {
+        if (bpHighValue > 200 || bpHighValue < 50) {
+            newErrors.bpH = `BP High should be between ${bpLowValue || 50} and 200 mm Hg.`;
+        } else if (bpHighValue < bpLowValue) {
+            newErrors.bpH = 'Blood Pressure High cannot be less than Blood Pressure Low.';
+        }
+    }
+
+    // Blood Pressure Low validation
+    if (changedField === 'bpL' && bpLowValue) {
+        if (bpLowValue < 30 || bpLowValue > 200) {
+            newErrors.bpL = 'BP Low should be between 30 and 200 mm Hg.';
+        } else if (bpLowValue > bpHighValue) {
+            newErrors.bpL = 'Blood Pressure Low cannot be greater than Blood Pressure High.';
+        }
+    }
+
+    // Pulse validation
+    if (changedField === 'pulse' && (pulseValue < 30 || pulseValue > 200)) {
+        newErrors.pulse = "Pulse should be between 30 and 200 bpm.";
+    }
+
+    // Respiratory Rate validation
+    if (changedField === 'respiratoryRate' && (respiratoryRateValue < 1 || respiratoryRateValue > 40)) {
+        newErrors.respiratoryRate = "Respiratory Rate should be between 1 and 40 breaths per minute.";
+    }
+
+    // Update state with new errors
+    setErrors(newErrors);
+
+    // Update formData to reflect errors
+    setFormData((prevData) => {
+        return {
+            ...prevData,
+            oxygen: {
+                ...prevData.oxygen,
+                showError: !!newErrors.oxygen,
+                message: newErrors.oxygen || "",
+                valid: !newErrors.oxygen,
+            },
+            temp: {
+                ...prevData.temp,
+                showError: !!newErrors.temp,
+                message: newErrors.temp || "",
+                valid: !newErrors.temp,
+            },
+            bpH: {
+                ...prevData.bpH,
+                showError: !!newErrors.bpH,
+                message: newErrors.bpH || "",
+                valid: !newErrors.bpH,
+            },
+            bpL: {
+                ...prevData.bpL,
+                showError: !!newErrors.bpL,
+                message: newErrors.bpL || "",
+                valid: !newErrors.bpL,
+            },
+            pulse: {
+                ...prevData.pulse,
+                showError: !!newErrors.pulse,
+                message: newErrors.pulse || "",
+                valid: !newErrors.pulse,
+            },
+            respiratoryRate: {
+                ...prevData.respiratoryRate,
+                showError: !!newErrors.respiratoryRate,
+                message: newErrors.respiratoryRate || "",
+                valid: !newErrors.respiratoryRate,
+            },
+        };
+    });
+};
+
+// Call validateInputs initially or based on effect dependencies if needed
+useEffect(() => {
+    validateInputs(); // Ensure all fields are validated on load
+}, []);
+
  
 
   const handleCancel = () => {
@@ -327,54 +429,7 @@ const TransferPatientForm = () => {
 
   const [errors, setErrors] = useState({});
   // Validate inputs
-  const validateInputs = () => {
-    const newErrors = {};
-
-    // Parse values as integers
-    const oxygenValue = parseInt(oxygen, 10);
-    const bpHighValue = parseInt(bpHigh, 10);
-    const bpLowValue = parseInt(bpLow, 10);
-    const temperatureValue = parseInt(temperature, 10);
-    const pulseValue = parseInt(pulse, 10);
-    const respiratoryRateValue = parseInt(respiratoryRate, 10);
-
-    // Oxygen validation
-    if (oxygen && (oxygenValue < 50 || oxygenValue > 100)) {
-      newErrors.oxygen = "Oxygen should be between 50 and 100.";
-    }
-
-    // Temperature validation
-    if (temperature && (temperatureValue < 20 || temperatureValue > 45)) {
-      newErrors.temperature = "Temperature should be between 20°C and 45°C.";
-    }
-
-    // Blood Pressure High validation
-    if (bpHigh && (bpHighValue > 200 || bpHighValue < (bpLowValue || 50))) {
-      newErrors.bpHigh = `BP High should be between ${bpLowValue || 50} and 200 mm Hg.`;
-    }
-
-    // Blood Pressure Low validation
-    if (bpLow && (bpLowValue < 30 || bpLowValue > (bpHighValue || 200))) {
-      newErrors.bpLow = 'BP Low should be between 30 and 200 mm Hg.';
-    }
-
-    // Pulse validation
-    if (pulse && (pulseValue < 30 || pulseValue > 200)) {
-      newErrors.pulse = "Pulse should be between 30 and 200 bpm.";
-    }
-
-    // Respiratory Rate validation
-    if (respiratoryRate && (respiratoryRateValue < 1 || respiratoryRateValue > 40)) {
-      newErrors.respiratoryRate = "Respiratory Rate should be between 1 and 40 breaths per minute.";
-    }
-
-    setErrors(newErrors);
-  };
-
-  useEffect(() => {
-    validateInputs();
-  }, [oxygen, bpHigh, bpLow, temperature, pulse, respiratoryRate]);
-
+ 
 
   
 

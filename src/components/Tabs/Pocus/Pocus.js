@@ -145,22 +145,22 @@ const Pocus = () => {
         <ScrollView contentContainerStyle={styles.container}>
 {pocusData.length >= 1 && (
         <View style={{ marginVertical: 20 }}>
+           <ScrollView horizontal> 
           <DataTable>
             {/* Table Header */}
             <DataTable.Header>
-              <DataTable.Title>ID</DataTable.Title>
-              <DataTable.Title>Abdomen</DataTable.Title>
-              <DataTable.Title>ABG</DataTable.Title>
-              <DataTable.Title>CXR</DataTable.Title>
-              <DataTable.Title>ECG</DataTable.Title>
-              <DataTable.Title>Heart</DataTable.Title>
-              <DataTable.Title>IVC</DataTable.Title>
-              <DataTable.Title>Left Pleural Effusion</DataTable.Title>
-              <DataTable.Title>Left Pneumothorax</DataTable.Title>
-              <DataTable.Title>Right Pleural Effusion</DataTable.Title>
-              <DataTable.Title>Right Pneumothorax</DataTable.Title>
-            </DataTable.Header>
-
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>ID</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>Abdomen</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>ABG</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>CXR</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>ECG</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>Heart</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>IVC</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>Left Pleural Effusion</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>Left Pneumothorax</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>Right Pleural Effusion</DataTable.Title>
+    <DataTable.Title style={{ paddingHorizontal: 10, fontWeight: 'bold' }}>Right Pneumothorax</DataTable.Title>
+  </DataTable.Header>
             {/* Table Rows */}
             {pocusData.map((row) => (
               <DataTable.Row key={row.userID}>
@@ -178,6 +178,7 @@ const Pocus = () => {
               </DataTable.Row>
             ))}
           </DataTable>
+          </ScrollView> 
         </View>
       )}
 
@@ -442,6 +443,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         alignSelf: 'center',
         marginBottom:30,
+        bottom:30,
     },
     buttonText: {
         color: '#fff',

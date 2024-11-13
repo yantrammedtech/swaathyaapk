@@ -193,7 +193,7 @@ const Airway = () => {
 </View>
 
       {/* Additional Checkboxes */}
-      <View style={styles.checkboxGroup}>
+      <View style={styles.checkboxGroup2}>
         <CheckBox
           title="Morbid obesity"
           checked={mainFormFields.morbidObesity}
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
       flex: 1,
       padding: 20,
       backgroundColor: '#fff',
-     
+     bottom:20,
     },
     title: {
       fontSize: 18,
@@ -324,6 +324,9 @@ const styles = StyleSheet.create({
     },
     checkboxGroup: {
       marginBottom: 20,
+    },
+    checkboxGroup2: {
+      marginBottom: 40,
     },
     inputGroup: {
       marginBottom: 20,

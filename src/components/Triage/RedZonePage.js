@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import TriageFormContext, { GetTriageFormDataObject } from './Context/TriageFormContext';
 import { zoneType } from '../../utility/role';
 import { authPost } from '../../axios/authPost';
+import Toast from 'react-native-toast-message';
+
 
 const RedZonePage = ({ route }) => {
   const {   condition } = route.params;
@@ -94,6 +96,23 @@ const RedZonePage = ({ route }) => {
 
   const handleSubmit = async() => {
     const data = GetTriageFormDataObject(formData) ;
+    if (!selectedWard) {
+      Toast.show({
+        type: 'error',
+        text1: 'Validation Error',
+        text2: 'Please select a ward.',
+      });
+      return;
+    }
+    
+    if (!zone) {
+      Toast.show({
+        type: 'error',
+        text1: 'Validation Error',
+        text2: 'Please select a zone.',
+      });
+      return;
+    }
     data.ward = selectedWard;
     data.zone = zone;
     data.hospitalID = user.hospitalID;

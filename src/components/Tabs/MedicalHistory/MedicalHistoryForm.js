@@ -409,7 +409,8 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
         shadowOpacity: 0.2, // Shadow opacity for iOS
         shadowRadius: 4, // Shadow blur radius for iOS
-        marginBottom: 25,
+        marginBottom: 45,
+        bottom:10,
       },
       buttonText: {
         color: "#FFFFFF", // White text color
