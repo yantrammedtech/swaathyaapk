@@ -62,6 +62,7 @@ import PreOpRecordAfterSchedule from "./src/components/OtTabs/PreOP/preOpAfterSc
 import { IconButton, Menu, Divider } from 'react-native-paper';
 import PostOpRecord from "./src/components/OtTabs/PreOP/PostOpRecord";
 import Record from "./src/components/Record/Record";
+import DischargePatientProfile from "./src/components/DischargePatient/PatientProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -82,7 +83,9 @@ const Routing = () => {
         <Stack.Screen name="Hub" component={HubScreen}  options={{
     headerStyle: {
       backgroundColor: '#1977f3',
+      color:'#fff'
     },
+    headerTintColor: '#FFFFFF',
   }}  />
         {/* ============Help =============== */}
 
@@ -929,6 +932,32 @@ const Routing = () => {
                 }}
               />
             ),
+          })}
+        />
+
+
+<Stack.Screen
+          name="DischargePatientProfile"
+          component={DischargePatientProfile}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            headerTitle: 'Patient Profile',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+           
           })}
         />
 

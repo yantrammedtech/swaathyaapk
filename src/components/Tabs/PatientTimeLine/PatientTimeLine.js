@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Modal, Button, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Modal, Button, TouchableOpacity, Image , TextInput} from 'react-native';
 import { authFetch } from '../../../axios/authFetch';
 import { useSelector } from 'react-redux';
 
@@ -110,6 +110,9 @@ const PatientTimeline = () => {
     getAllTimeline()
   },[currentPatient,user])
 
+  console.log("selectedItem===============",selectedItem)
+  console.log("timelines===============",timelines)
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -132,10 +135,41 @@ const PatientTimeline = () => {
             <Text style={styles.modalTitle}>Patient Timeline Summary</Text>
             <View style={styles.modalBody}>
               <View style={styles.diagnosisBox}>
-                <Text style={styles.diagnosisTextModal}>
-                  {selectedItem ? selectedItem.diagnosis : ''}
-                </Text>
+              <Text style={styles.diagnosisTextModal}>
+        {selectedItem?.diagnosis ? "Final Diagnosis" : ""}
+      </Text>
+      <TextInput
+        style={styles.diagnosisInput}
+        multiline
+        numberOfLines={1}
+        editable={false}
+        value={selectedItem?.diagnosis || "Diagnosis data not available"}
+      />
               </View>
+
+              {selectedItem?.followUpDate && (
+        <>
+          {/* Follow-up Status */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Follow up</Text>
+            <TextInput
+              style={styles.input}
+              editable={false}
+              value={selectedItem?.followUp ? "Yes" : "No"}
+            />
+          </View>
+
+          {/* Follow-up Date */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Follow up Date</Text>
+            <TextInput
+              style={styles.input}
+              editable={false}
+              value={selectedItem.followUpDate?.split("T")[0]}
+            />
+          </View>
+        </>
+      )}
               {/* <Image
                 source={{ uri: 'https://example.com/doctor_image.png' }} // Replace with your local image or URL
                 style={styles.doctorImage}
@@ -233,16 +267,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   modalBody: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   diagnosisBox: {
-    borderColor: '#ddd',
-    borderWidth: 1,
-    padding: 15,
-    width: '70%',
-    borderRadius: 5,
+   
+    marginVertical: 10,
   },
   diagnosisTextModal: {
     color: '#666',
@@ -259,6 +290,34 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#007BFF',
     fontSize: 16,
+  },
+  inputContainer: {
+    flexDirection:'row',
+    marginVertical: 8,
+  },
+  label: {
+    fontSize: 16,
+    color: '#555',
+    margin:10,
+    marginTop:4,
+    marginBottom: 4,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    color: '#000',
+  },
+  diagnosisInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    color: '#000',
+    textAlignVertical: 'top', // aligns text to the top for multiline inputs
   },
 });
 
