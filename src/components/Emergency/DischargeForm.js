@@ -61,10 +61,12 @@ const allPatient = useSelector((state) => state.allPatientsList)
   }, [diet.search]);
 
   const [formData, setFormData] = React.useState({
-    dischargeType: 1,
+    dischargeType: 0,
     advice: "",
     followUp: 0,
     followUpDate: "",
+    diagnosis: "",
+    prescription: "",
   });
 
   const handleAdd = () => {
@@ -124,7 +126,75 @@ const allPatient = useSelector((state) => state.allPatientsList)
 
 
 
+  const validateForm = () => {
+    // Check dischargeType first
+    if (!formData.dischargeType || formData.dischargeType === 0) {
+      Toast.show({
+        type: 'error',
+        text1: 'Validation Error',
+        text2: 'Please select a reason for Discharge.',
+      });
+      return false;
+    }
+  
+    // Check diet selection if dischargeType is not "Death"
+    if (diet.selectedList.length === 0 && formData.dischargeType !== 5) {
+      Toast.show({
+        type: 'error',
+        text1: 'Validation Error',
+        text2: 'At least one diet must be selected.',
+      });
+      return false;
+    }
+  
+    // Check advice if dischargeType is not "Death"
+    if (!formData.advice.trim() && formData.dischargeType !== 5) {
+      Toast.show({
+        type: 'error',
+        text1: 'Validation Error',
+        text2: 'Advice on discharge is required.',
+      });
+      return false;
+    }
+  
+    // Check followUpDate if followUp is required
+    if (formData.followUp === 1 && !formData.followUpDate.trim()) {
+      Toast.show({
+        type: 'error',
+        text1: 'Validation Error',
+        text2: 'Follow-up date is required.',
+      });
+      return false;
+    }
+  
+    // Check prescription if dischargeType is not "Death"
+    if (!formData.prescription.trim() && formData.dischargeType !== 5) {
+      Toast.show({
+        type: 'error',
+        text1: 'Validation Error',
+        text2: 'Prescription is required.',
+      });
+      return false;
+    }
+  
+    // Check diagnosis
+    if (!formData.diagnosis.trim()) {
+      Toast.show({
+        type: 'error',
+        text1: 'Validation Error',
+        text2: 'Final diagnosis is required.',
+      });
+      return false;
+    }
+  
+    return true; // If all validations pass
+  };
+
  const handleDischarge = async () => {
+
+  if (!validateForm()) {
+    return; 
+  }
    
     const response = await authPost(
       `patient/${user.hospitalID}/patients/discharge/${currentPatient.id}`,
@@ -133,6 +203,8 @@ const allPatient = useSelector((state) => state.allPatientsList)
         advice: formData.advice,
         followUpDate: formData.followUpDate,
         followUp: formData.followUp,
+        diagnosis:formData.diagnosis,
+        prescription:formData.prescription,
         diet: diet.selectedList.join(","),
       },
       user.token
@@ -196,8 +268,10 @@ const handleCancel = () => {
         />
    
 
-      {/* Diet Input with ADD Button */}
-      <View style={styles.dietContainer}>
+   {formData.dischargeType !== 5 && (
+    <>
+ {/* Diet Input with ADD Button */}
+ <View style={styles.dietContainer}>
         <TextInput
           style={styles.dietinput}
           placeholder="Diet"
@@ -228,34 +302,30 @@ const handleCancel = () => {
         numColumns={2}
         columnWrapperStyle={{ justifyContent: 'space-between' }}
       />
-
-      {/* Other Inputs */}
-      <TextInput
-        style={styles.input}
-        placeholder="Advice on discharge"
-        onChangeText={(text) => {
-        setFormData((data) => ({
-          ...data,
-          advice: text, // Update advice with the current text input value
-        }));
-      }}
-      value={formData.advice} 
-      />
-      {/* <TextInput
-        style={styles.input}
-        placeholder="Final Diagnosis"
-        value={finalDiagnosis}
-        onChangeText={setFinalDiagnosis}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Prescription"
-        value={prescription}
-        onChangeText={setPrescription}
-      /> */}
-
-      {/* Follow-up Radio Button */}
-      <View style={styles.followUpContainer}>
+       {/* Advice and Prescription */}
+       <TextInput
+            style={styles.input}
+            placeholder="Advice on Discharge"
+            value={formData.advice}
+            onChangeText={(text) =>
+              setFormData((data) => ({ ...data, advice: text }))
+            }
+          />
+           <TextInput
+            style={styles.input}
+            placeholder="Prescription"
+            value={formData.prescription}
+            onChangeText={(text) =>
+              setFormData((data) => ({ ...data, prescription: text }))
+            }
+          />
+    </>
+   )}
+     
+     {formData.dischargeType !== 5 && (
+      <>
+  {/* Follow-up Radio Button */}
+  <View style={styles.followUpContainer}>
         <Text style={styles.followUpText}>Follow up required?</Text>
         <RadioButton.Group
           onValueChange={handleFollowUpChange}
@@ -299,6 +369,10 @@ const handleCancel = () => {
     />
   )}
 </View>
+      </>
+     )}
+
+    
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
