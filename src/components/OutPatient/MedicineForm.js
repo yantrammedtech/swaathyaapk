@@ -231,7 +231,12 @@ const MedicineForm = ({ visible, onClose ,updateLatestData}) => {
 
     const fetchMedicineList = async (text, index) => {
         if (text.length >= 1) {
-          const response = await authPost("data/medicines", { text }, user.token);
+          // const response = await authPost("data/medicines", { text }, user.token);
+          const response = await authPost(
+            `medicine/${user.hospitalID}/getMedicines`,
+            { text },
+            user.token
+          );
           if (response.message === "success") {
         setMedArr(response.medicines)
 
@@ -242,6 +247,8 @@ const MedicineForm = ({ visible, onClose ,updateLatestData}) => {
               );
               return newData;
             });
+
+          
           }
         }
       };
@@ -441,6 +448,7 @@ const MedicineForm = ({ visible, onClose ,updateLatestData}) => {
       
                 {/* Select Days */}
                 <View style={styles.inputContainer}>
+                <Text style={styles.dayslabel}>Days Count</Text>
   <TextInput
     value={medicineData[index]?.daysCount?.toString() || ''}  // Fetch value from state
     onChangeText={(text) => {
@@ -878,6 +886,12 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 12,
         marginTop: 10,
+      },
+      dayslabel: {
+        fontSize: 15,           // Font size for the label
+        fontWeight: '500',     // Bold text for emphasis
+        color: '#333',          // Dark color for the text (adjust to fit your theme)
+        marginBottom: 5,        // Adds space between label and input field
       },
     
 });

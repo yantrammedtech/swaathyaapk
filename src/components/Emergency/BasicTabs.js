@@ -43,17 +43,20 @@ export default function BasicTabs() {
         >
           <Text style={styles.categoryText}>Symptoms</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.categoryButton,
-            selectedCategory === "Tests"
-              ? styles.activeButton
-              : styles.inactiveButton,
-          ]}
-          onPress={() => setSelectedCategory("Tests")}
-        >
-          <Text style={styles.categoryText}>Tests</Text>
-        </TouchableOpacity>
+        { currentPatient?.ptype !== 1  && (
+ <TouchableOpacity
+ style={[
+   styles.categoryButton,
+   selectedCategory === "Tests"
+     ? styles.activeButton
+     : styles.inactiveButton,
+ ]}
+ onPress={() => setSelectedCategory("Tests")}
+>
+ <Text style={styles.categoryText}>Tests</Text>
+</TouchableOpacity>
+        )}
+       
         <TouchableOpacity
           style={[
             styles.categoryButton,

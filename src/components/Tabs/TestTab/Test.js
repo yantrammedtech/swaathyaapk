@@ -10,6 +10,7 @@ import {
   Button,
   FlatList,
 } from "react-native";
+import Toast from 'react-native-toast-message';
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import TestItem from "./TestItem";
@@ -104,12 +105,36 @@ const TestTab = () => {
         tests: tests,
       };
   
-      const response = await authPost(`test`, body, user.token);
+      const response = await authPost(`test/${user.hospitalID}`, body, user.token);
+      console.log("response=========test==========",response)
+
+
       if (response.message === "success") {
         // setSelectedList((prevList) => [...prevList, ...response.tests]);
+        Toast.show({
+          type: 'success',
+          position: 'top',
+          text1: 'Success',
+          text2: 'Test added successfully.',
+          visibilityTime: 3000,
+          autoHide: true,
+          bottomOffset: 40,
+        });
       setSelectedItem([]);
-
+      setModalVisible(false)
         console.log("res=====",response)
+      }
+      else {
+        // Error toast
+        Toast.show({
+          type: 'error',
+          position: 'top',
+          text1: 'Error',
+          text2: response.message || 'Failed to add the test.',
+          visibilityTime: 3000,
+          autoHide: true,
+          bottomOffset: 40,
+        });
       }
       setSelectedItem(null);
     } else {
@@ -127,7 +152,7 @@ const TestTab = () => {
   };
   useEffect(() => {
     getAllTests()
-  },[user, patientTimeLineID])
+  },[user, patientTimeLineID, modalVisible])
 
   const mappedTestList = selectedList.map(item => ({
     id: item.id,
@@ -161,6 +186,7 @@ const TestTab = () => {
       />
     )}
     keyExtractor={(item) => item.id.toString()}
+    contentContainerStyle={{ paddingBottom: 60 }}
   />
 
       <Modal
@@ -235,8 +261,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 3,
-    // backgroundColor:"red",
+    marginBottom: 10,
     width: "100%",
+    marginBottom: 10,
+    
   },
   button: {
     flexDirection: "row",
@@ -245,7 +273,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1977f3",
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
+    marginTop: 10,
     alignSelf: "flex-end",
     marginBottom: 10,
   },

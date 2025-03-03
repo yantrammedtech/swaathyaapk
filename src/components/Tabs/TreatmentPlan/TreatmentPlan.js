@@ -72,7 +72,7 @@ const TreatmentPlanScreen = () => {
     if (user.token && patientTimeLineID) {
       getAllMedicine();
     }
-  }, [user, currentPatient]);
+  }, [user, currentPatient,modalVisible]);
 
   const department = async () => {
     const id = user.departmentID;
@@ -110,7 +110,7 @@ const backgroundColor = getRandomColor();
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.scrollContentContainer}
+      contentContainerStyle={{ paddingBottom: 80 }} 
     >
       <TouchableOpacity
         style={styles.addButton}
