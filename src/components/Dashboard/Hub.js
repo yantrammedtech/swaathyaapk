@@ -1,36 +1,107 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Modal , TextInput} from 'react-native';
+import { authFetch } from '../../axios/authFetch';
+import { useSelector } from 'react-redux';
+import { authPost } from '../../axios/authPost';
 
-const hubs = [
-  { id: '1', name: 'HUB 23', status: 'Online' },
-  { id: '2', name: 'HuB 24', status: 'Online' },
-  { id: '3', name: 'HUB5', status: 'Online' },
-  { id: '4', name: 'HUB2', status: 'Online' },
-];
+
 
 const HubScreen = () => {
+const user = useSelector((state) => state.currentUserData)
+const [allHubs,setAllHubs] = useState([])
+const [modalVisible, setModalVisible] = useState(false);
+const [hubName, setHubName] = useState('');
+const [hubCustomName, setHubCustomName] = useState('');
+const [hubAddress, setHubAddress] = useState('');
+const [hubProtocolAddress, setHubProtocolAddress] = useState('');
+
+
   const renderHub = ({ item }) => (
     <View style={styles.hubCard}>
       <Image source={require('../../assets/medicalhistory/streamline_wifi-router.png')} style={styles.hubIcon} />
-      <Text style={styles.hubName}>{item.name}</Text>
-      <View style={styles.statusButton}>
+      <Text style={styles.label}>Hub Name: <Text style={styles.value}>{item.hubName}</Text></Text>
+<Text style={styles.label}>Hub Custom Name: <Text style={styles.value}>{item.hubCustomName}</Text></Text>
+
+      {/* <View style={styles.statusButton}>
         <Text style={styles.statusText}>{item.status}</Text>
-      </View>
+      </View> */}
     </View>
   );
 
+
+  const getAllHubs = async() => {
+      const response = await authFetch(`hub/${user.hospitalID}`, user.token)
+      console.log("getAllHubs========================",response.hubs)
+      setAllHubs(response.hubs)
+  }
+  useEffect(() => {
+    getAllHubs()
+  },[user])
+
+ 
   return (
     <View style={styles.container}>
       <FlatList
-        data={hubs}
+        data={allHubs}
         renderItem={renderHub}
         keyExtractor={(item) => item.id}
         numColumns={2}
         contentContainerStyle={styles.hubList}
       />
-      <TouchableOpacity style={styles.addButton}>
+      {/* <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
         <Text style={styles.addButtonText}>+ Add Hub</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+
+       {/* Modal for entering hub details */}
+       <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Add Hub Details</Text>
+
+            {/* Input fields for hub details */}
+            <TextInput
+              style={styles.input}
+              placeholder="Hub Name"
+              value={hubName}
+              onChangeText={setHubName}
+            />
+            {/* <TextInput
+              style={styles.input}
+              placeholder="Hub Custom Name"
+              value={hubCustomName}
+              onChangeText={setHubCustomName}
+            /> */}
+            <TextInput
+              style={styles.input}
+              placeholder="Hub Address"
+              value={hubAddress}
+              onChangeText={setHubAddress}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Hub Protocol Address"
+              value={hubProtocolAddress}
+              onChangeText={setHubProtocolAddress}
+            />
+
+            {/* Submit and Cancel buttons */}
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.submitButton} onPress={handleAddHub}>
+                <Text style={styles.buttonText}>Submit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 };
@@ -91,6 +162,67 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',  // Darker color for labels
+  },
+  value: {
+    fontSize: 16,
+    fontWeight: 'normal',
+    color: '#666',  // Lighter color for values
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  input: {
+    width: '100%',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#CCC',
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+  },
+  submitButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    flex: 1,
+    marginRight: 5,
+  },
+  cancelButton: {
+    backgroundColor: '#FF3B30',
+    padding: 10,
+    borderRadius: 5,
+    flex: 1,
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    textAlign: 'center',
     fontSize: 16,
   },
 });

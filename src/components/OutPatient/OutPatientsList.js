@@ -159,7 +159,7 @@ console.log("data=============", data)
 
 {!search ? (
     <>
- <View style={styles.tabButtonContainer}>
+  <View style={styles.tabButtonContainer}>
                 {/* Latest Patient List Tab */}
                 <TouchableOpacity
                     style={[
@@ -168,7 +168,12 @@ console.log("data=============", data)
                     ]}
                     onPress={() => setActiveTab('LatestPatients')}
                 >
-                    <Text style={styles.tabText}>Latest Patient List</Text>
+                    <Text
+                    style={[
+                        styles.tabText,
+                        activeTab === 'LatestPatients' && { color: 'white', fontWeight: 'bold' } // Set text color to white when active
+                      ]}
+                    >Latest Patient List</Text>
                 </TouchableOpacity>
 
                 {/* Active Patients List Tab */}
@@ -179,7 +184,12 @@ console.log("data=============", data)
                     ]}
                     onPress={() => setActiveTab('ActivePatients')}
                 >
-                    <Text style={styles.tabText}>Active Patients List</Text>
+                    <Text 
+                    style={[
+                        styles.tabText,
+                        activeTab === 'ActivePatients' && { color: 'white', fontWeight: 'bold' } // Set text color to white when active
+                      ]}
+                    >Active Patients List</Text>
                 </TouchableOpacity>
             </View>
 

@@ -30,7 +30,7 @@ const renderPatient = ({ item }) => {
     <TouchableOpacity
       style={styles.recentPatientContainer}
       onPress={() =>
-        navigation.navigate('CommonPatientProfile', {
+        navigation.navigate('DischargePatientProfile', {
           patientId: item.id,
         })
       }
@@ -130,7 +130,12 @@ const renderPatient = ({ item }) => {
                     ]}
                     onPress={() => setActiveTab('InPatient')}
                 >
-                    <Text style={styles.tabText}>In Patient List</Text>
+                    <Text 
+                   style={[
+                    styles.tabText,
+                    activeTab === 'InPatient' && { color: 'white', fontWeight: 'bold' } // Set text color to white when active
+                  ]}
+                    >In Patient List</Text>
                 </TouchableOpacity>
 
                 {/* Active Patients List Tab */}
@@ -141,7 +146,12 @@ const renderPatient = ({ item }) => {
                     ]}
                     onPress={() => setActiveTab('EmergencyPatients')}
                 >
-                    <Text style={styles.tabText}>Emergency Patients  List</Text>
+                    <Text 
+                   style={[
+                    styles.tabText,
+                    activeTab === 'EmergencyPatients' && { color: 'white', fontWeight: 'bold' } // Set text color to white when active
+                  ]}
+                    >Emergency Patients  List</Text>
                 </TouchableOpacity>
             </View>
 

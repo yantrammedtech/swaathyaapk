@@ -4,6 +4,7 @@ import { CheckBox } from 'react-native-elements';
 import { authPost } from '../../../axios/authPost';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -12,6 +13,7 @@ const AnaesthesiaRecord = () => {
   const user = useSelector((state) => state.currentUserData);
   const currentPatient = useSelector((state) => state.currentPatientData);
   const patientTimeLineID = currentPatient?.patientTimeLineID;
+  const navigation = useNavigation()
 
   const [airwayChecked, setAirwayChecked] = useState(false); // Checkbox state for Airway Size
   const [selectedAirwaySize, setSelectedAirwaySize] = useState(''); // Track selected Airway Size option
@@ -109,18 +111,19 @@ const AnaesthesiaRecord = () => {
           type: 'success',
           position: 'top',
           text1: 'Success',
-          text2: 'Anesthesia form added',
+          text2: 'Anaesthesia form added',
           visibilityTime: 3000,
           autoHide: true,
           bottomOffset: 40,
         });
-      
+        
+      navigation.navigate('PostOpRecord')
       } else {
         Toast.show({
           type: 'error',
           position: 'top',
           text1: 'Error',
-          text2: 'Anesthesia form update Failed',
+          text2: 'Anaesthesia form update Failed',
           visibilityTime: 3000,
           autoHide: true,
           bottomOffset: 40,
@@ -456,7 +459,7 @@ const AnaesthesiaRecord = () => {
       <Text style={styles.buttonText}>Save</Text>
     </TouchableOpacity>
 
-    <TouchableOpacity style={styles.nextButton} onPress={saveHandler}>
+    <TouchableOpacity style={styles.nextButton} onPress={() =>   navigation.navigate('PostOpRecord')}>
       <Text style={styles.buttonText}>Next</Text>
     </TouchableOpacity>
     </View>

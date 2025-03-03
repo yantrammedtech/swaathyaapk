@@ -161,7 +161,10 @@ const ChatScreen = () => {
       // Add the bot message after file upload
       setMessages(prevMessages => [
         ...prevMessages,
-        { id: String(prevMessages.length + 1), text: "Issue received. Our technical team is working to resolve it within 24 hours.", type: 'bot' },
+        { id: String(prevMessages.length + 1), 
+          text: "Issue received. Click Submit to create the ticket. Our team will resolve it within 24 hours.", 
+          type: 'bot' 
+         },
     ]);
     // handleSubmit()
   

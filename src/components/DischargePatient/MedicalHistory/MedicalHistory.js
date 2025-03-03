@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import MedicalHistoryScreen from "./MedicalHistory";
 import { View,Text ,StyleSheet,TouchableOpacity, Alert,ScrollView, Image} from "react-native"
-import { authFetch } from "../../../axios/authFetch";
 import { useSelector } from "react-redux";
 import { authPatch } from "../../../axios/usePatch";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
+import { authFetch } from "../../../axios/authFetch";
 
 
 
@@ -104,45 +103,12 @@ const MedicalHistoryForm =() => {
   }, [currentPatient.id, user]);
 
 
-  
-  const handleSave = async () => {
-    
-    const medicalResonse = await authPatch(
-      `history/${user.hospitalID}/patient/${currentPatient.id}/${user.id}`,
-      medicalHistoryData,
-      user.token
-    );
-    if (medicalResonse.message == "success") {
-      Alert.alert(
-        "Update Status",
-        "Medical successfully updated",
-        [{ text: "OK" }],
-        { cancelable: false }
-      );
-      setisEdit(false)
-      
-      // this will navigate previous path
-      // navigate(-1);
-    } else {
-      Alert.alert("Error", medicalResonse.message, [{ text: "OK" }], {
-        cancelable: false,
-      });
-    }
-  };
-
+ 
 
   console.log("medical  data ===initial=====",medicalHistoryData)
     return(
         <View style={styles.container}>
-          
-<View style={styles.editcontainer}>
-      <TouchableOpacity
-        style={styles.editIcon}
-        onPress={() => setisEdit(true)}
-      >
-        <Icon name="edit" size={24} color="#000" />
-      </TouchableOpacity>
-      </View>
+ 
 
 {!isEdit && (
   
@@ -372,17 +338,8 @@ const MedicalHistoryForm =() => {
 
 
    
-            {!flag && isEdit && (
 
-            <MedicalHistoryScreen  medicalHistoryData={medicalHistoryData} setMedicalHistory={setMedicalHistory}/>
-            )}
-          
-
-          {isEdit && (
- <TouchableOpacity style={styles.savebutton} onPress={handleSave}>
- <Text style={styles.buttonText}>Save</Text>
-</TouchableOpacity>
-          )}  
+         
      
         </View>
     )

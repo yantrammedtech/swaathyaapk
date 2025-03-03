@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SCOPE_LIST } from '../../utility/scopes';
+import Scanner from '../Scanner/Scanner';
 const { height } = Dimensions.get('window'); // Get screen height
 
 
@@ -65,137 +66,149 @@ const Dashboard = ({ onNotificationPress }) => {
 
   console.log("hasInpatient", hasInpatient)
 
-
+const [isQROpen,setIsQROpen] = useState(false)
+const handleScanComplete = (data) => {
+  // Set `isQROpen` to false to close the scanner
+  setIsQROpen(false);
+  console.log("Scanned Data:", data); // You can use this to handle scanned data as needed
+};
 
   return (
-    <View style={styles.container}>
-      <Header toggleSidebar={toggleSidebar} onNotificationPress={onNotificationPress} />
+    <>
+    {isQROpen ? (
+      <Scanner onScanComplete={handleScanComplete} />
+    ):(
+ <View style={styles.container}>
+ <Header toggleSidebar={toggleSidebar} onNotificationPress={onNotificationPress} />
 
-      <Image
-        source={require('../../assets/imge.png')}
-        style={styles.image}
-        resizeMode="contain" // Use resizeMode as a prop
-      />
+ <Image
+   source={require('../../assets/imge.png')}
+   style={styles.image}
+   resizeMode="contain" // Use resizeMode as a prop
+ />
 
-      <Text style={styles.dashboardText}>Dashboard</Text>
+ <Text style={styles.dashboardText}>Dashboard</Text>
 
-      <ScrollView contentContainerStyle={styles.boxContainer}>
-        {/* Out Patient */}
-        {hasOutpatient &&
-          <Pressable style={[styles.box, styles.outPatient]}
-          onPress={() => navigation.navigate('OutPatientsList')}
-          >
-            <View style={styles.boxContent}>
-              <Image
-                source={require('../../assets/Clip path group.png')}
-                style={styles.boxImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.boxText}>Out Patient</Text>
-            </View>
-            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-              <Icon name="arrow-upward" size={24} color="#fff" />
-            </View>
-          </Pressable>
-        }
+ <ScrollView contentContainerStyle={styles.boxContainer}>
+   {/* Out Patient */}
+   {hasOutpatient &&
+     <Pressable style={[styles.box, styles.outPatient]}
+     onPress={() => navigation.navigate('OutPatientsList')}
+     >
+       <View style={styles.boxContent}>
+         <Image
+           source={require('../../assets/Clip path group.png')}
+           style={styles.boxImage}
+           resizeMode="contain"
+         />
+         <Text style={styles.boxText}>Out Patient</Text>
+       </View>
+       <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+         <Icon name="arrow-upward" size={24} color="#fff" />
+       </View>
+     </Pressable>
+   }
 
-        {/* In Patient InPatientsList*/}
-        {hasInpatient === true &&
-          <Pressable style={[styles.box, styles.inPatient]}
-            onPress={() => navigation.navigate('InPatientsList')}
+   {/* In Patient InPatientsList*/}
+   {hasInpatient === true &&
+     <Pressable style={[styles.box, styles.inPatient]}
+       onPress={() => navigation.navigate('InPatientsList')}
 
-          >
-            <View style={styles.boxContent}>
-              <Image
-                source={require('../../assets/Clip path group.png')}
-                style={styles.boxImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.boxText}>In Patient</Text>
-            </View>
-            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-              <Icon name="arrow-upward" size={24} color="#fff" />
-            </View>
-          </Pressable>
-        }
+     >
+       <View style={styles.boxContent}>
+         <Image
+           source={require('../../assets/Clip path group.png')}
+           style={styles.boxImage}
+           resizeMode="contain"
+         />
+         <Text style={styles.boxText}>In Patient</Text>
+       </View>
+       <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+         <Icon name="arrow-upward" size={24} color="#fff" />
+       </View>
+     </Pressable>
+   }
 
-        {/* OT */}
-        {(hasSurgeon || hasAnesthesia) &&
-          <Pressable style={[styles.box, styles.otPatient]}
-          onPress={() => navigation.navigate('OtDashboard')}
-          >
-            <View style={styles.boxContent}>
-              <Image
-                source={require('../../assets/Clip path group-3.png')}
-                style={styles.boxImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.boxText}>OT</Text>
-            </View>
-            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-              <Icon name="arrow-upward" size={24} color="#fff" />
-            </View>
-          </Pressable>
-        }
+   {/* OT */}
+   {(hasSurgeon || hasAnesthesia) &&
+     <Pressable style={[styles.box, styles.otPatient]}
+     onPress={() => navigation.navigate('OtDashboard')}
+     >
+       <View style={styles.boxContent}>
+         <Image
+           source={require('../../assets/Clip path group-3.png')}
+           style={styles.boxImage}
+           resizeMode="contain"
+         />
+         <Text style={styles.boxText}>OT</Text>
+       </View>
+       <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+         <Icon name="arrow-upward" size={24} color="#fff" />
+       </View>
+     </Pressable>
+   }
 
-        {/* Emergency */}
-        {(hasEmergencyRedZone || hasEmergencyYellowZone || hasEmergencyGreenZone) &&
-          <Pressable style={[styles.box, styles.emergencyPatient]}
-            onPress={() => navigation.navigate('EmergencyDashboard')}
+   {/* Emergency */}
+   {(hasEmergencyRedZone || hasEmergencyYellowZone || hasEmergencyGreenZone) &&
+     <Pressable style={[styles.box, styles.emergencyPatient]}
+       onPress={() => navigation.navigate('EmergencyDashboard')}
 
-          >
-            <View style={styles.boxContent}>
-              <Image
-                source={require('../../assets/Clip path group-2.png')}
-                style={styles.boxImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.boxText}>Emergency</Text>
-            </View>
-            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-              <Icon name="arrow-upward" size={24} color="#fff" />
-            </View>
-          </Pressable>
-        }
+     >
+       <View style={styles.boxContent}>
+         <Image
+           source={require('../../assets/Clip path group-2.png')}
+           style={styles.boxImage}
+           resizeMode="contain"
+         />
+         <Text style={styles.boxText}>Emergency</Text>
+       </View>
+       <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+         <Icon name="arrow-upward" size={24} color="#fff" />
+       </View>
+     </Pressable>
+   }
 
-        {/* Triage */}
-        {hasTriage &&
-          <Pressable
-            style={[styles.box, styles.triagePatient]}
-            onPress={() => navigation.navigate('TriageDashboard')}
-          >
-            <View style={styles.boxContent}>
-              <Image
-                source={require('../../assets/Clip path group.png')}
-                style={styles.boxImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.boxText}>Triage</Text>
-            </View>
-            <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-              <Icon name="arrow-upward" size={24} color="#fff" />
-            </View>
-          </Pressable>
-        }
+   {/* Triage */}
+   {hasTriage &&
+     <Pressable
+       style={[styles.box, styles.triagePatient]}
+       onPress={() => navigation.navigate('TriageDashboard')}
+     >
+       <View style={styles.boxContent}>
+         <Image
+           source={require('../../assets/Clip path group.png')}
+           style={styles.boxImage}
+           resizeMode="contain"
+         />
+         <Text style={styles.boxText}>Triage</Text>
+       </View>
+       <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+         <Icon name="arrow-upward" size={24} color="#fff" />
+       </View>
+     </Pressable>
+   }
 
-        {/* Record */}
-        <Pressable style={[styles.box, styles.recordPatient]} onPress={() => navigation.navigate('Record')}>
-          <View style={styles.boxContent}>
-            <Image
-              source={require('../../assets/Clip path group-1.png')}
-              style={styles.boxImage}
-              resizeMode="contain"
-            />
-            <Text style={styles.boxText}>Discharge Record</Text>
-          </View>
-          <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
-            <Icon name="arrow-upward" size={24} color="#fff" />
-          </View>
-        </Pressable>
-      </ScrollView>
+   {/* Record */}
+   <Pressable style={[styles.box, styles.recordPatient]} onPress={() => navigation.navigate('Record')}>
+     <View style={styles.boxContent}>
+       <Image
+         source={require('../../assets/Clip path group-1.png')}
+         style={styles.boxImage}
+         resizeMode="contain"
+       />
+       <Text style={styles.boxText}>Discharge Record</Text>
+     </View>
+     <View style={[styles.arrowContainer, styles.rotatedIcon2]}>
+       <Icon name="arrow-upward" size={24} color="#fff" />
+     </View>
+   </Pressable>
+ </ScrollView>
 
-      <Sidebar isVisible={sidebarVisible} onClose={toggleSidebar} />
-    </View>
+ <Sidebar isVisible={sidebarVisible} onClose={toggleSidebar} />
+</View>
+    )}
+    </>
+   
   );
 };
 

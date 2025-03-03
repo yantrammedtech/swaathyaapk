@@ -21,7 +21,7 @@ const SymptomsTab = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [symptom, setSymptom] = useState('');
   const [duration, setDuration] = useState('');
-  const [durationType, setDurationType] = useState('Week');
+  const [durationType, setDurationType] = useState('Days');
   const [symptomList, setSymptomsList] = useState([]);
   const [symptomsData, setSymptomsData] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -247,7 +247,7 @@ const SymptomsTab = () => {
                   style={styles.picker}
                   onValueChange={(itemValue) => setDurationType(itemValue)}
                 >
-                  <Picker.Item label="Duration Type*" value="" />
+                  {/* <Picker.Item label="Duration Type*" value="" /> */}
                   <Picker.Item label="Week" value="Week" />
                   <Picker.Item label="Days" value="Days" />
                   <Picker.Item label="Month" value="Month" />

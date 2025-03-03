@@ -191,7 +191,7 @@ const [currentPatientTimelineId,setCurrentPatientTimelineId]=useState(null)
                 bottomOffset: 40,
               });
               
-             // navigate("/hospital-dashboard/ot");
+             
             } else {
               Alert.alert(
                 "Error",                  
