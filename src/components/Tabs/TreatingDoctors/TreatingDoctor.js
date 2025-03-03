@@ -59,13 +59,13 @@ function compareDates(a, b) {
     );
   }
 
-  const handleAddDoctor = () => {
-    console.log('Doctor Added:', doctor, category, reason);
-    onClose();
-  };
+ 
 
   const onClose = () => {
     setDoctorModel(false)
+    setDoctorID('');
+    setCategory('');
+    setReason('');
   }
 
   const getAllList = async () => {
@@ -96,9 +96,22 @@ function compareDates(a, b) {
       body,
       user.token
     );
+    console.log("response==================",response)
     if (response.message == "success") {
       setSelectedList((prevList) => {
         return [...prevList, ...response.doctor];
+      });
+      setDoctorID('');
+      setCategory('');
+      setReason('');
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Success',
+        text2: 'Doctor added successfully.',
+        visibilityTime: 3000,
+        autoHide: true,
+        bottomOffset: 40,
       });
     }else{
       Toast.show({
@@ -181,7 +194,7 @@ function compareDates(a, b) {
           <Text style={styles.title}>Add Doctor</Text>
           <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={doctor}
+            selectedValue={doctorID}
             onValueChange={(itemValue) => setDoctorID(Number(itemValue))}  
             style={styles.picker}
           >

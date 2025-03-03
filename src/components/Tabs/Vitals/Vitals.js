@@ -102,7 +102,7 @@ if (Array.isArray(bpData) && bpData.length === 2) {
   };
   useEffect(() => {
     getAllVitals()
-  },[user, currentPatient])
+  },[user, currentPatient,modalVisible])
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

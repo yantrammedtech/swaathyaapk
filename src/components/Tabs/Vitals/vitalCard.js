@@ -70,9 +70,12 @@ const VitalCard =({ visible, onClose, onSave }) => {
   } else if (field === "bpH") {
     if (updatedValue > 200  || updatedValue < 50) {
       newErrors.bpH = `BP High should be between ${vitals.bpL || 50} and 200 mm Hg.`;
-    }else if (updatedValue < vitals.bpL) {
-      newErrors.bpH = 'Blood Pressure High cannot be less than Blood Pressure Low.';
-    }  else {
+    } 
+    else if (vitals.bpL && updatedValue <= vitals.bpL) {
+      newErrors.bpH = "High BP value should be greater than the low BP value.";
+    } 
+    else {
+
       delete newErrors.bpH;
     }
    
@@ -85,8 +88,11 @@ const VitalCard =({ visible, onClose, onSave }) => {
   } else if (field === "bpL") {
     if (updatedValue < 30 || updatedValue > 200) {
       newErrors.bpL = 'BP Low should be between 30 and 200 mm Hg.';
-    } else if (updatedValue > vitals.bpH) {
-      newErrors.bpL = 'Blood Pressure Low cannot be greater than Blood Pressure High.';
+
+    } 
+    else if (vitals.bpH && updatedValue >= vitals.bpH) {
+      newErrors.bpL = "Low BP value should be less than the high BP value.";
+
     } else {
       delete newErrors.bpL;
     }
@@ -194,6 +200,19 @@ const convertTimeToISO = (time) => {
   }
     
       const handleSavePress = async() => {
+
+
+        if (!vitals.time) {
+          setVitals((prev) => ({
+            ...prev,
+            errors: {
+              ...prev.errors,
+              time: "Please set the time of observation.",
+            },
+          }));
+          return;
+        }
+
         const newErrors = {};
   
   // Check required fields
@@ -214,6 +233,7 @@ const convertTimeToISO = (time) => {
     Alert.alert("Validation Error", "Please fill in all required fields.");
     return;
   }
+
         const wardName = currentPatient?.wardID ? wardList.find((ward) => ward.id == currentPatient.wardID)?.name : ''
       const patientAge = calculateAge(user.dob)
       // console.log("oxytime===",vitals.time, vitals.temperatureTime)

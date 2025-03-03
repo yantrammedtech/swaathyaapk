@@ -324,27 +324,56 @@ useEffect(() => {
   };
   const handleSubmit = async () => {
     let valid = true;
-    Object.keys(formData).forEach((el) => {
-      if (
-        !formData[el ].valid &&
-        el != "wardID" &&
-        el != "departmentID"
-      ) {
-        formData[el ].showError = true;
-        formData[el ].message =
-          "This field is required";
-        valid = false;
-      }
-      if (
-        (el == "wardID" || el == "departmentID") &&
-        formData.transferType.value == transferType.internal &&
-        !formData[el].value
-      ) {
-        formData[el].showError = true;
-        valid = false;
-      }
-    });
+
+
+    const newFormData = { ...formData };
+    if (!formData.transferType.value) {
+      newFormData.transferType.showError = true;
+      newFormData.transferType.message = 'This field is required';
+      valid = false;
+    }
+
+    if (formData.transferType.value === transferType.internal) {
+      Object.keys(formData).forEach((el) => {
+        if (
+          !formData[el].valid &&
+          el !== 'wardID' &&
+          el !== 'departmentID'
+        ) {
+          newFormData[el].showError = true;
+          newFormData[el ].message = 'This field is required';
+          isValid = false;
+        }
+        if (
+          (el === 'wardID' || el === 'departmentID') &&
+          formData.transferType.value === transferType.internal &&
+          !formData[el].value
+        ) {
+          newFormData[el].showError = true;
+          isValid = false;
+        }
+      });
+    } else {
+      Object.keys(formData).forEach((el) => {
+        if (
+          (el === 'reason' || el === 'relativeName') &&
+          formData.transferType.value === transferTypeValue.external &&
+          !formData[el].value
+        ) {
+          newFormData[el].showError = true;
+          valid = false;
+        }
+      });
+    }
+    setFormData(newFormData);
+   
     if (!valid) {
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please complete all required fields.",
+        visibilityTime: 3000,
+      });
       return;
     }
 
@@ -363,6 +392,7 @@ useEffect(() => {
       departmentID: formData.departmentID.value,
       userID: formData.userID.value,
     };
+    
     const response = await authPatch(
       `patient/${user.hospitalID}/patients/${currentPatient.id}/transfer`,
       reqObj,
@@ -435,7 +465,7 @@ const wardOptions = wardList.map(ward => ({
     <RadioButton.Item label="External" value={transferTypeValue.external} />
   </View>
       </RadioButton.Group>
-
+      {formData.transferType.showError && <Text style={{ color: 'red' }}>{formData.transferType.message}</Text>}
       {formData.transferType.value === transferTypeValue.internal ? (
         <>
           <View style={styles.gridItem}>

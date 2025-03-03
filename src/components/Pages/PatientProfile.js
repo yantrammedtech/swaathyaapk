@@ -23,6 +23,8 @@ const PatientProfile = ({ route }) => {
         return state.currentPatientData
     })
 
+    const isRequestSurgeryDisabled = currentPatientData?.status !== null 
+
     const handleBackPress = () => {
         console.log("Can go back:", navigation.canGoBack()); // Check if it returns true or false
         if (navigation.canGoBack()) {
@@ -154,10 +156,17 @@ const PatientProfile = ({ route }) => {
  <View style={styles.row}>
  <TouchableOpacity
   style={styles.option}
- onPress={() => navigation.navigate('RequestSurgery')} 
+//  onPress={() => navigation.navigate('RequestSurgery')}
+ onPress={isRequestSurgeryDisabled ? null : () => navigation.navigate('RequestSurgery')} 
 
   >
+    {isRequestSurgeryDisabled  ? (
+   <Image source={require("../../assets/transfer/Threerequestdisable.png")} style={styles.optionIcon} />
+
+    ):(
    <Image source={require("../../assets/transfer/Three request.png")} style={styles.optionIcon} />
+
+    )}
    <Text style={styles.optionText}>Request</Text>
  </TouchableOpacity>
 
