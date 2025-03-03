@@ -73,12 +73,12 @@ const OtPatientProfile = () => {
                             {currentPatientData?.addedOn ? new Date(currentPatientData.startTime).toLocaleDateString() : 'Not Available'}
                         </Text>
                     </View>
-                    <View  style={styles.shakecontainer}>
+                    {/* <View  style={styles.shakecontainer}>
                     <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconContainer}>
        
                     <Image source={require("../../assets/transfer/X.png")} style={styles.reverseImage} />
       </TouchableOpacity>
-                    </View>
+                    </View> */}
                 </View>
             </View>
 
