@@ -82,7 +82,7 @@ const renderPatient = ({ item }) => {
   const getAllPatient = async () => {
    
     const response = await authFetch(
-        `patient/${user.hospitalID}/patients/${patientStatus.discharged}?patientStartStatus=${patientStatus.emergency}`,
+        `patient/${user.hospitalID}/patients/${patientStatus.discharged}?patientStartStatus=${patientStatus.emergency}&userID=${user.id}&role=${user.role}`,
         user.token
       );
        console.log("discharge patient response============", response);
@@ -156,7 +156,7 @@ const renderPatient = ({ item }) => {
             </View>
 
              <FlatList
-        data={allPatient}
+         data={[...allPatient].sort(compareDates)}
         renderItem={renderPatient}
         keyExtractor={(item) => item.id}
       />
@@ -166,6 +166,10 @@ const renderPatient = ({ item }) => {
     </View>
   );
 };
+
+function compareDates(a, b) {
+  return new Date(b.endTime).valueOf() - new Date(a.endTime).valueOf();
+}
 
 const styles = StyleSheet.create({
   mainContainer: {

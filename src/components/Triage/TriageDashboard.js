@@ -87,7 +87,19 @@ const getRandomColor = () => {
             </Text>
             <View style={styles.recentPatientDateRow}>
               <Icon name="access-time" size={20} color="#666" />
-              <Text style={styles.recentPatientDateText}>{new Date(item.dob).toDateString()} | 10:00 AM</Text>
+            
+              <Text style={styles.recentPatientDateText}>
+  {new Date(new Date(item.lastModified).getTime() + 5.5 * 60 * 60 * 1000).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Kolkata",
+  })}
+</Text>
+
             </View>
           </View>
         </View>

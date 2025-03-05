@@ -78,7 +78,7 @@ const SymptomsTab = () => {
   };
 
   const getAllSymptomps = async () => {
-    const response = await authFetch(`symptom/${currentPatientData.patientTimeLineID}`, currentUserData.token);
+    const response = await authFetch(`symptom/${currentPatientData.id}`, currentUserData.token);
 
     if (response.message == "success") {
       setSymptomsData (response.symptoms);
@@ -147,6 +147,7 @@ const SymptomsTab = () => {
       timeLineID: currentPatientData.patientTimeLineID,
       userID: currentUserData.id,
       symptoms: symptomps,
+      patientID:currentPatientData.id
     };
     const response = await authPost(`symptom`, body, currentUserData.token);
     if (response.message == "success") {

@@ -76,6 +76,7 @@ const MedicineForm = ({ visible, onClose ,updateLatestData}) => {
       
           const finalData = medicineData.map((el) => ({
             timeLineID: patientTimeLineID,
+            patientID: currentPatient?.id,
             userID: user.id,
             medicineType: el.medicineType?.toString(),
             medicine: el.medicineName,

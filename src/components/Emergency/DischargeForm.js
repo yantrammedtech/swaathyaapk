@@ -21,7 +21,7 @@ const allPatient = useSelector((state) => state.allPatientsList)
   const navigation = useNavigation(); 
 
   const [openReason, setOpenReason] = useState(false);
-  const [reason, setReason] = useState(1);
+  const [reason, setReason] = useState(0);
   const [reasonItems, setReasonItems] = useState([
     { label: 'Discharge Success', value: 1 },
     { label: 'DOPR', value: 2 },
@@ -137,42 +137,12 @@ const allPatient = useSelector((state) => state.allPatientsList)
       return false;
     }
   
-    // Check diet selection if dischargeType is not "Death"
-    if (diet.selectedList.length === 0 && formData.dischargeType !== 5) {
-      Toast.show({
-        type: 'error',
-        text1: 'Validation Error',
-        text2: 'At least one diet must be selected.',
-      });
-      return false;
-    }
-  
-    // Check advice if dischargeType is not "Death"
-    if (!formData.advice.trim() && formData.dischargeType !== 5) {
-      Toast.show({
-        type: 'error',
-        text1: 'Validation Error',
-        text2: 'Advice on discharge is required.',
-      });
-      return false;
-    }
-  
     // Check followUpDate if followUp is required
     if (formData.followUp === 1 && !formData.followUpDate.trim()) {
       Toast.show({
         type: 'error',
         text1: 'Validation Error',
         text2: 'Follow-up date is required.',
-      });
-      return false;
-    }
-  
-    // Check prescription if dischargeType is not "Death"
-    if (!formData.prescription.trim() && formData.dischargeType !== 5) {
-      Toast.show({
-        type: 'error',
-        text1: 'Validation Error',
-        text2: 'Prescription is required.',
       });
       return false;
     }
@@ -268,7 +238,7 @@ const handleCancel = () => {
         />
    
 
-   {formData.dischargeType !== 5 && (
+   {formData.dischargeType === 1 && (
     <>
  {/* Diet Input with ADD Button */}
  <View style={styles.dietContainer}>
@@ -321,8 +291,17 @@ const handleCancel = () => {
           />
     </>
    )}
+
+<TextInput
+            style={styles.input}
+            placeholder="Final Diagnosis"
+            value={formData.diagnosis}
+            onChangeText={(text) =>
+              setFormData((data) => ({ ...data, diagnosis: text }))
+            }
+          />
      
-     {formData.dischargeType !== 5 && (
+     {formData.dischargeType === 1 && (
       <>
   {/* Follow-up Radio Button */}
   <View style={styles.followUpContainer}>

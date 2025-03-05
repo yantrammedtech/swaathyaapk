@@ -87,7 +87,7 @@ const Report = () => {
   
       // Perform the API call for file upload
       const reportResponse = await authPostAttachments(
-`attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
+`attachment/${user.hospitalID}/${patientTimeLineID}/${currentPatient.id}/${user.id}`,
         form,
         user.token
       );
@@ -106,7 +106,7 @@ const Report = () => {
 
   const getAllReports = async () => {
     const response = await authFetch(
-      `attachment/${user.hospitalID}/all/${patientTimeLineID}`,
+      `attachment/${user.hospitalID}/all/${currentPatient.id}`,
       user.token
     );
     console.log("getAllReports===", response);
@@ -258,7 +258,7 @@ const Report = () => {
 
           // Perform the API call for file upload
           const reportResponse = await authPostAttachments(
-            `attachment/${user.hospitalID}/${patientTimeLineID}/${user.id}`,
+            `attachment/${user.hospitalID}/${patientTimeLineID}/${currentPatient.id}/${user.id}`,
             form,
             user.token
           );
