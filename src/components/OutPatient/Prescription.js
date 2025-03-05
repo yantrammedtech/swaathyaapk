@@ -61,7 +61,7 @@ const Prescription = () => {
 
   const getAllMedicine = async () => {
     const response = await authFetch(
-      `prescription/${user.hospitalID}/${patientTimeLineID}`,
+      `prescription/${user.hospitalID}/${patientTimeLineID}/${currentPatient?.id}`,
       user.token
     );
 console.log("response==============",response)

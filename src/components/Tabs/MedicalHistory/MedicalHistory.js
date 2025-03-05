@@ -31,13 +31,7 @@ const MedicalHistoryScreen = ({medicalHistoryData, setMedicalHistory}) => {
   );
   
 
-  React.useEffect(() => {
-    if (giveBy && phoneNumber && relation) {
-      setFormDisabled(false);
-    } else {
-      setFormDisabled(true);
-    }
-  }, [giveBy, phoneNumber, relation]);
+ 
 
 const [selectedBloodType, setSelectedBloodType] = useState(medicalHistoryData?.bloodGroup || "");
   const [errors, setErrors] = useState({});
@@ -977,6 +971,15 @@ const [selectedBloodType, setSelectedBloodType] = useState(medicalHistoryData?.b
       getAllRelationList();
     }
   }, [user]);
+
+  React.useEffect(() => {
+    if (giveBy && phoneNumber && relation) {
+      setFormDisabled(false);
+    } else {
+      setFormDisabled(true);
+    }
+  }, [giveBy, phoneNumber, relation]);
+  
 
   const handleChange = (text) => {
     const regex = /^[a-zA-Z][a-zA-Z\s]*$/;

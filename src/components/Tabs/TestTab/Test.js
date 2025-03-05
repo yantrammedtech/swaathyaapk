@@ -36,11 +36,11 @@ const TestTab = () => {
   const removeDuplicatesAndFilter = (tests, prefix) => {
     const uniqueSymptomsMap = new Map();
     tests.forEach((test) => {
-      uniqueSymptomsMap.set(test.long_common_name_.toLowerCase(), test);
+      uniqueSymptomsMap.set(test.LOINC_Name.toLowerCase(), test);
     });
     const uniqueSymptoms = Array.from(uniqueSymptomsMap.values());
     return uniqueSymptoms.filter((test) =>
-      test.long_common_name_.toLowerCase().startsWith(prefix.toLowerCase())
+      test.LOINC_Name.toLowerCase().startsWith(prefix.toLowerCase())
     );
   };
 
@@ -52,7 +52,7 @@ const TestTab = () => {
 
     // Send the request with the correct payload format
     const response = await authPost(
-      `data/lionicCode`,
+      `data/lionicCode/${user.hospitalID}`,
       { text: searchText }, // Sends { text: "de" } if searchText is "de"
       user.token
     );
@@ -91,18 +91,19 @@ const TestTab = () => {
   };
 
   const handleAddTest = async() => {
-    if (selectedItem && testList.some((test) => test.long_common_name_ === selectedItem)) {
+    if (selectedItem && testList.some((test) => test.LOINC_Name === selectedItem)) {
       const tests =
-      selectedItem && testList.some((test) => test.long_common_name_ === selectedItem)
+      selectedItem && testList.some((test) => test.LOINC_Name === selectedItem)
         ? testList
-            .filter((test) => test.long_common_name_ === selectedItem)
-            .map((test) => ({ loinc_num_: test.loinc_num_, test: selectedItem }))
+            .filter((test) => test.LOINC_Name === selectedItem)
+            .map((test) => ({ testID:test.id, loinc_num_: test.LOINC_Code, test: selectedItem, department: test.Department }))
         : [];
     
       const body = {
         timeLineID: patientTimeLineID,
         userID: user.id,
         tests: tests,
+        patientID: currentPatient.id,
       };
   
       const response = await authPost(`test/${user.hospitalID}`, body, user.token);
@@ -144,7 +145,7 @@ const TestTab = () => {
 
 
   const getAllTests = async () => {
-    const response = await authFetch(`test/${patientTimeLineID}`, user.token);
+    const response = await authFetch(`test/${currentPatient.id}`, user.token);
     console.log("getAllTests==",response)
     if (response.message == "success") {
       setSelectedList(response.tests);
@@ -163,6 +164,8 @@ const TestTab = () => {
   }));
 
   console.log("selectedList====", selectedList);
+  console.log("selectedItem====", selectedItem);
+  console.log("selectTest====", selectTest);
 
   return (
     <View style={styles.container}>
@@ -212,13 +215,13 @@ const TestTab = () => {
                 <View style={styles.dropdown}>
                   <FlatList
                     data={testList}
-                    keyExtractor={(item) => item.loinc_num_}
+                    keyExtractor={(item) => item.LOINC_Code}
                     renderItem={({ item }) => (
                       <TouchableOpacity
                         style={styles.dropdownItem}
-                        onPress={() => selectTest(item.long_common_name_)}
+                        onPress={() => selectTest(item.LOINC_Name)}
                       >
-                        <Text style={styles.dropdownText}>{item.long_common_name_}</Text>
+                        <Text style={styles.dropdownText}>{item.LOINC_Name}</Text>
                       </TouchableOpacity>
                     )}
                   />
@@ -237,13 +240,13 @@ const TestTab = () => {
 
             <View style={styles.selectedListContainer}>
               {newSelectedList.map((test) => (
-                <View key={test.loinc_num_} style={styles.selectedItem}>
+                <View key={test.LOINC_Code} style={styles.selectedItem}>
                   <Text>{test.name}</Text>
                   <Button
                     title="Remove"
                     onPress={() =>
                       setNewSelectedList((prev) =>
-                        prev.filter((t) => t.loinc_num_ !== test.loinc_num_)
+                        prev.filter((t) => t.LOINC_Code !== test.LOINC_Code)
                       )
                     }
                   />

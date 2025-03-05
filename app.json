@@ -7,6 +7,12 @@
       "eas": {
         "projectId": "6b923793-fd82-4c3e-8fae-995f1c72f9b5"
       }
-    }
+    },
+    "experiments": {
+      "newArchEnabled": true
+    },
+    "plugins": [
+      "expo-barcode-scanner"
+    ]
   }
 }

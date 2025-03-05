@@ -43,8 +43,20 @@ const OutPatientsList = () => {
             user.token
           );
         if (response.message == "success") {
+            const removeDuplicates = (patients) => {
+                const seen = new Set();
+                return patients.filter((patient) => {
+                  if (seen.has(patient.id)) {
+                    return false; // Duplicate, exclude from result
+                  }
+                  seen.add(patient.id);
+                  return true; // Unique, include in result
+                });
+              };
             // Assuming you are receiving response.patients as the patient list
-            const sortedPatients = response.patients.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+            const sortedPatients = removeDuplicates(response.patients.sort((a, b) => new Date(b.startTime) - new Date(a.startTime)).filter(
+                (patient) => patient.ptype === 1
+              ));
             setRecentPatient(sortedPatients);
         }
     }
@@ -55,7 +67,7 @@ const OutPatientsList = () => {
         } else {
             getAllData()
         }
-    }, [activeTab])
+    }, [activeTab, user])
 
 
     const getRandomColor = () => {

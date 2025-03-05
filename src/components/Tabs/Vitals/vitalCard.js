@@ -10,7 +10,7 @@ const VitalCard =({ visible, onClose, onSave }) => {
 
   const user = useSelector((state) => state.currentUserData);
   const currentPatient = useSelector((state) => state.currentPatientData);
-  const patientTimeLineID = currentPatient?.patientTimeLineID;
+  // const patientTimeLineID = currentPatient?.patientTimeLineID;
 
   const [wardList, setWardList] = React.useState([]);
 
@@ -239,7 +239,7 @@ const convertTimeToISO = (time) => {
       // console.log("oxytime===",vitals.time, vitals.temperatureTime)
       console.log("object",vitals.oxygenTime ? convertTimeToISO(vitals.time) : "")
         const response = await authPost(
-          `vitals/${user.hospitalID}/${patientTimeLineID}`,
+          `vitals/${user.hospitalID}/${currentPatient.id}`,
           {
             userID: user.id,
             oxygen: vitals.oxygen,

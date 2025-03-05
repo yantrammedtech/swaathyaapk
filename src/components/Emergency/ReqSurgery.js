@@ -42,8 +42,27 @@ const RequestSurgeryForm = () => {
     navigation.goBack(); // Navigate to the previous page
   };
   const handleSubmit = async () => {
+    if (!patientType) {
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please select a patient type",
+        visibilityTime: 3000,
+      });
+      return;
+    }
     const selectedsurgeryType =
       surgeryType === "Others" ? manualSurgeryType : surgeryType;
+
+      if (!selectedsurgeryType) {
+        Toast.show({
+          type: "error",
+          text1: "Validation Error",
+          text2: "Please select or enter a surgery type",
+          visibilityTime: 3000,
+        });
+        return;
+      }
 
     try {
       const data = {

@@ -116,7 +116,7 @@ const OtPatientProfile = () => {
     onPress={() => navigation.navigate('TransferPatient')} 
 
     >
-      <Image source={require("../../assets/transfer/Two transfer.png")} style={styles.optionIcon} />
+      <Image source={require("../../assets/transfer/Twotransfer.png")} style={styles.optionIcon} />
       <Text style={styles.optionText}>Transfer</Text>
     </TouchableOpacity>
   </View>
@@ -127,7 +127,7 @@ const OtPatientProfile = () => {
     onPress={() => navigation.navigate('RequestSurgery')} 
 
      >
-      <Image source={require("../../assets/transfer/Three request.png")} style={styles.optionIcon} />
+      <Image source={require("../../assets/transfer/Threerequest.png")} style={styles.optionIcon} />
       <Text style={styles.optionText}>Request</Text>
     </TouchableOpacity>
 

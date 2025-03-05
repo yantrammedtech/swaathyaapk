@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SCOPE_LIST } from '../../utility/scopes';
-import Scanner from '../Scanner/Scanner';
+// import Scanner from '../Scanner/Scanner';
 const { height } = Dimensions.get('window'); // Get screen height
 
 
@@ -76,7 +76,9 @@ const handleScanComplete = (data) => {
   return (
     <>
     {isQROpen ? (
-      <Scanner onScanComplete={handleScanComplete} />
+      <>
+      </>
+      // <Scanner onScanComplete={handleScanComplete} />
     ):(
  <View style={styles.container}>
  <Header toggleSidebar={toggleSidebar} onNotificationPress={onNotificationPress} />

@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 const VitalsTab = () => {
   const user = useSelector((state) => state.currentUserData);
   const currentPatient = useSelector((state) => state.currentPatientData);
-  const patientTimeLineID = currentPatient?.patientTimeLineID;
+  // const patientTimeLineID = currentPatient?.patientTimeLineID;
   const vitalsData = useSelector((state) => state.vitals[0])
 const dispatch= useDispatch()
   const [modalVisible, setModalVisible] = useState(false);
@@ -57,7 +57,7 @@ if (Array.isArray(bpData) && bpData.length === 2) {
 
   const getAllVitals = async () => {
     const response = await authFetch(
-      `vitals/${user.hospitalID}/${patientTimeLineID}`,
+      `vitals/${user.hospitalID}/${currentPatient.id}`,
       user.token
     );
     // console.log("getAllVitals=====",response)
