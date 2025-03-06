@@ -4,12 +4,16 @@ import axios from "axios";
 import { BASE_URL } from '@env';
 
 export async function postAxios(url, body) {
+  console.log("fetchdata",BASE_URL)
+
   const authPost = axios.create({
     baseURL: BASE_URL,
     method: "post",
   });
   try {
     const response = await authPost.post(url, body);
+  console.log("dataresponse",response)
+
     const data = response.data;
     return data;
   } catch (err) {

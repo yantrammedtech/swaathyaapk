@@ -3,6 +3,8 @@ import axios from "axios";
 import { BASE_URL } from '@env';
 
 export async function authDelete(url, token) {
+  console.log("fetchdata",BASE_URL)
+
   const authPost = axios.create({
     baseURL: BASE_URL,
     method: "delete",

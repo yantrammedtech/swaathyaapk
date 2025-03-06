@@ -63,6 +63,7 @@ import { IconButton, Menu, Divider } from 'react-native-paper';
 import PostOpRecord from "./src/components/OtTabs/PreOP/PostOpRecord";
 import Record from "./src/components/Record/Record";
 import DischargePatientProfile from "./src/components/DischargePatient/PatientProfile";
+import VitalsTabs from "./src/components/Tabs/Vitals/VitalsTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -144,7 +145,32 @@ const Routing = () => {
            
           })}
         />
-        
+        {/* =============common screens======= */}
+        <Stack.Screen
+          name="vitalstabs"
+          component={VitalsTabs}
+          options={({ navigation, route }) => ({
+            headerStyle: {
+              backgroundColor: '#1977f3',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+            // Dynamic Title
+            headerTitle: route.params?.title || 'Vitals',
+            headerLeft: () => (
+              <Icon
+                name="chevron-left"
+                size={24}
+                color="#fff"
+                style={{ marginLeft: 1 }}
+                onPress={() => navigation.goBack()}
+              />
+            ),
+          })}
+        />
+
 
         <Stack.Screen name="EmergencyDashboard" component={EmergencyDashboard} options={{ headerShown: false }} />
         <Stack.Screen
