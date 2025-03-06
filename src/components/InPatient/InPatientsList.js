@@ -31,6 +31,7 @@ const InPatientsList = () => {
             `patient/${user.hospitalID}/patients/recent/${patientStatus.inpatient}?userID=${user.id}&role=${user.role}`,
             user.token
         );
+        console.log("responseipdlist",response)
         if (response.message == "success") {
             setRecentPatient(response.patients);
         }
