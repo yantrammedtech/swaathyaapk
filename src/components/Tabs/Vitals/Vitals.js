@@ -26,6 +26,7 @@ const VitalsTab = () => {
   const latestOxygen = vitalsData?.oxygen[0]?.oxygen;
   const latestTemperature = vitalsData?.temperature[0]?.temperature;
   const latestPulse = vitalsData?.pulse[0]?.pulse;
+  const respiratoryRate = vitalsData?.respiratoryRate[0]?.respiratoryRate
 
   const [latestOxygenNumber, setLatestOxygenNumber] = useState(0);
 
@@ -292,7 +293,7 @@ setUnit("%"); */}
           <View style={styles.rowOxygen}>
             <View style={styles.row}>
               <Image
-                source={require("../../../assets/vitals/pulse.png")}
+                source={require("../../../assets/vitals/RR.png")}
                 style={styles.image}
                 resizeMode="contain"
               />
@@ -304,7 +305,7 @@ setUnit("%"); */}
               resizeMode="contain"
             />
           </View>
-          <Text style={styles.textValue}> {latestPulse} bpm</Text>
+          <Text style={styles.textValue}> {respiratoryRate} bpm</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
