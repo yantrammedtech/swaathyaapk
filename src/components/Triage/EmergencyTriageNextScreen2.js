@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -36,8 +36,8 @@ const NextScreen = () => {
   const triageDataFromStore = useSelector((state) => state.triageData);
   const [gcs, setGcs] = useState(triageDataFromStore.gcs);
   const dispatch = useDispatch();
-
-  const [gcsScore, setGcsScore] = useState(11);
+  const user = useSelector((state) => {return state.currentUserData})
+  const [gcsScore, setGcsScore] = useState(0);
   const [eyeMovementChecked, setEyeMovementChecked] = useState(false);
   const [motorResponseChecked, setMotorResponseChecked] = useState(false);
   const [verbalResponseChecked, setVerbalResponseChecked] = useState(false);
@@ -48,13 +48,13 @@ const NextScreen = () => {
   const [errors, setErrors] = useState({});
 
   const responseOptions = {
-    eye: ["Spontaneous", "To Sound", "To Pressures", "None"],
-    motor: ["Obey Commands", "Localising", "Extension", "Abnormal Flexions", "Normal Flexion", "None"],
+    eye: ["Spontaneous", "To Sound", "To Pressure", "None"],
+    motor: ["Obey Commands", "Localising", "Extension", "Abnormal Flexion", "Normal Flexion", "None"],
     verbal: ["Oriented", "Confused", "Words", "Sounds", "None"],
   };
 
   const navigation = useNavigation();
-
+ 
   const handleNextPress = () => {
     const errs = {
       painScale: validateFields('painScale', painScale, [1, 10]),
@@ -88,6 +88,135 @@ const NextScreen = () => {
     navigation.navigate('Trauma');
   };
 
+// ===============web socket start===============
+const [socket, setSocket] = useState(null);
+const [receivedMessage, setReceivedMessage] = useState(null);
+const [isMessageConsumed, setIsMessageConsumed] = useState(false);
+
+const delay = 10000;
+
+  const formdata = {
+    eyeMovement: selectedEyeMovement, 
+    verbalResponse: selectedVerbalResponse, 
+    motorResponse: selectedMotorResponse, 
+    painScale,
+  }
+  const sendMessage = useCallback(
+    (data) => {
+      console.log("data===",data)
+      console.log("socket===",socket)
+      if (socket) socket.send(JSON.stringify(data));
+    },
+    [socket]
+  );
+
+  useEffect(() => {
+    sendMessage({
+      type: 'GCS',
+      data: formdata,
+    });
+  }, []);
+
+
+  useEffect(() => {
+    if (user.token) {
+      let intervalId;
+      const ws = new WebSocket(
+        "ws://hospitaldashboard-env.eba-mqytecux.ap-south-1.elasticbeanstalk.com/api/v1/triage",
+        user.token
+      );
+console.log("object", ws)
+      const ping = () => {
+        console.log("ping")
+        ws.send(JSON.stringify({ type: "ping" }));
+        console.log("ping ws", ws)
+      };
+
+      const wsOpenHandler = () => {
+        console.log("WebSocket connection established.");
+        intervalId = setInterval(ping, delay);
+        console.log("wsOpenHandler intervalId", intervalId)
+        setSocket(ws);
+        console.log("wsOpenHandler ws", ws)
+
+      };
+
+      const wsMessageHandler = (event) => {
+        console.log("wsMessageHandler", event)
+        const data = JSON.parse(event.data);
+        setReceivedMessage(data);
+        console.log("Received message:", data);
+      };
+
+      const wsCloseHandler = (event) => {
+        console.log("wsCloseHandler")
+        if (intervalId) clearInterval(intervalId);
+        setSocket(null);
+        console.log("WebSocket connection closed", event);
+      };
+
+      const wsErrorHandler = (error) => {
+        console.error("WebSocket error: ", error);
+      };
+
+      ws.addEventListener("open", wsOpenHandler);
+      ws.addEventListener("message", wsMessageHandler);
+      ws.addEventListener("close", wsCloseHandler);
+      ws.addEventListener("error", wsErrorHandler);
+
+      return () => {
+        if (intervalId) clearInterval(intervalId);
+        ws.removeEventListener("open", wsOpenHandler);
+        ws.removeEventListener("message", wsMessageHandler);
+        ws.removeEventListener("close", wsCloseHandler);
+        ws.removeEventListener("error", wsErrorHandler);
+        console.log("Closing socket connection.");
+        ws.close();
+      };
+    }
+  }, [user.token]);
+
+  
+// ===============web socket end===============
+
+const scoreList = {
+  eyeMovement: {
+    spontaneous: 4,
+    'to sound': 3,
+    'to pressure': 2,
+    none: 1,
+  },
+  verbalResponse: {
+    oriented: 5,
+    confused: 4,
+    words: 3,
+    sounds: 2,
+    none: 1,
+  },
+  motorResponse: {
+    'obey commands': 6,
+    localising: 5,
+    'normal flexion': 4,
+    'abnormal flexion': 3,
+    extension: 2,
+    none: 1,
+  },
+};
+
+  const calculateGcsScore = () => {
+    const eyeScore = scoreList.eyeMovement[selectedEyeMovement?.toLowerCase()] || 0;
+    const motorScore = scoreList.motorResponse[selectedMotorResponse?.toLowerCase()] || 0;
+    const verbalScore = scoreList.verbalResponse[selectedVerbalResponse?.toLowerCase()] || 0;
+    
+    return eyeScore + motorScore + verbalScore;
+  };
+
+  useEffect(() => {
+    setGcsScore(calculateGcsScore());
+  }, [selectedEyeMovement, selectedMotorResponse, selectedVerbalResponse]);
+
+
+  console.log("gcsScore==",formdata, gcsScore)
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.scoreContainer}>
