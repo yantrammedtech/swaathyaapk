@@ -289,26 +289,29 @@ const Report = () => {
   return (
     <View style={styles.container}>
       {/* Upload Section */}
-      <View style={styles.uploadContainer}>
-        <Icon name="cloud-upload" size={50} color="#ccc" />
-        <Text style={styles.uploadText}>
-          Browse and choose the files you want to upload from your computer
-        </Text>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <TouchableOpacity
-            style={styles.uploadButton}
-            onPress={handleUploadPress}
-          >
-            <Icon name="add" size={30} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.cameraButton}
-            onPress={handleCameraPress}
-          >
-            <Icon name="camera-alt" size={30} color="#fff" />
-          </TouchableOpacity>
-        </View>
-      </View>
+      {currentPatient?.ptype !== 21 && (
+ <View style={styles.uploadContainer}>
+ <Icon name="cloud-upload" size={50} color="#ccc" />
+ <Text style={styles.uploadText}>
+   Browse and choose the files you want to upload from your computer
+ </Text>
+ <View style={{ flexDirection: "row", alignItems: "center" }}>
+   <TouchableOpacity
+     style={styles.uploadButton}
+     onPress={handleUploadPress}
+   >
+     <Icon name="add" size={30} color="#fff" />
+   </TouchableOpacity>
+   <TouchableOpacity
+     style={styles.cameraButton}
+     onPress={handleCameraPress}
+   >
+     <Icon name="camera-alt" size={30} color="#fff" />
+   </TouchableOpacity>
+ </View>
+</View>
+      )}
+     
 
       {/* Display list of uploaded reports */}
       <FlatList

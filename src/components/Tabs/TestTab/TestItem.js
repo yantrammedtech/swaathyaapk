@@ -201,7 +201,7 @@ const backgroundColor = getRandomColor();
                 <Text style={styles.labelText}>DOB</Text>
                 <Text style={styles.colonText}>:</Text>
                 <Text style={styles.detailsValue}>
-                  {user.dob.split("T")[0]}
+                  {user?.dob?.split("T")[0]}
                 </Text>
               </View>
               <View style={styles.detailsRow}>

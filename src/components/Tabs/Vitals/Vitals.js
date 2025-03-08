@@ -307,13 +307,15 @@ setUnit("%"); */}
           </View>
           <Text style={styles.textValue}> {respiratoryRate} bpm</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={handleAddVitalsPress}
-        >
-          <Text style={styles.addButtonText}>+ Add Vitals</Text>
-        </TouchableOpacity>
+{currentPatient?.ptype !== 21 && (
+ <TouchableOpacity
+ style={styles.addButton}
+ onPress={handleAddVitalsPress}
+>
+ <Text style={styles.addButtonText}>+ Add Vitals</Text>
+</TouchableOpacity>
+)}
+       
 
         <VitalCard
           visible={modalVisible}

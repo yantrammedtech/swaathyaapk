@@ -169,13 +169,16 @@ const TestTab = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
+      {currentPatient?.ptype !== 21 && (
+
+        <TouchableOpacity
         style={styles.button}
         onPress={() => setModalVisible(true)}
-      >
+        >
         <Icon name="add" size={20} color="#fff" />
         <Text style={styles.buttonText}>Add Tests</Text>
       </TouchableOpacity>
+      )}
 
       <FlatList
     data={mappedTestList}
