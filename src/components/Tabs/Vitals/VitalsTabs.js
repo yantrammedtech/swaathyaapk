@@ -9,7 +9,6 @@ const VitalsTabs = ({route }) => {
   const [activeTab, setActiveTab] = useState('Logs');
   const user = useSelector((state) => state.currentUserData);
   const currentPatient = useSelector((state) => state.currentPatientData);
-  const patientTimeLineID = currentPatient?.patientTimeLineID;
   return (
     <View style={styles.container}>
 
@@ -31,7 +30,7 @@ const VitalsTabs = ({route }) => {
       </View>
 
       {/* Tab Content */}
-      {activeTab === 'Logs' ? <VitalsLogs category={route.params.category} unit={route.params.unit} user={user} patientTimeLineID={patientTimeLineID} /> : <VitalsGraphs category={route.params.category} unit={route.params.unit} user={user} patientTimeLineID={patientTimeLineID} />}
+      {activeTab === 'Logs' ? <VitalsLogs category={route.params.category} unit={route.params.unit} user={user} patientID={currentPatient.id} /> : <VitalsGraphs category={route.params.category} unit={route.params.unit} user={user} patientID={currentPatient.id} />}
     </View>
   );
 };
