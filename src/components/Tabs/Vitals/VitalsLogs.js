@@ -1,90 +1,125 @@
-// VitalsLogs.js
-import React, { useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { authFetch } from '../../../axios/authFetch';
 
-const logsData = [
-  { id: '1', date: '10/21/2024', time: '11:14:20 AM', bpm: 102 },
-  { id: '2', date: '10/21/2024', time: '11:15:20 AM', bpm: 102 },
-  { id: '3', date: '10/21/2024', time: '11:16:20 AM', bpm: 100 },
-  { id: '4', date: '10/21/2024', time: '11:17:20 AM', bpm: 90 },
-  { id: '5', date: '10/21/2024', time: '11:18:20 AM', bpm: 80 },
-  { id: '6', date: '10/21/2024', time: '11:19:20 AM', bpm: 56 },
-  { id: '1', date: '10/21/2024', time: '11:14:20 AM', bpm: 102 },
-  { id: '2', date: '10/21/2024', time: '11:15:20 AM', bpm: 102 },
-  { id: '3', date: '10/21/2024', time: '11:16:20 AM', bpm: 100 },
-  { id: '4', date: '10/21/2024', time: '11:17:20 AM', bpm: 90 },
-  { id: '5', date: '10/21/2024', time: '11:18:20 AM', bpm: 80 },
-  { id: '6', date: '10/21/2024', time: '11:19:20 AM', bpm: 56 },
-  { id: '1', date: '10/21/2024', time: '11:14:20 AM', bpm: 102 },
-  { id: '2', date: '10/21/2024', time: '11:15:20 AM', bpm: 102 },
-  { id: '3', date: '10/21/2024', time: '11:16:20 AM', bpm: 100 },
-  { id: '4', date: '10/21/2024', time: '11:17:20 AM', bpm: 90 },
-  { id: '5', date: '10/21/2024', time: '11:18:20 AM', bpm: 80 },
-  { id: '6', date: '10/21/2024', time: '11:19:20 AM', bpm: 56 },
-];
+const VitalsLogs = ({ category, unit, user, patientID }) => {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-const VitalsLogs = ({category,unit,user,patientTimeLineID}) => {
+  // Helper function to create row data object
+  const createData = (value, timeStamp, userID) => {
+    return { value, timeStamp, userID };
+  };
 
-
+  // Fetch filtered data
   const getFilteredData = async () => {
-    const response = await authFetch(
-      `vitals/${user.hospitalID}/${patientTimeLineID}/single?vital=${category}`,
-      user.token
-    );
+    try {
+      const response = await authFetch(
+        `vitals/${user.hospitalID}/${patientID}/single?vital=${category}`,
+        user.token
+      );
 
-    if (response.message == "success") {
-      setRows(() => {
-        if (response.vitals.length) {
-          const timeVar = (category + "Time")
-          return response.vitals?.map((vital) => {
-            if (category == "temperature" && vital.device) {
-              return createData(
-                vital[category] || "",
-                Number(vital.deviceTime) * 1000,
-                vital.userID || ""
-              );  
-            } else {
-              return createData(vital[category] || "", String(vital[timeVar]), vital.userID || "");
-            }
-          });
-        } else return [];
-      });
+      if (response.message === 'success') {
+        const timeVar = `${category}Time`; // Dynamically form the time field name
+        const formattedRows = response.vitals.map((vital) => {
+          const value = vital[category] || '';
+          const timeStamp = vital[timeVar] || '';
+          const userID = vital.userID || '';
+          return createData(value, timeStamp, userID);
+        });
+
+        // Sort rows by timestamp in descending order (latest first)
+        formattedRows.sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp));
+
+        setRows(formattedRows);
+      } else {
+        setError('Failed to fetch data');
+      }
+    } catch (err) {
+      setError('An error occurred while fetching data');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(()=>{
-    getFilteredData()
-  },[])
+  useEffect(() => {
+    getFilteredData();
+  }, [category]);
 
+  // Format date and time from timestamp and add 5 hours and 30 minutes
+  const formatDateTime = (timestamp) => {
+    if (!timestamp) return { date: 'N/A', time: 'N/A' };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.row}>
-      <View>
-        <Text style={styles.dateText}>{item.date}</Text>
-        <Text style={styles.timeText}>{item.time}</Text>
+    const date = new Date(timestamp);
+    date.setHours(date.getHours() + 5); // Add 5 hours
+    date.setMinutes(date.getMinutes() + 30); // Add 30 minutes
+
+    return {
+      date: date.toLocaleDateString(),
+      time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    };
+  };
+
+  // Render each row item
+  const renderItem = ({ item }) => {
+    const { date, time } = formatDateTime(item.timeStamp);
+
+    return (
+      <View style={styles.row}>
+        <View>
+          <Text style={styles.dateText}>{date}</Text>
+          <Text style={styles.timeText}>{time}</Text>
+        </View>
+        <Text style={styles.bpmText}>
+          {item.value} {unit}
+        </Text>
       </View>
-      <Text style={styles.bpmText}>{item.bpm}bpm</Text>
-    </View>
-  );
+    );
+  };
+
+  // Show loading indicator
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#004E98" />
+      </View>
+    );
+  }
+
+  // Show error message
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       {/* Header Row */}
       <View style={styles.headerRow}>
         <Text style={[styles.headerText, { flex: 1 }]}>Time</Text>
-        <Text style={[styles.headerText, { flex: 1, textAlign: 'right' }]}>Blood Pressure</Text>
+        <Text style={[styles.headerText, { flex: 1, textAlign: 'right' }]}>
+          {category.charAt(0).toUpperCase() + category.slice(1)} ({unit})
+        </Text>
       </View>
 
+      {/* Data List */}
       <FlatList
-        data={logsData}
-        keyExtractor={item => item.id}
+        data={rows}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
         contentContainerStyle={{ paddingHorizontal: 16 }}
+        ListEmptyComponent={<Text style={styles.emptyText}>No data available</Text>}
       />
     </View>
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   headerRow: {
@@ -106,6 +141,9 @@ const styles = StyleSheet.create({
   dateText: { fontSize: 14, color: '#000' },
   timeText: { fontSize: 12, color: '#666' },
   bpmText: { fontSize: 14, fontWeight: 'bold', color: '#000' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  errorText: { color: 'red', fontSize: 16 },
+  emptyText: { textAlign: 'center', marginTop: 20, color: '#666' },
 });
 
 export default VitalsLogs;

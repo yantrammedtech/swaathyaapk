@@ -3,13 +3,11 @@
     "name": "swaathyaapk",
     "slug": "swaathyaapk",
     "version": "1.0.0",
+    "owner": "yantramintern6",
     "extra": {
       "eas": {
-        "projectId": "6b923793-fd82-4c3e-8fae-995f1c72f9b5"
+        "projectId": "292b87ed-10a0-4f6c-b85f-5f4afe33e345"
       }
-    },
-    "experiments": {
-      "newArchEnabled": true
     },
     "plugins": [
       "expo-barcode-scanner"
