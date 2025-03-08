@@ -177,11 +177,13 @@ function compareDates(a, b) {
         </>
       ))}
      
-
+{currentPatient?.ptype !== 21 && (
+ <TouchableOpacity style={styles.addButton} onPress={()=> setDoctorModel(true)}>
+ <Text style={styles.addButtonText}>+ Add Doctor</Text>
+</TouchableOpacity>
+)}
       
-      <TouchableOpacity style={styles.addButton} onPress={()=> setDoctorModel(true)}>
-        <Text style={styles.addButtonText}>+ Add Doctor</Text>
-      </TouchableOpacity>
+     
 
       <Modal
       animationType="slide"

@@ -163,12 +163,15 @@ const SymptomsTab = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+      {currentPatientData?.ptype !== 21 && (
+        <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
 
-        <Icon name="add" size={20} color="#fff" />
-        <Text style={styles.buttonText}>Add Symptoms</Text>
-      </TouchableOpacity>
+<Icon name="add" size={20} color="#fff" />
+<Text style={styles.buttonText}>Add Symptoms</Text>
+</TouchableOpacity>
 
+      )}
+      
       <FlatList
         data={symptomsData}
         renderItem={({ item }) => (
